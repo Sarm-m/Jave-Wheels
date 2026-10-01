@@ -47,7 +47,7 @@ class InicioViewModel : ViewModel() {
         _uiState.update { it.copy(esConductorRegistrado = true, rol = rolInicial) }
     }
 
-    /** Entra como pasajero (por ejemplo, "Por ahora, ser pasajero"). */
+    /** Activa el modo pasajero. */
     fun usarComoPasajero() {
         _uiState.update { it.copy(rol = Rol.PASAJERO) }
     }

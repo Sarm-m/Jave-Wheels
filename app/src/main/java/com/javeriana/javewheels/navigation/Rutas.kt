@@ -33,7 +33,6 @@ sealed class Rutas : NavKey {
     @Serializable data object Confirmacion : Rutas()
 
     // --- Registro de conductor ---
-    // Ruta CON datos (como PokemonDetailRoute en la Clase 4):
     // desdeRegistro = true si llega justo después de crear la cuenta.
     @Serializable data class QuieresConducir(val desdeRegistro: Boolean) : Rutas()
     @Serializable data object RegistrarVehiculo : Rutas()
@@ -44,6 +43,11 @@ sealed class Rutas : NavKey {
     @Serializable data object MisViajes : Rutas()
     @Serializable data object Mensajes : Rutas()
     @Serializable data object Perfil : Rutas()
+
+    // --- Flujo del pasajero ---
+    @Serializable data object WheelsDisponibles : Rutas()
+    @Serializable data class DetalleWheel(val wheelId: String) : Rutas()
+    @Serializable data object DetalleReserva : Rutas()
 }
 
 // ============================================================

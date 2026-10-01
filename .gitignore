@@ -13,3 +13,13 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# Archivos generados del informe de implementación
+/docs/Informe_Implementacion_Sebas.pdf
+/docs/Informe_Implementacion_Sebas.aux
+/docs/Informe_Implementacion_Sebas.log
+/docs/Informe_Implementacion_Sebas.out
+/docs/Informe_Implementacion_Sebas.toc
+/docs/Informe_Implementacion_Sebas.fls
+/docs/Informe_Implementacion_Sebas.fdb_latexmk
+/docs/Informe_Implementacion_Sebas.synctex.gz

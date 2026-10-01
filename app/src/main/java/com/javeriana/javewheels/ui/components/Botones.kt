@@ -15,6 +15,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -65,7 +67,8 @@ fun BotonPrincipal(
 fun BotonSecundario(
     texto: String,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    colors: ButtonColors = ButtonDefaults.outlinedButtonColors()
 ) {
     OutlinedButton(
         onClick = onClick,
@@ -73,6 +76,7 @@ fun BotonSecundario(
             .fillMaxWidth()
             .height(52.dp),
         shape = RoundedCornerShape(14.dp),
+        colors = colors,
         border = BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary)
     ) {
         Text(text = texto, style = MaterialTheme.typography.labelLarge)

@@ -35,13 +35,14 @@ private const val PROXIMAMENTE = "Disponible en la próxima entrega"
 @Composable
 fun InicioScreen(
     onQuiereSerConductor: () -> Unit,
+    onBuscarWheels: () -> Unit = {},
     modifier: Modifier = Modifier,
     viewModel: InicioViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
 
-    // Función local para no repetir Toast.makeText(...) (Clase 3)
+    // Muestra avisos breves para las acciones visuales.
     fun mostrarMensaje(texto: String) {
         Toast.makeText(context, texto, Toast.LENGTH_SHORT).show()
     }
@@ -75,7 +76,7 @@ fun InicioScreen(
                     onSeleccionarMomento = { viewModel.seleccionarMomento(it) },
                     onIrALaJaveriana = { viewModel.irALaJaveriana() },
                     onGuardados = { mostrarMensaje(PROXIMAMENTE) },
-                    onBuscar = { mostrarMensaje(viewModel.buscarWheels()) },
+                    onBuscar = onBuscarWheels,
                     modifier = modificadorPanel
                 )
             } else {

@@ -57,3 +57,79 @@ val proximoViajeConductor = Viaje(
 
 /** Destino del acceso rápido "Ir a la Javeriana". */
 const val DESTINO_JAVERIANA = "Pontificia Universidad Javeriana"
+
+/** Wheels compatibles con la búsqueda del pasajero. */
+val wheelsDisponibles = listOf(
+    WheelPasajero(
+        id = "andres-directo",
+        conductor = "Andrés Rojas",
+        origen = "Salitre",
+        destino = "Javeriana",
+        fecha = "Mañana, 1 oct.",
+        hora = "7:35 a. m.",
+        aporte = "$3.000",
+        cuposDisponibles = 2,
+        modoBuseta = false,
+        compatibilidad = "A 120 m · Recogida directa",
+        distancia = "120 m"
+    ),
+    WheelPasajero(
+        id = "laura-buseta",
+        conductor = "Laura Gómez",
+        origen = "Salitre",
+        destino = "Javeriana",
+        fecha = "Mañana, 1 oct.",
+        hora = "7:30 a. m.",
+        aporte = "$4.000",
+        cuposDisponibles = 2,
+        modoBuseta = true,
+        compatibilidad = "A 350 m · A pie: 4 min"
+    )
+)
+
+/** Reservas activas y solicitudes pendientes del pasajero. */
+val reservasPasajero = listOf(
+    ReservaPasajero(
+        wheel = wheelsDisponibles[1].copy(
+            id = "alexandra-confirmada",
+            conductor = "Alexandra Ramos"
+        ),
+        estado = "Confirmada",
+        detalleRecogida = "Modo Buseta · 350 m al punto"
+    ),
+    ReservaPasajero(
+        wheel = wheelsDisponibles[0].copy(
+            id = "andres-pendiente",
+            origen = "Chapinero",
+            fecha = "Vie., 2 oct.",
+            hora = "8:00 a. m."
+        ),
+        estado = "Pendiente",
+        detalleRecogida = "Esperando respuesta del conductor"
+    )
+)
+
+val reservaConfirmada = reservasPasajero.first()
+
+/** Wheels finalizados que aparecen en el historial del pasajero. */
+val wheelsFinalizados = listOf(
+    ReservaPasajero(
+        wheel = reservaConfirmada.wheel.copy(
+            id = "alexandra-finalizado",
+            fecha = "Mar., 29 sept."
+        ),
+        estado = "Finalizado",
+        detalleRecogida = "Modo Buseta · Calle 72"
+    ),
+    ReservaPasajero(
+        wheel = wheelsDisponibles[0].copy(
+            id = "andres-finalizado",
+            origen = "Javeriana",
+            destino = "Chapinero",
+            fecha = "Lun., 28 sept.",
+            hora = "5:30 p. m."
+        ),
+        estado = "Finalizado",
+        detalleRecogida = "Recogida directa · Chapinero"
+    )
+)

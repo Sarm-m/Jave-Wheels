@@ -12,6 +12,7 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import com.javeriana.javewheels.entities.Rol
+import com.javeriana.javewheels.entities.wheelsDisponibles
 import com.javeriana.javewheels.ui.components.BarraNavegacion
 import com.javeriana.javewheels.ui.screens.acceso.ConfirmacionScreen
 import com.javeriana.javewheels.ui.screens.acceso.LoginScreen
@@ -28,6 +29,9 @@ import com.javeriana.javewheels.ui.screens.principal.InicioScreen
 import com.javeriana.javewheels.ui.screens.principal.MensajesScreen
 import com.javeriana.javewheels.ui.screens.principal.MisViajesScreen
 import com.javeriana.javewheels.ui.screens.principal.PerfilScreen
+import com.javeriana.javewheels.ui.screens.principal.WheelsDisponiblesScreen
+import com.javeriana.javewheels.ui.screens.principal.DetalleWheelScreen
+import com.javeriana.javewheels.ui.screens.principal.DetalleReservaScreen
 import com.javeriana.javewheels.ui.theme.JWAzul
 import com.javeriana.javewheels.viewmodels.InicioViewModel
 
@@ -74,7 +78,11 @@ fun JWNavHost(modifier: Modifier = Modifier) {
 
 
     val rutaActual = backStack.lastOrNull()
-    val pestanaActual = Pestana.entries.find { it.ruta == rutaActual }
+    val pestanaActual = when (rutaActual) {
+        Rutas.WheelsDisponibles, is Rutas.DetalleWheel -> Pestana.Inicio
+        Rutas.DetalleReserva -> Pestana.MisViajes
+        else -> Pestana.entries.find { it.ruta == rutaActual }
+    }
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -140,7 +148,7 @@ fun JWNavHost(modifier: Modifier = Modifier) {
                 }
 
                 // ==================== REGISTRO DE CONDUCTOR ====================
-                // "ruta" trae el dato desdeRegistro (ruta con datos, Clase 4)
+                // La ruta indica si se acaba de crear la cuenta.
                 entry<Rutas.QuieresConducir> { ruta ->
                     QuieresConducirScreen(
                         desdeRegistro = ruta.desdeRegistro,
@@ -175,11 +183,31 @@ fun JWNavHost(modifier: Modifier = Modifier) {
                 entry<Rutas.Inicio> {
                     InicioScreen(
                         viewModel = inicioViewModel,
-                        onQuiereSerConductor = { navegarA(Rutas.QuieresConducir(desdeRegistro = false)) }
+                        onQuiereSerConductor = { navegarA(Rutas.QuieresConducir(desdeRegistro = false)) },
+                        onBuscarWheels = { navegarA(Rutas.WheelsDisponibles) }
                     )
                 }
                 entry<Rutas.MisViajes> {
-                    MisViajesScreen()
+                    MisViajesScreen(onVerReserva = { navegarA(Rutas.DetalleReserva) })
+                }
+                entry<Rutas.WheelsDisponibles> {
+                    WheelsDisponiblesScreen(
+                        onVolver = { volver() },
+                        onVerWheel = { navegarA(Rutas.DetalleWheel(it)) }
+                    )
+                }
+                entry<Rutas.DetalleWheel> { ruta ->
+                    val wheel = wheelsDisponibles.firstOrNull { it.id == ruta.wheelId }
+                    if (wheel != null) {
+                        DetalleWheelScreen(
+                            wheel = wheel,
+                            onVolver = { volver() },
+                            onSolicitarCupo = { irAPestana(Pestana.MisViajes) }
+                        )
+                    }
+                }
+                entry<Rutas.DetalleReserva> {
+                    DetalleReservaScreen(onVolver = { volver() })
                 }
                 entry<Rutas.Mensajes> {
                     MensajesScreen()
