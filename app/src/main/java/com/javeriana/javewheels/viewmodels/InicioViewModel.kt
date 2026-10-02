@@ -18,8 +18,10 @@ import kotlinx.coroutines.flow.update
 data class InicioUiState(
     val rol: Rol = Rol.PASAJERO,
     val esConductorRegistrado: Boolean = false,  // true cuando registró su vehículo
+    val origen: String = "Mi ubicación",
     val destino: String = "",
     val viajeProgramado: Boolean = false,        // false = "Ahora", true = "Programar"
+    val salidaProgramadaMillis: Long = com.javeriana.javewheels.entities.salidaEnDias(1, 450),
     val proximoViaje: Viaje = proximoViajeConductor
 )
 
@@ -47,12 +49,21 @@ class InicioViewModel : ViewModel() {
         _uiState.update { it.copy(esConductorRegistrado = true, rol = rolInicial) }
     }
 
-    /** Entra como pasajero (por ejemplo, "Por ahora, ser pasajero"). */
+    /** Activa el modo pasajero. */
     fun usarComoPasajero() {
         _uiState.update { it.copy(rol = Rol.PASAJERO) }
     }
 
     // --- Panel "Buscar un Wheel" (pasajero) ---
+
+    fun seleccionarRutaGuardada(ruta: com.javeriana.javewheels.entities.RutaGuardada) {
+        _uiState.update { it.copy(origen = ruta.origen, destino = ruta.destino) }
+    }
+
+    fun actualizarBusqueda(origen: String, destino: String, programado: Boolean, salida: Long) {
+        _uiState.update { it.copy(origen = origen.trim(), destino = destino.trim(),
+            viajeProgramado = programado, salidaProgramadaMillis = if (programado) salida else it.salidaProgramadaMillis) }
+    }
 
     fun actualizarDestino(valor: String) {
         _uiState.update { it.copy(destino = valor) }

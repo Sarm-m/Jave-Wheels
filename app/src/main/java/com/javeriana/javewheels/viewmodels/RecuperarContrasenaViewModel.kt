@@ -89,7 +89,7 @@ class RecuperarContrasenaViewModel : ViewModel() {
         return error.isEmpty()
     }
 
-    /** Limpia el mensaje de error (por ejemplo, al volver atrás). */
+    /** Limpia el mensaje de error al volver atrás. */
     fun limpiarError() {
         _uiState.update { it.copy(mensajeError = "") }
     }

@@ -21,6 +21,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -43,14 +47,24 @@ fun CampoTexto(
     placeholder: String = "",
     esContrasena: Boolean = false,
     tipoTeclado: KeyboardType = KeyboardType.Text,
-    hayError: Boolean = false
+    hayError: Boolean = false,
+    obligatorio: Boolean = false,   // true = muestra un * rojo antes de la etiqueta
+    iconoFinal: ImageVector? = null,   // ícono al final del campo (ej. lupa del buscador)
+    descripcionIconoFinal: String? = null
 ) {
     // Estado visual (mostrar u ocultar la contraseña).
     var mostrarContrasena by remember { mutableStateOf(false) }
+    val colorError = MaterialTheme.colorScheme.error
 
     Column(modifier = modifier.fillMaxWidth()) {
-        Text(
-            text = etiqueta,
+        // Si la etiqueta está vacía no se dibuja (ej. buscador, caja de mensaje)
+        if (etiqueta.isNotBlank()) Text(
+            text = buildAnnotatedString {
+                if (obligatorio) {
+                    withStyle(SpanStyle(color = colorError)) { append("*") }
+                }
+                append(etiqueta)
+            },
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.padding(bottom = 6.dp)
@@ -82,6 +96,8 @@ fun CampoTexto(
                             contentDescription = if (mostrarContrasena) "Ocultar contraseña" else "Mostrar contraseña"
                         )
                     }
+                } else if (iconoFinal != null) {
+                    Icon(imageVector = iconoFinal, contentDescription = descripcionIconoFinal)
                 }
             }
         )

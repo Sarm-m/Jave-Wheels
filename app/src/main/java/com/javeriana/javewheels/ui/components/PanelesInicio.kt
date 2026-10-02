@@ -19,11 +19,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.BookmarkBorder
 import androidx.compose.material.icons.filled.CalendarMonth
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.School
-import androidx.compose.material.icons.filled.SwapHoriz
 import androidx.compose.material.icons.filled.TripOrigin
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -70,16 +68,11 @@ fun EncabezadoInicio(
             .padding(horizontal = 24.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Avatar
-        Box(
-            modifier = Modifier
-                .size(44.dp)
-                .clip(CircleShape)
-                .background(JWCelesteContenedor),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(Icons.Default.Person, contentDescription = "Avatar", tint = MaterialTheme.colorScheme.primary)
-        }
+        AvatarUsuario(
+            foto = null,
+            descripcion = "Avatar",
+            modifier = Modifier.size(44.dp)
+        )
         Spacer(modifier = Modifier.width(12.dp))
 
         // Saludo (weight(1f) = ocupa todo el espacio que sobra)
@@ -96,28 +89,7 @@ fun EncabezadoInicio(
             )
         }
 
-        // Chip del rol
-        Row(
-            modifier = Modifier
-                .clip(RoundedCornerShape(18.dp))
-                .background(JWCelesteContenedor)
-                .clickable { onCambiarRol() }
-                .padding(horizontal = 12.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = rol.titulo,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.primary
-            )
-            Spacer(modifier = Modifier.width(6.dp))
-            Icon(
-                imageVector = Icons.Default.SwapHoriz,
-                contentDescription = "Cambiar rol",
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(20.dp)
-            )
-        }
+        SelectorRol(rol = rol, onCambiarRol = onCambiarRol)
     }
 }
 
@@ -206,7 +178,9 @@ fun PanelPasajero(
     onIrALaJaveriana: () -> Unit,
     onGuardados: () -> Unit,
     onBuscar: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    origen: String = "Mi ubicación",
+    resumenProgramado: String = ""
 ) {
     PanelInferior(modifier = modifier) {
         Text(
@@ -233,6 +207,11 @@ fun PanelPasajero(
         }
         Spacer(modifier = Modifier.height(12.dp))
 
+        if (viajeProgramado && resumenProgramado.isNotBlank()) {
+            Text(resumenProgramado, style = MaterialTheme.typography.bodyMedium)
+            Spacer(modifier = Modifier.height(12.dp))
+        }
+
         // Origen y destino
         Column(
             modifier = Modifier
@@ -247,7 +226,7 @@ fun PanelPasajero(
             ) {
                 Icon(Icons.Default.TripOrigin, contentDescription = null, tint = JWCeleste, modifier = Modifier.size(20.dp))
                 Spacer(modifier = Modifier.width(12.dp))
-                Text("Mi ubicación", style = MaterialTheme.typography.bodyLarge)
+                Text(origen, style = MaterialTheme.typography.bodyLarge)
             }
             HorizontalDivider(color = JWBordeSuave)
             OutlinedTextField(
