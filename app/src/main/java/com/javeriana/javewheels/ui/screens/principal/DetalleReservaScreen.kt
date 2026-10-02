@@ -1,6 +1,5 @@
 package com.javeriana.javewheels.ui.screens.principal
 
-import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -26,36 +25,20 @@ import com.javeriana.javewheels.ui.components.DatosDetallePasajero
 import com.javeriana.javewheels.ui.components.EncabezadoViajes
 import com.javeriana.javewheels.ui.components.EtiquetaViaje
 import com.javeriana.javewheels.ui.components.PuntoRecogidaPasajero
+import com.javeriana.javewheels.ui.components.compartirViaje
 import com.javeriana.javewheels.ui.theme.JaveWheelsTheme
 
 @Composable
 fun DetalleReservaScreen(
     onVolver: () -> Unit,
     onEnviarMensaje: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onVerViaje: (() -> Unit)? = null
 ) {
     val context = LocalContext.current
     val wheel = reservaConfirmada.wheel
     fun mostrarAviso() {
         Toast.makeText(context, "Acción disponible próximamente", Toast.LENGTH_SHORT).show()
-    }
-
-    fun compartirViaje() {
-        val compartir = Intent(Intent.ACTION_SEND).apply {
-            type = "text/plain"
-            putExtra(Intent.EXTRA_SUBJECT, "Mi viaje en JaveWheels")
-            putExtra(Intent.EXTRA_TEXT, """
-                Mi viaje en JaveWheels
-                ${wheel.origen} → ${wheel.destino}
-                ${wheel.fecha} · Salida: ${wheel.hora}
-                Conductor: ${wheel.conductor}
-                Vehículo: ${wheel.vehiculo}
-                Recogida: ${wheel.puntoRecogida}
-                Hora estimada de recogida: ${wheel.horaRecogida}
-                Aporte: ${wheel.aporte}
-            """.trimIndent())
-        }
-        context.startActivity(Intent.createChooser(compartir, "Compartir viaje"))
     }
 
     Column(modifier = modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
@@ -77,8 +60,9 @@ fun DetalleReservaScreen(
             PuntoRecogidaPasajero(wheel, acordado = true)
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 BotonSecundario("Enviar mensaje", onClick = onEnviarMensaje, modifier = Modifier.weight(1f))
-                BotonSecundario("Compartir viaje", onClick = { compartirViaje() }, modifier = Modifier.weight(1f))
+                BotonSecundario("Compartir viaje", onClick = { compartirViaje(context, wheel) }, modifier = Modifier.weight(1f))
             }
+            if (onVerViaje != null) BotonSecundario("Ver viaje en vivo", onClick = onVerViaje)
             BotonTexto("Cancelar reserva", onClick = { mostrarAviso() })
         }
     }

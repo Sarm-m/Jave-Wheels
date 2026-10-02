@@ -7,6 +7,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
@@ -29,6 +30,9 @@ import com.javeriana.javewheels.ui.screens.acceso.VerificarCodigoScreen
 import com.javeriana.javewheels.ui.screens.bienvenida.CargaScreen
 import com.javeriana.javewheels.ui.screens.bienvenida.BienvenidaScreen
 import com.javeriana.javewheels.ui.screens.conductor.ConductorCompletadoScreen
+import com.javeriana.javewheels.ui.screens.conductor.PublicarWheelScreen
+import com.javeriana.javewheels.ui.screens.conductor.AdministrarWheelScreen
+import com.javeriana.javewheels.ui.screens.conductor.ViajeEnCursoScreen
 import com.javeriana.javewheels.ui.screens.conductor.EditarVehiculoScreen
 import com.javeriana.javewheels.ui.screens.conductor.QuieresConducirScreen
 import com.javeriana.javewheels.ui.screens.conductor.RegistrarVehiculoScreen
@@ -47,6 +51,9 @@ import com.javeriana.javewheels.ui.screens.principal.PerfilScreen
 import com.javeriana.javewheels.ui.screens.principal.WheelsDisponiblesScreen
 import com.javeriana.javewheels.ui.screens.principal.DetalleWheelScreen
 import com.javeriana.javewheels.ui.screens.principal.DetalleReservaScreen
+import com.javeriana.javewheels.ui.screens.pasajero.VerViajeBusetaScreen
+import com.javeriana.javewheels.ui.screens.pasajero.VerViajeEnVivoScreen
+import com.javeriana.javewheels.ui.components.compartirViaje
 import com.javeriana.javewheels.ui.theme.JWAzul
 import com.javeriana.javewheels.viewmodels.ChatsViewModel
 import com.javeriana.javewheels.viewmodels.InicioViewModel
@@ -59,6 +66,7 @@ import com.javeriana.javewheels.viewmodels.VehiculoViewModel
 
 @Composable
 fun JWNavHost(modifier: Modifier = Modifier) {
+    val context = LocalContext.current
     // La app arranca en la pantalla de Bienvenida
     val backStack = rememberNavBackStack(Rutas.Bienvenida)
 
@@ -115,7 +123,9 @@ fun JWNavHost(modifier: Modifier = Modifier) {
 
         // Viajes y reservas: sigue marcada la pestaña Mis viajes
         Rutas.DetalleReserva, is Rutas.ResumenWheel,
-        is Rutas.DetalleViajeConductor -> Pestana.MisViajes
+        is Rutas.DetalleViajeConductor, Rutas.PublicarWheel,
+        Rutas.AdministrarWheel, Rutas.ViajeEnCurso,
+        Rutas.VerViajeEnVivo, Rutas.VerViajeBuseta -> Pestana.MisViajes
 
         else -> Pestana.entries.find { it.ruta == rutaActual }
     }
@@ -228,7 +238,8 @@ fun JWNavHost(modifier: Modifier = Modifier) {
                         },
                         onGuardados = { navegarA(Rutas.RutasGuardadas) },
                         onSeleccionarMomento = { navegarA(if (it) Rutas.ProgramarBusqueda else Rutas.BuscarAhora) },
-                        onVerViajeConductor = { navegarA(Rutas.DetalleViajeConductor(inicioViewModel.uiState.value.proximoViaje.id)) }
+                        onVerViajeConductor = { navegarA(Rutas.DetalleViajeConductor(inicioViewModel.uiState.value.proximoViaje.id)) },
+                        onPublicarWheel = { navegarA(Rutas.PublicarWheel) }
                     )
                 }
                 entry<Rutas.BuscarAhora> {
@@ -272,7 +283,11 @@ fun JWNavHost(modifier: Modifier = Modifier) {
                 }
                 entry<Rutas.DetalleViajeConductor> { ruta ->
                     val viaje = (viajesProgramadosConductor + viajesFinalizadosConductor).firstOrNull { it.id == ruta.viajeId }
-                    if (viaje != null) DetalleViajeConductorScreen(viaje, onVolver = { volver() })
+                    if (viaje != null) DetalleViajeConductorScreen(
+                        viaje = viaje,
+                        onVolver = { volver() },
+                        onAdministrar = { navegarA(Rutas.AdministrarWheel) }
+                    )
                 }
                 entry<Rutas.RutasGuardadas> {
                     RutasGuardadasScreen(onVolver = { volver() }, onElegirRuta = {
@@ -286,7 +301,45 @@ fun JWNavHost(modifier: Modifier = Modifier) {
                         onEnviarMensaje = {
                             val idChat = chatsViewModel.abrirChatConductor(reservaConfirmada.wheel.conductor)
                             navegarA(Rutas.DetalleChat(idChat))
+                        },
+                        onVerViaje = {
+                            navegarA(if (reservaConfirmada.wheel.modoBuseta) Rutas.VerViajeBuseta else Rutas.VerViajeEnVivo)
                         }
+                    )
+                }
+                // ==================== PANTALLAS DE VIAJE ====================
+                entry<Rutas.PublicarWheel> {
+                    PublicarWheelScreen(
+                        onBack = { volver() },
+                        onPublicar = { navegarA(Rutas.AdministrarWheel) },
+                        mostrarBarraNavegacion = false
+                    )
+                }
+                entry<Rutas.AdministrarWheel> {
+                    AdministrarWheelScreen(
+                        onBack = { volver() },
+                        onIniciarViaje = { navegarA(Rutas.ViajeEnCurso) },
+                        mostrarBarraNavegacion = false
+                    )
+                }
+                entry<Rutas.ViajeEnCurso> {
+                    ViajeEnCursoScreen(
+                        onVolver = { volver() },
+                        onAbrirChat = { nombre ->
+                            val idChat = chatsViewModel.abrirChatConductor(nombre)
+                            navegarA(Rutas.DetalleChat(idChat))
+                        },
+                        mostrarBarraNavegacion = false
+                    )
+                }
+                entry<Rutas.VerViajeEnVivo> {
+                    VerViajeEnVivoScreen(onVolver = { volver() }, mostrarBarraNavegacion = false)
+                }
+                entry<Rutas.VerViajeBuseta> {
+                    VerViajeBusetaScreen(
+                        onVolver = { volver() },
+                        onCompartirViaje = { compartirViaje(context, reservaConfirmada.wheel) },
+                        mostrarBarraNavegacion = false
                     )
                 }
                 entry<Rutas.Mensajes> {

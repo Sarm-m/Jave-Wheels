@@ -29,9 +29,6 @@ import com.javeriana.javewheels.viewmodels.InicioViewModel
 // el panel del pasajero o el del conductor.
 // ============================================================
 
-/** Mensaje para las funciones que llegan en la próxima entrega. */
-private const val PROXIMAMENTE = "Disponible en la próxima entrega"
-
 @Composable
 fun InicioScreen(
     onQuiereSerConductor: () -> Unit,
@@ -39,6 +36,7 @@ fun InicioScreen(
     onGuardados: () -> Unit = {},
     onSeleccionarMomento: (Boolean) -> Unit = {},
     onVerViajeConductor: () -> Unit = {},
+    onPublicarWheel: () -> Unit = {},
     modifier: Modifier = Modifier,
     viewModel: InicioViewModel = viewModel()
 ) {
@@ -87,7 +85,7 @@ fun InicioScreen(
             } else {
                 PanelConductor(
                     proximoViaje = uiState.proximoViaje,
-                    onPublicar = { mostrarMensaje(PROXIMAMENTE) },
+                    onPublicar = onPublicarWheel,
                     onVerViaje = onVerViajeConductor,
                     modifier = modificadorPanel
                 )

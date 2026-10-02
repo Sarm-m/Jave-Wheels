@@ -12,7 +12,12 @@ import com.javeriana.javewheels.entities.Viaje
 import com.javeriana.javewheels.ui.components.*
 
 @Composable
-fun DetalleViajeConductorScreen(viaje: Viaje, onVolver: () -> Unit, modifier: Modifier = Modifier) {
+fun DetalleViajeConductorScreen(
+    viaje: Viaje,
+    onVolver: () -> Unit,
+    modifier: Modifier = Modifier,
+    onAdministrar: (() -> Unit)? = null
+) {
     val finalizado = viaje.estado == "Finalizado"
     Column(modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
         EncabezadoViajes(if (finalizado) "Resumen del viaje" else "Detalle del viaje", onVolver)
@@ -29,6 +34,9 @@ fun DetalleViajeConductorScreen(viaje: Viaje, onVolver: () -> Unit, modifier: Mo
             Text("Punto de encuentro", style = MaterialTheme.typography.titleMedium)
             Text(viaje.puntoRecogida)
             if (finalizado) Text("Viaje finalizado. Este resumen conserva los datos del recorrido.")
+            if (!finalizado && onAdministrar != null) {
+                BotonPrincipal("Administrar Wheel", onClick = onAdministrar)
+            }
         }
     }
 }
