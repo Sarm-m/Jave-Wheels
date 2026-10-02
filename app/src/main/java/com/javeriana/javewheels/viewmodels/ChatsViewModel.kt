@@ -47,6 +47,25 @@ class ChatsViewModel : ViewModel() {
         _uiState.update { estadoActual -> estadoActual.copy(borrador = valor) }
     }
 
+    /** Reutiliza el chat del conductor y lo deja primero en Mensajes. */
+    fun abrirChatConductor(nombre: String): Int {
+        val chats = _uiState.value.chats
+        val chat = chats.firstOrNull { it.nombreUsuario.equals(nombre, ignoreCase = true) }
+            ?: Chat(
+                id = (chats.maxOfOrNull { it.id } ?: 0) + 1,
+                nombreUsuario = nombre,
+                mensajes = emptyList()
+            )
+        _uiState.update { estadoActual ->
+            estadoActual.copy(
+                chats = listOf(chat) + estadoActual.chats.filter { it.id != chat.id },
+                busqueda = "",
+                borrador = ""
+            )
+        }
+        return chat.id
+    }
+
     fun enviarMensaje(idChat: Int) {
         val texto = _uiState.value.borrador.trim()
         if (texto.isEmpty()) return

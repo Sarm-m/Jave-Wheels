@@ -56,7 +56,7 @@ val proximoViajeConductor = Viaje(
 )
 
 /** Destino del acceso rápido "Ir a la Javeriana". */
-const val DESTINO_JAVERIANA = "Pontificia Universidad Javeriana"
+const val DESTINO_JAVERIANA = "Javeriana"
 
 /** Año más antiguo que se acepta para un vehículo. */
 const val ANIO_MINIMO_VEHICULO = 1980

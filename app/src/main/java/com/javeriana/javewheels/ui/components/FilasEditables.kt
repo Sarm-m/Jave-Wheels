@@ -16,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -85,13 +86,17 @@ fun FilaEditable(
     contenidoExtra: @Composable () -> Unit = {}
 ) {
     var editando by remember { mutableStateOf(false) }
+    val focusManager = LocalFocusManager.current
 
     Column(modifier = modifier.fillMaxWidth()) {
         FilaConBoton(
             etiqueta = etiqueta,
             valor = if (editando || esContrasena) "" else valor,
             textoBoton = if (editando) textoListo else textoEditar,
-            onClick = { editando = !editando }
+            onClick = {
+                if (editando) focusManager.clearFocus()
+                editando = !editando
+            }
         )
         if (editando) {
             CampoTexto(

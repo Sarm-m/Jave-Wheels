@@ -13,6 +13,7 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import com.javeriana.javewheels.entities.Rol
+import com.javeriana.javewheels.entities.reservaConfirmada
 import com.javeriana.javewheels.entities.usuarioDePrueba
 import com.javeriana.javewheels.entities.wheelsFinalizados
 import com.javeriana.javewheels.entities.viajesProgramadosConductor
@@ -280,7 +281,13 @@ fun JWNavHost(modifier: Modifier = Modifier) {
                     })
                 }
                 entry<Rutas.DetalleReserva> {
-                    DetalleReservaScreen(onVolver = { volver() })
+                    DetalleReservaScreen(
+                        onVolver = { volver() },
+                        onEnviarMensaje = {
+                            val idChat = chatsViewModel.abrirChatConductor(reservaConfirmada.wheel.conductor)
+                            navegarA(Rutas.DetalleChat(idChat))
+                        }
+                    )
                 }
                 entry<Rutas.Mensajes> {
                     ListaChatsScreen(

@@ -84,7 +84,10 @@ fun BuscarMomentoScreen(
             OutlinedTextField(destino, { destino = it; error = null }, Modifier.fillMaxWidth(),
                 label = { Text("Destino") }, singleLine = true,
                 leadingIcon = { Icon(Icons.Default.Place, contentDescription = null) })
-            TextButton(onClick = { destino = "Javeriana"; error = null }) { Text("Ir a la Javeriana") }
+            if (!destino.trim().equals(DESTINO_JAVERIANA, ignoreCase = true) &&
+                !destino.trim().equals("Pontificia Universidad Javeriana", ignoreCase = true)) {
+                TextButton(onClick = { destino = DESTINO_JAVERIANA; error = null }) { Text("Ir a la Javeriana") }
+            }
             if (programado) {
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     ChipOpcion("Hoy", Icons.Default.CalendarMonth, false, {
