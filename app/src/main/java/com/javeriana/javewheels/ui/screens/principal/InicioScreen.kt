@@ -35,13 +35,17 @@ private const val PROXIMAMENTE = "Disponible en la próxima entrega"
 @Composable
 fun InicioScreen(
     onQuiereSerConductor: () -> Unit,
+    onBuscarWheels: () -> Unit = {},
+    onGuardados: () -> Unit = {},
+    onSeleccionarMomento: (Boolean) -> Unit = {},
+    onVerViajeConductor: () -> Unit = {},
     modifier: Modifier = Modifier,
     viewModel: InicioViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
 
-    // Función local para no repetir Toast.makeText(...) (Clase 3)
+    // Muestra avisos breves para las acciones visuales.
     fun mostrarMensaje(texto: String) {
         Toast.makeText(context, texto, Toast.LENGTH_SHORT).show()
     }
@@ -69,20 +73,22 @@ fun InicioScreen(
 
             if (uiState.rol == Rol.PASAJERO) {
                 PanelPasajero(
+                    origen = uiState.origen,
                     destino = uiState.destino,
                     viajeProgramado = uiState.viajeProgramado,
+                    resumenProgramado = "${com.javeriana.javewheels.entities.fechaBusqueda(uiState.salidaProgramadaMillis)} · ${com.javeriana.javewheels.entities.horaBusqueda(uiState.salidaProgramadaMillis)}",
                     onDestinoChange = { viewModel.actualizarDestino(it) },
-                    onSeleccionarMomento = { viewModel.seleccionarMomento(it) },
+                    onSeleccionarMomento = onSeleccionarMomento,
                     onIrALaJaveriana = { viewModel.irALaJaveriana() },
-                    onGuardados = { mostrarMensaje(PROXIMAMENTE) },
-                    onBuscar = { mostrarMensaje(viewModel.buscarWheels()) },
+                    onGuardados = onGuardados,
+                    onBuscar = onBuscarWheels,
                     modifier = modificadorPanel
                 )
             } else {
                 PanelConductor(
                     proximoViaje = uiState.proximoViaje,
                     onPublicar = { mostrarMensaje(PROXIMAMENTE) },
-                    onVerViaje = { mostrarMensaje(PROXIMAMENTE) },
+                    onVerViaje = onVerViajeConductor,
                     modifier = modificadorPanel
                 )
             }

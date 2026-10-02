@@ -9,7 +9,7 @@ import androidx.compose.runtime.Composable
 // Conecta los colores de Color.kt con los "roles" de Material 3.
 // Así los componentes (Button, OutlinedTextField, NavigationBar...)
 // toman automáticamente los colores de JaveWheels.
-// Solo hay tema claro porque el diseño de Figma es claro.
+// Solo hay tema claro porque el diseño es claro.
 // ============================================================
 
 private val esquemaClaro = lightColorScheme(

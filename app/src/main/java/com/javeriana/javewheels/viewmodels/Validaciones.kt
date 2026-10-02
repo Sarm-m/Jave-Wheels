@@ -7,7 +7,7 @@ import java.util.Calendar
 
 // ============================================================
 // Validaciones compartidas por varios ViewModels.
-// Son funciones normales de Kotlin (Clase 1): reciben un String
+// Son funciones de Kotlin: reciben un String
 // y devuelven true/false.
 // ============================================================
 

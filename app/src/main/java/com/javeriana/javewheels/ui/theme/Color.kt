@@ -4,7 +4,7 @@ import androidx.compose.ui.graphics.Color
 
 // ============================================================
 // Colores de JaveWheels
-// Son los mismos de la colección de variables "JaveWheels" en Figma.
+// Son los mismos de la colección de variables "JaveWheels" en diseño.
 // Formato: 0xFF + código hexadecimal (FF = totalmente opaco).
 // ============================================================
 

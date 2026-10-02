@@ -47,6 +47,16 @@ sealed class Rutas : NavKey {
     @Serializable data object MisViajes : Rutas()
     @Serializable data object Mensajes : Rutas()
     @Serializable data object Perfil : Rutas()
+
+    // --- Flujo del pasajero ---
+    @Serializable data class WheelsDisponibles(val origen: String = "Mi ubicación", val destino: String = "", val desdeMillis: Long? = null, val programado: Boolean = false) : Rutas()
+    @Serializable data class DetalleWheel(val wheelId: String) : Rutas()
+    @Serializable data object DetalleReserva : Rutas()
+    @Serializable data class ResumenWheel(val wheelId: String) : Rutas()
+    @Serializable data class DetalleViajeConductor(val viajeId: String) : Rutas()
+    @Serializable data object RutasGuardadas : Rutas()
+    @Serializable data object BuscarAhora : Rutas()
+    @Serializable data object ProgramarBusqueda : Rutas()
 }
 
 // ============================================================

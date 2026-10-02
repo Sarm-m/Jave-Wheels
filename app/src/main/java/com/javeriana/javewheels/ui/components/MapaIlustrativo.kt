@@ -28,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.javeriana.javewheels.ui.theme.JWAmarillo
 import com.javeriana.javewheels.ui.theme.JWAzul
@@ -45,12 +46,17 @@ import com.javeriana.javewheels.ui.theme.MapaParque
 @Composable
 fun MapaIlustrativo(
     modifier: Modifier = Modifier,
-    onCentrarUbicacion: () -> Unit = {}
+    onCentrarUbicacion: () -> Unit = {},
+    altura: Dp = 300.dp,
+    textoUbicacion: String = "Tu ubicación",
+    mostrarCentrar: Boolean = true,
+    textoDestino: String = "Javeriana"
 ) {
+    val escala = altura.value / 300f
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(300.dp)
+            .height(altura)
             .background(MapaFondo)
     ) {
         // 1. Manzanas: una cuadrícula de rectángulos grises
@@ -58,7 +64,7 @@ fun MapaIlustrativo(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(12.dp),
-            verticalArrangement = Arrangement.spacedBy(14.dp)
+            verticalArrangement = Arrangement.spacedBy(14.dp * escala)
         ) {
             repeat(5) {
                 Row(
@@ -69,7 +75,7 @@ fun MapaIlustrativo(
                         Box(
                             modifier = Modifier
                                 .weight(1f)
-                                .height(40.dp)
+                                .height(40.dp * escala)
                                 .clip(RoundedCornerShape(6.dp))
                                 .background(MapaManzana)
                         )
@@ -91,7 +97,7 @@ fun MapaIlustrativo(
         Column(
             modifier = Modifier
                 .align(Alignment.TopEnd)
-                .padding(top = 70.dp, end = 70.dp),
+                .padding(top = 70.dp * escala, end = 70.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Box(
@@ -105,7 +111,7 @@ fun MapaIlustrativo(
             }
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "Javeriana",
+                text = textoDestino,
                 style = MaterialTheme.typography.labelMedium,
                 color = JWAzul,
                 modifier = Modifier
@@ -119,7 +125,7 @@ fun MapaIlustrativo(
         Column(
             modifier = Modifier
                 .align(Alignment.BottomStart)
-                .padding(start = 70.dp, bottom = 70.dp),
+                .padding(start = 70.dp, bottom = 70.dp * escala),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Box(
@@ -131,14 +137,14 @@ fun MapaIlustrativo(
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "Tu ubicación",
+                text = textoUbicacion,
                 style = MaterialTheme.typography.labelMedium,
                 color = JWAzul
             )
         }
 
-        // 5. Botón "Centrar ubicación"
-        Box(
+        // 5. Botón opcional de centrar ubicación
+        if (mostrarCentrar) Box(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(end = 24.dp, bottom = 48.dp)

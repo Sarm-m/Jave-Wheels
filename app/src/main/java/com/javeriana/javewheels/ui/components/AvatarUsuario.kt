@@ -41,7 +41,9 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.javeriana.javewheels.ui.theme.JWAzul
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.javeriana.javewheels.ui.theme.FotoCirculoFondo
@@ -54,12 +56,13 @@ import kotlinx.coroutines.withContext
 
 @Composable
 fun AvatarUsuario(
-    foto: Uri?,
-    descripcion: String,
     modifier: Modifier = Modifier,
+    foto: Uri? = null,
+    descripcion: String? = null,
     colorFondo: Color = JWCelesteContenedor,
-    colorIcono: Color = MaterialTheme.colorScheme.primary
-) {
+    colorIcono: Color = MaterialTheme.colorScheme.primary,
+    tamano: Dp = 44.dp
+){
     val contexto = LocalContext.current
     // Carga la imagen en segundo plano cada vez que cambia la foto
     val imagen by produceState<ImageBitmap?>(initialValue = null, key1 = foto) {

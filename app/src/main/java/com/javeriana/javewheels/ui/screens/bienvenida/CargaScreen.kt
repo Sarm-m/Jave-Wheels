@@ -43,7 +43,7 @@ import com.javeriana.javewheels.viewmodels.CargaViewModel
 
 // ============================================================
 // Carga: "Pantalla Carga 1 - Reserva", "2 - Seguimiento" y
-// "3 - Roles" de Figma. Es UNA sola pantalla que cambia de contenido
+// "3 - Roles". Es UNA sola pantalla que cambia de contenido
 // según la página actual guardada en el CargaViewModel.
 // ============================================================
 
