@@ -6,20 +6,17 @@ import androidx.compose.ui.graphics.vector.ImageVector
 // Modelos de datos
 // ============================================================
 
-/** Rol con el que el usuario está usando la app. */
 enum class Rol(val titulo: String) {
     PASAJERO("Pasajero"),
     CONDUCTOR("Conductor")
 }
 
-/** Una página de la pantalla de carga (Pantalla Carga 1, 2 y 3 de Figma). */
 data class PaginaCarga(
     val titulo: String,
     val descripcion: String,
     val icono: ImageVector
 )
 
-/** Un viaje (Wheel) publicado por un conductor. */
 data class Viaje(
     val origen: String,
     val destino: String,
@@ -30,9 +27,27 @@ data class Viaje(
     val estado: String
 )
 
-/** Datos básicos del usuario que inició sesión. */
 data class Usuario(
     val nombre: String,
     val correo: String,
-    val celular: String
+    val celular: String,
+    val placa: String? = null,
+    val marca: String? = null,
+    val modelo: String? = null,
+    val anio: Int? = null,
+    val color: String? = null,
+    val cupos: Int? = null
 )
+
+data class Mensaje(
+    val texto: String,
+    val esMio: Boolean
+)
+
+data class Chat(
+    val id: Int,
+    val nombreUsuario: String,
+    val mensajes: List<Mensaje>
+) {
+    val ultimoMensaje: Mensaje? get() = mensajes.lastOrNull()
+}

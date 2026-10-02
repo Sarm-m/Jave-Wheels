@@ -32,14 +32,17 @@ sealed class Rutas : NavKey {
     @Serializable data object RestablecerContrasena : Rutas()
     @Serializable data object Confirmacion : Rutas()
 
-    // --- Registro de conductor ---
-    // Ruta CON datos (como PokemonDetailRoute en la Clase 4):
-    // desdeRegistro = true si llega justo después de crear la cuenta.
     @Serializable data class QuieresConducir(val desdeRegistro: Boolean) : Rutas()
     @Serializable data object RegistrarVehiculo : Rutas()
     @Serializable data object ConductorCompletado : Rutas()
 
-    // --- Pestañas de la barra de navegación ---
+    @Serializable data class DetalleChat(val idChat: Int) : Rutas()
+
+    @Serializable data object EditarPerfil : Rutas()
+    @Serializable data object EditarVehiculo : Rutas()
+    @Serializable data object PerfilActualizado : Rutas()
+    @Serializable data object VehiculoActualizado : Rutas()
+
     @Serializable data object Inicio : Rutas()
     @Serializable data object MisViajes : Rutas()
     @Serializable data object Mensajes : Rutas()
@@ -47,7 +50,7 @@ sealed class Rutas : NavKey {
 }
 
 // ============================================================
-// PESTAÑAS de la barra inferior (NavigationBar)
+// PESTAÑAS de la barra inferior
 // ============================================================
 
 enum class Pestana(

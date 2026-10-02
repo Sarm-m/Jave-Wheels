@@ -1,5 +1,6 @@
 package com.javeriana.javewheels.navigation
 
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -12,6 +13,7 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import com.javeriana.javewheels.entities.Rol
+import com.javeriana.javewheels.entities.usuarioDePrueba
 import com.javeriana.javewheels.ui.components.BarraNavegacion
 import com.javeriana.javewheels.ui.screens.acceso.ConfirmacionScreen
 import com.javeriana.javewheels.ui.screens.acceso.LoginScreen
@@ -22,14 +24,22 @@ import com.javeriana.javewheels.ui.screens.acceso.VerificarCodigoScreen
 import com.javeriana.javewheels.ui.screens.bienvenida.CargaScreen
 import com.javeriana.javewheels.ui.screens.bienvenida.BienvenidaScreen
 import com.javeriana.javewheels.ui.screens.conductor.ConductorCompletadoScreen
+import com.javeriana.javewheels.ui.screens.conductor.EditarVehiculoScreen
 import com.javeriana.javewheels.ui.screens.conductor.QuieresConducirScreen
 import com.javeriana.javewheels.ui.screens.conductor.RegistrarVehiculoScreen
+import com.javeriana.javewheels.ui.screens.principal.EditarPerfilScreen
+import com.javeriana.javewheels.ui.screens.principal.InformacionUsuarioScreen
 import com.javeriana.javewheels.ui.screens.principal.InicioScreen
-import com.javeriana.javewheels.ui.screens.principal.MensajesScreen
+import com.javeriana.javewheels.ui.screens.principal.DetalleChatScreen
+import com.javeriana.javewheels.ui.screens.principal.ListaChatsScreen
 import com.javeriana.javewheels.ui.screens.principal.MisViajesScreen
-import com.javeriana.javewheels.ui.screens.principal.PerfilScreen
+import com.javeriana.javewheels.ui.screens.principal.PerfilActualizadoScreen
+import com.javeriana.javewheels.ui.screens.principal.VehiculoActualizadoScreen
 import com.javeriana.javewheels.ui.theme.JWAzul
+import com.javeriana.javewheels.viewmodels.ChatsViewModel
 import com.javeriana.javewheels.viewmodels.InicioViewModel
+import com.javeriana.javewheels.viewmodels.PerfilViewModel
+import com.javeriana.javewheels.viewmodels.VehiculoViewModel
 
 // ============================================================
 // NAVHOST — Muestra la pantalla actual
@@ -44,29 +54,28 @@ fun JWNavHost(modifier: Modifier = Modifier) {
     // (así todos saben si el usuario es pasajero o conductor).
     val inicioViewModel: InicioViewModel = viewModel()
 
+    // ViewModels de Perfil y de Editar vehículo (se limpian al cerrar sesión)
+    val perfilViewModel: PerfilViewModel = viewModel()
+    val vehiculoViewModel: VehiculoViewModel = viewModel()
+
+    // ViewModel de los chats (lista y detalle comparten los mismos datos)
+    val chatsViewModel: ChatsViewModel = viewModel()
+
     // ---------- Funciones de ayuda para navegar ----------
 
-    /** Ir a una pantalla nueva (se apila encima). */
     fun navegarA(ruta: NavKey) {
         backStack.add(ruta)
     }
 
-    /** Volver a la pantalla anterior (si hay alguna). */
     fun volver() {
         if (backStack.size > 1) backStack.removeLastOrNull()
     }
 
-    /**
-     * Borra toda la pila y empieza desde [ruta].
-     * Se usa cuando NO se debe poder volver atrás
-     * (ej. después de iniciar sesión no se regresa al login).
-     */
     fun empezarDesde(ruta: NavKey) {
         backStack.clear()
         backStack.add(ruta)
     }
 
-    /** Cambia de pestaña: Inicio siempre queda de base para que "atrás" vuelva a Inicio. */
     fun irAPestana(pestana: Pestana) {
         empezarDesde(Rutas.Inicio)
         if (pestana != Pestana.Inicio) navegarA(pestana.ruta)
@@ -74,7 +83,11 @@ fun JWNavHost(modifier: Modifier = Modifier) {
 
 
     val rutaActual = backStack.lastOrNull()
-    val pestanaActual = Pestana.entries.find { it.ruta == rutaActual }
+    val pestanaActual = when (rutaActual) {
+        Rutas.EditarPerfil, Rutas.EditarVehiculo -> Pestana.Perfil
+        is Rutas.DetalleChat -> Pestana.Mensajes
+        else -> Pestana.entries.find { it.ruta == rutaActual }
+    }
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -91,7 +104,10 @@ fun JWNavHost(modifier: Modifier = Modifier) {
         NavDisplay(
             backStack = backStack,
             onBack = { volver() },
-            modifier = Modifier.padding(innerPadding),
+            // consumeWindowInsets evita un hueco de más cuando sale el teclado en el chat
+            modifier = Modifier
+                .padding(innerPadding)
+                .consumeWindowInsets(innerPadding),
             entryProvider = entryProvider {
 
                 // ==================== BIENVENIDA ====================
@@ -140,7 +156,6 @@ fun JWNavHost(modifier: Modifier = Modifier) {
                 }
 
                 // ==================== REGISTRO DE CONDUCTOR ====================
-                // "ruta" trae el dato desdeRegistro (ruta con datos, Clase 4)
                 entry<Rutas.QuieresConducir> { ruta ->
                     QuieresConducirScreen(
                         desdeRegistro = ruta.desdeRegistro,
@@ -182,14 +197,61 @@ fun JWNavHost(modifier: Modifier = Modifier) {
                     MisViajesScreen()
                 }
                 entry<Rutas.Mensajes> {
-                    MensajesScreen()
+                    ListaChatsScreen(
+                        viewModel = chatsViewModel,
+                        onAbrirChat = { idChat ->
+                            chatsViewModel.actualizarBorrador("")
+                            navegarA(Rutas.DetalleChat(idChat))
+                        }
+                    )
+                }
+
+                entry<Rutas.DetalleChat> { ruta ->
+                    DetalleChatScreen(
+                        viewModel = chatsViewModel,
+                        idChat = ruta.idChat
+                    )
                 }
                 entry<Rutas.Perfil> {
-                    PerfilScreen(
-                        viewModel = inicioViewModel,
+                    InformacionUsuarioScreen(
+                        inicioViewModel = inicioViewModel,
+                        perfilViewModel = perfilViewModel,
+                        onEditarPerfil = {
+                            perfilViewModel.iniciarEdicion()
+                            navegarA(Rutas.EditarPerfil)
+                        },
+                        onEditarVehiculo = {
+                            vehiculoViewModel.cargarParaEdicion(usuarioDePrueba)
+                            navegarA(Rutas.EditarVehiculo)
+                        },
                         onRegistrarVehiculo = { navegarA(Rutas.RegistrarVehiculo) },
-                        onCerrarSesion = { empezarDesde(Rutas.IniciarSesion) }
+                        onCerrarSesion = {
+                            perfilViewModel.reiniciar()
+                            vehiculoViewModel.reiniciar()
+                            chatsViewModel.reiniciar()
+                            empezarDesde(Rutas.IniciarSesion)
+                        }
                     )
+                }
+
+                // ==================== EDICIÓN DE PERFIL Y VEHÍCULO ====================
+                entry<Rutas.EditarPerfil> {
+                    EditarPerfilScreen(
+                        viewModel = perfilViewModel,
+                        onGuardado = { empezarDesde(Rutas.PerfilActualizado) }
+                    )
+                }
+                entry<Rutas.EditarVehiculo> {
+                    EditarVehiculoScreen(
+                        viewModel = vehiculoViewModel,
+                        onGuardado = { empezarDesde(Rutas.VehiculoActualizado) }
+                    )
+                }
+                entry<Rutas.PerfilActualizado> {
+                    PerfilActualizadoScreen(onIrAlMenu = { empezarDesde(Rutas.Inicio) })
+                }
+                entry<Rutas.VehiculoActualizado> {
+                    VehiculoActualizadoScreen(onIrAlMenu = { empezarDesde(Rutas.Inicio) })
                 }
             }
         )

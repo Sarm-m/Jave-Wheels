@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -21,6 +22,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.javeriana.javewheels.ui.theme.JWAmarillo
+import com.javeriana.javewheels.ui.theme.JWAzul
+import com.javeriana.javewheels.ui.theme.JWCeleste
 import com.javeriana.javewheels.ui.theme.JWCelesteContenedor
 import com.javeriana.javewheels.ui.theme.JaveWheelsTheme
 
@@ -103,20 +107,37 @@ fun TextoAyuda(
 
 /** Círculo con el check de "Confirmación exitosa". */
 @Composable
-fun IconoConfirmacion(modifier: Modifier = Modifier) {
+fun IconoConfirmacion(modifier: Modifier = Modifier, descripcion: String = "Confirmación exitosa", conDiscoAmarillo: Boolean = false) {
     Box(
         modifier = modifier
             .size(124.dp)
             .clip(CircleShape)
-            .background(JWCelesteContenedor),
+            .background(if (conDiscoAmarillo) JWCeleste else JWCelesteContenedor),
         contentAlignment = Alignment.Center
     ) {
-        Icon(
-            imageVector = Icons.Default.CheckCircle,
-            contentDescription = "Confirmación exitosa",
-            tint = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.size(72.dp)
-        )
+        if (conDiscoAmarillo) {
+            Box(
+                modifier = Modifier
+                    .size(84.dp)
+                    .clip(CircleShape)
+                    .background(JWAmarillo),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Check,
+                    contentDescription = descripcion,
+                    tint = JWAzul,
+                    modifier = Modifier.size(52.dp)
+                )
+            }
+        } else {
+            Icon(
+                imageVector = Icons.Default.CheckCircle,
+                contentDescription = descripcion,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(72.dp)
+            )
+        }
     }
 }
 

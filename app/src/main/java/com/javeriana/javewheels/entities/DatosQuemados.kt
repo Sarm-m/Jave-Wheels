@@ -18,7 +18,7 @@ const val CODIGO_VERIFICACION = "123456"
 /** Mínimo de caracteres de una contraseña. */
 const val MINIMO_CONTRASENA = 8
 
-/** Usuario de prueba que se muestra en Perfil. */
+/** Usuario de prueba que se muestra en Perfil (sin vehículo: todavía no es conductor). */
 val usuarioDePrueba = Usuario(
     nombre = "Javeriano de prueba",
     correo = "javeriano$DOMINIO_INSTITUCIONAL",
@@ -57,3 +57,60 @@ val proximoViajeConductor = Viaje(
 
 /** Destino del acceso rápido "Ir a la Javeriana". */
 const val DESTINO_JAVERIANA = "Pontificia Universidad Javeriana"
+
+/** Año más antiguo que se acepta para un vehículo. */
+const val ANIO_MINIMO_VEHICULO = 1980
+
+const val TIEMPO_RESPUESTA_CHAT = 1500L
+
+val chatsQuemados = listOf(
+    Chat(
+        id = 1,
+        nombreUsuario = "Camila Rojas",
+        mensajes = listOf(
+            Mensaje("¿Vas hoy para la Javeriana?", esMio = false),
+            Mensaje("Hola", esMio = true)
+        )
+    ),
+    Chat(
+        id = 2,
+        nombreUsuario = "Andrés Gómez",
+        mensajes = listOf(
+            Mensaje("¿A qué hora sales?", esMio = true),
+            Mensaje("Llego en 30 minutos", esMio = false)
+        )
+    ),
+    Chat(
+        id = 3,
+        nombreUsuario = "Laura Martínez",
+        mensajes = listOf(
+            Mensaje("Gracias por el viaje de ayer", esMio = false),
+            Mensaje("Con gusto, nos vemos mañana", esMio = true),
+            Mensaje("Perfecto, ahí estaré", esMio = false)
+        )
+    ),
+    Chat(
+        id = 4,
+        nombreUsuario = "Santiago Pérez",
+        mensajes = listOf(
+            Mensaje("¿Tienes cupo para el viernes?", esMio = true),
+            Mensaje("Sí, queda 1 cupo", esMio = false)
+        )
+    ),
+    Chat(
+        id = 5,
+        nombreUsuario = "Valentina Cruz",
+        mensajes = listOf(
+            Mensaje("Ya estoy en la entrada", esMio = false)
+        )
+    )
+)
+
+val respuestasQuemadas = listOf(
+    "Listo, perfecto",
+    "Voy en camino",
+    "Dale, nos vemos allá",
+    "Gracias por avisar",
+    "Salgo en 2",
+    "Ok"
+)
