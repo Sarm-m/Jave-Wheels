@@ -32,35 +32,30 @@ sealed class Rutas : NavKey {
     @Serializable data object RestablecerContrasena : Rutas()
     @Serializable data object Confirmacion : Rutas()
 
+    // --- Registro de conductor ---
+    // Ruta CON datos (como PokemonDetailRoute en la Clase 4):
+    // desdeRegistro = true si llega justo después de crear la cuenta.
     @Serializable data class QuieresConducir(val desdeRegistro: Boolean) : Rutas()
     @Serializable data object RegistrarVehiculo : Rutas()
     @Serializable data object ConductorCompletado : Rutas()
 
-    @Serializable data class DetalleChat(val idChat: Int) : Rutas()
-
-    @Serializable data object EditarPerfil : Rutas()
-    @Serializable data object EditarVehiculo : Rutas()
-    @Serializable data object PerfilActualizado : Rutas()
-    @Serializable data object VehiculoActualizado : Rutas()
-
+    // --- Pestañas de la barra de navegación ---
     @Serializable data object Inicio : Rutas()
     @Serializable data object MisViajes : Rutas()
     @Serializable data object Mensajes : Rutas()
     @Serializable data object Perfil : Rutas()
+    //  pantallas 10,11...
+    @Serializable data object VerViajeEnVivo : Rutas()
+    @Serializable data object PublicarWheel : Rutas()
+    @Serializable data object AdministrarWheel : Rutas()
+    @Serializable data object ViajeEnCurso : Rutas()
 
-    // --- Flujo del pasajero ---
-    @Serializable data class WheelsDisponibles(val origen: String = "Mi ubicación", val destino: String = "", val desdeMillis: Long? = null, val programado: Boolean = false) : Rutas()
-    @Serializable data class DetalleWheel(val wheelId: String) : Rutas()
-    @Serializable data object DetalleReserva : Rutas()
-    @Serializable data class ResumenWheel(val wheelId: String) : Rutas()
-    @Serializable data class DetalleViajeConductor(val viajeId: String) : Rutas()
-    @Serializable data object RutasGuardadas : Rutas()
-    @Serializable data object BuscarAhora : Rutas()
-    @Serializable data object ProgramarBusqueda : Rutas()
+    @Serializable data object VerViajeBuseta : Rutas()
+
 }
 
 // ============================================================
-// PESTAÑAS de la barra inferior
+// PESTAÑAS de la barra inferior (NavigationBar)
 // ============================================================
 
 enum class Pestana(
