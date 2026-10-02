@@ -2,7 +2,6 @@ package com.javeriana.javewheels.ui.screens.conductor
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,7 +27,6 @@ import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
@@ -40,18 +38,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.javeriana.javewheels.navigation.Pestana
 import com.javeriana.javewheels.ui.components.BarraNavegacion
 import com.javeriana.javewheels.ui.components.LogoJaveWheels
 import com.javeriana.javewheels.ui.components.PantallaBaseLayout
-import com.javeriana.javewheels.ui.components.BarraNavegacion
+//import com.javeriana.javewheels.ui.components.Pestana
+import com.javeriana.javewheels.navigation.Pestana
 
 @Composable
 fun PublicarWheelScreen(
@@ -72,154 +68,220 @@ fun PublicarWheelScreen(
         onBackClick = onBack
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
-            val scrollState = rememberScrollState()
 
+            // Contenedor principal con scroll vertical
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .verticalScroll(scrollState)
-                    .padding(horizontal = 20.dp, vertical = 12.dp),
+                    .verticalScroll(rememberScrollState())
+                    .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                // 0. Encabezado: Logo y Título
+                // Encabezado
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    LogoJaveWheels(modifier = Modifier.size(44.dp))
+                    LogoJaveWheels(modifier = Modifier.size(40.dp))
+                    Spacer(modifier = Modifier.width(10.dp))
                     Text(
                         text = "Publicar Wheel",
-                        fontSize = 22.sp,
+                        fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFF1E3A8A)
                     )
                 }
 
-                // 1. Tarjeta: Recorrido
+                // 1. Tarjeta Recorrido
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .shadow(elevation = 2.dp, shape = RoundedCornerShape(18.dp))
-                        .clip(RoundedCornerShape(18.dp))
+                        .clip(RoundedCornerShape(12.dp))
                         .background(Color.White)
-                        .padding(18.dp)
+                        .border(1.dp, Color.LightGray, RoundedCornerShape(12.dp))
+                        .padding(14.dp)
                 ) {
-                    Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
+                    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                         Text(
                             text = "Recorrido",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = Color(0xFF1E293B)
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.Bold
                         )
 
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
+                        Row(modifier = Modifier.fillMaxWidth()) {
+                            // Línea vertical que conecta origen y destino
                             Box(
                                 modifier = Modifier
-                                    .width(20.dp)
-                                    .height(110.dp),
+                                    .width(18.dp)
+                                    .height(80.dp),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Box(
                                     modifier = Modifier
                                         .width(2.dp)
-                                        .height(70.dp)
-                                        .background(Color(0xFFCBD5E1))
+                                        .height(55.dp)
+                                        .background(Color.LightGray)
                                 )
                                 Box(
                                     modifier = Modifier
                                         .align(Alignment.TopCenter)
-                                        .size(10.dp)
+                                        .size(8.dp)
                                         .clip(CircleShape)
-                                        .background(Color(0xFF4FA8E0))
+                                        .background(Color(0xFF3B82F6))
                                 )
                                 Box(
                                     modifier = Modifier
                                         .align(Alignment.BottomCenter)
-                                        .size(10.dp)
+                                        .size(8.dp)
                                         .clip(CircleShape)
                                         .background(Color(0xFFF59E0B))
                                 )
                             }
 
-                            Spacer(modifier = Modifier.width(12.dp))
+                            Spacer(modifier = Modifier.width(8.dp))
 
+                            // Campos de texto simples
                             Column(
                                 modifier = Modifier.weight(1f),
-                                verticalArrangement = Arrangement.spacedBy(10.dp)
+                                verticalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
-                                CampoRecorridoItem(etiqueta = "Origen", valor = origen)
-                                CampoRecorridoItem(etiqueta = "Destino", valor = destino)
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clip(RoundedCornerShape(8.dp))
+                                        .background(Color(0xFFF1F5F9))
+                                        .padding(8.dp)
+                                ) {
+                                    Column {
+                                        Text(text = "Origen", fontSize = 10.sp, color = Color.Gray)
+                                        Text(text = origen, fontSize = 12.sp, fontWeight = FontWeight.Medium)
+                                    }
+                                }
+
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clip(RoundedCornerShape(8.dp))
+                                        .background(Color(0xFFF1F5F9))
+                                        .padding(8.dp)
+                                ) {
+                                    Column {
+                                        Text(text = "Destino", fontSize = 10.sp, color = Color.Gray)
+                                        Text(text = destino, fontSize = 12.sp, fontWeight = FontWeight.Medium)
+                                    }
+                                }
                             }
                         }
                     }
                 }
 
-                // 2. Tarjeta: Detalles del viaje
+                // 2. Tarjeta Detalles del viaje
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .shadow(elevation = 2.dp, shape = RoundedCornerShape(18.dp))
-                        .clip(RoundedCornerShape(18.dp))
+                        .clip(RoundedCornerShape(12.dp))
                         .background(Color.White)
-                        .padding(18.dp)
+                        .border(1.dp, Color.LightGray, RoundedCornerShape(12.dp))
+                        .padding(14.dp)
                 ) {
-                    Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
+                    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                         Text(
                             text = "Detalles del viaje",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = Color(0xFF1E293B)
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.Bold
                         )
 
+                        // Fila de Fecha y Hora
                         Row(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                            horizontalArrangement = Arrangement.spacedBy(10.dp)
                         ) {
-                            Box(modifier = Modifier.weight(1f)) {
-                                CampoSelectorConIcono(
-                                    etiqueta = "Fecha",
-                                    valor = fecha,
-                                    icono = Icons.Default.CalendarMonth,
-                                    tieneFlecha = true
-                                )
+                            Box(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .border(1.dp, Color.LightGray, RoundedCornerShape(8.dp))
+                                    .padding(8.dp)
+                            ) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Icon(Icons.Default.CalendarMonth, contentDescription = null, tint = Color(0xFF3B82F6), modifier = Modifier.size(18.dp))
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Column {
+                                        Text(text = "Fecha", fontSize = 10.sp, color = Color.Gray)
+                                        Text(text = fecha, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                                    }
+                                }
                             }
-                            Box(modifier = Modifier.weight(1f)) {
-                                CampoSelectorConIcono(
-                                    etiqueta = "Hora",
-                                    valor = hora,
-                                    icono = Icons.Default.Schedule,
-                                    tieneFlecha = true
-                                )
+
+                            Box(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .border(1.dp, Color.LightGray, RoundedCornerShape(8.dp))
+                                    .padding(8.dp)
+                            ) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Icon(Icons.Default.Schedule, contentDescription = null, tint = Color(0xFF3B82F6), modifier = Modifier.size(18.dp))
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Column {
+                                        Text(text = "Hora", fontSize = 10.sp, color = Color.Gray)
+                                        Text(text = hora, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                                    }
+                                }
                             }
                         }
 
-                        CampoSelectorConIcono(
-                            etiqueta = "Aporte por pasajero",
-                            valor = aporte,
-                            icono = Icons.Default.Payments,
-                            tieneFlecha = false
-                        )
+                        // Aporte
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(8.dp))
+                                .border(1.dp, Color.LightGray, RoundedCornerShape(8.dp))
+                                .padding(8.dp)
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(Icons.Default.Payments, contentDescription = null, tint = Color(0xFF3B82F6), modifier = Modifier.size(18.dp))
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Column {
+                                    Text(text = "Aporte por pasajero", fontSize = 10.sp, color = Color.Gray)
+                                    Text(text = aporte, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                                }
+                            }
+                        }
 
-                        CampoSelectorConIcono(
-                            etiqueta = "Vehículo",
-                            valor = vehiculo,
-                            icono = Icons.Default.DirectionsCar,
-                            tieneFlecha = true
-                        )
+                        // Vehículo
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(8.dp))
+                                .border(1.dp, Color.LightGray, RoundedCornerShape(8.dp))
+                                .padding(8.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Icon(Icons.Default.DirectionsCar, contentDescription = null, tint = Color(0xFF3B82F6), modifier = Modifier.size(18.dp))
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Column {
+                                        Text(text = "Vehículo", fontSize = 10.sp, color = Color.Gray)
+                                        Text(text = vehiculo, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                                    }
+                                }
+                                Icon(Icons.Default.KeyboardArrowDown, contentDescription = null, tint = Color.Gray)
+                            }
+                        }
                     }
                 }
 
-                // 3. Tarjeta: Modo Buseta
+                // 3. Tarjeta Modo Buseta
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(18.dp))
-                        .background(Color(0xFFEDF6FD))
-                        .padding(16.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(Color(0xFFEFF6FF))
+                        .padding(12.dp)
                 ) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -227,165 +289,47 @@ fun PublicarWheelScreen(
                     ) {
                         Box(
                             modifier = Modifier
-                                .size(46.dp)
-                                .clip(RoundedCornerShape(12.dp))
-                                .background(Color(0xFF4FA8E0)),
+                                .size(36.dp)
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(Color(0xFF3B82F6)),
                             contentAlignment = Alignment.Center
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.DirectionsBus,
-                                contentDescription = "Buseta",
-                                tint = Color.White,
-                                modifier = Modifier.size(26.dp)
-                            )
+                            Icon(Icons.Default.DirectionsBus, contentDescription = null, tint = Color.White, modifier = Modifier.size(20.dp))
                         }
 
-                        Spacer(modifier = Modifier.width(14.dp))
+                        Spacer(modifier = Modifier.width(10.dp))
 
                         Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = "Modo Buseta",
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 15.sp,
-                                color = Color(0xFF0F172A)
-                            )
-                            Spacer(modifier = Modifier.height(2.dp))
-                            Text(
-                                text = "Recoge pasajeros en puntos intermedios de tu ruta",
-                                fontSize = 12.sp,
-                                color = Color(0xFF64748B),
-                                lineHeight = 16.sp
-                            )
+                            Text(text = "Modo Buseta", fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                            Text(text = "Recoge pasajeros en puntos intermedios", fontSize = 11.sp, color = Color.Gray)
                         }
-
-                        Spacer(modifier = Modifier.width(8.dp))
 
                         Switch(
                             checked = modoBusetaActivo,
                             onCheckedChange = { modoBusetaActivo = it },
-                            colors = SwitchDefaults.colors(
-                                checkedThumbColor = Color.White,
-                                checkedTrackColor = Color(0xFF4FA8E0),
-                                uncheckedThumbColor = Color.White,
-                                uncheckedTrackColor = Color(0xFFCBD5E1)
-                            )
+                            colors = SwitchDefaults.colors(checkedTrackColor = Color(0xFF3B82F6))
                         )
                     }
                 }
 
-                Spacer(modifier = Modifier.height(4.dp))
-
+                // Botón publicar
                 Button(
                     onClick = onPublicar,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(52.dp),
-                    shape = RoundedCornerShape(14.dp),
+                        .height(44.dp),
+                    shape = RoundedCornerShape(8.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0D3B66))
                 ) {
-                    Text(
-                        text = "Publicar Wheel",
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 16.sp
-                    )
+                    Text(text = "Publicar Wheel", fontSize = 14.sp, fontWeight = FontWeight.Bold)
                 }
-
-                Spacer(modifier = Modifier.height(12.dp))
             }
 
-            // Barra inferior institucional
+            // Barra inferior estándar
             BarraNavegacion(
                 pestanaActual = Pestana.MisViajes,
                 onSeleccionar = onSeleccionarPestana
             )
-        }
-    }
-}
-
-@Composable
-private fun CampoRecorridoItem(
-    etiqueta: String,
-    valor: String,
-    modifier: Modifier = Modifier
-) {
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .background(Color(0xFFF1F5F9))
-            .padding(horizontal = 14.dp, vertical = 10.dp)
-    ) {
-        Column {
-            Text(text = etiqueta, fontSize = 11.sp, color = Color(0xFF64748B))
-            Spacer(modifier = Modifier.height(2.dp))
-            Text(
-                text = valor,
-                fontSize = 13.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = Color(0xFF1E293B)
-            )
-        }
-    }
-}
-
-@Composable
-private fun CampoSelectorConIcono(
-    etiqueta: String,
-    valor: String,
-    icono: ImageVector,
-    tieneFlecha: Boolean,
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit = {}
-) {
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(14.dp))
-            .border(width = 1.dp, color = Color(0xFFE2E8F0), shape = RoundedCornerShape(14.dp))
-            .background(Color.White)
-            .clickable { onClick() }
-            .padding(horizontal = 12.dp, vertical = 10.dp)
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(36.dp)
-                    .clip(RoundedCornerShape(10.dp))
-                    .background(Color(0xFFEDF6FD)),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = icono,
-                    contentDescription = etiqueta,
-                    tint = Color(0xFF4FA8E0),
-                    modifier = Modifier.size(20.dp)
-                )
-            }
-
-            Spacer(modifier = Modifier.width(10.dp))
-
-            Column(modifier = Modifier.weight(1f)) {
-                Text(text = etiqueta, fontSize = 11.sp, color = Color(0xFF64748B))
-                Text(
-                    text = valor,
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF1E293B)
-                )
-            }
-
-            if (tieneFlecha) {
-                Icon(
-                    imageVector = Icons.Default.KeyboardArrowDown,
-                    contentDescription = "Desplegar",
-                    tint = Color(0xFF94A3B8),
-                    modifier = Modifier.size(20.dp)
-                )
-            }
         }
     }
 }

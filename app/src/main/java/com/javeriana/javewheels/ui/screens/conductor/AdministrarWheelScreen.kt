@@ -22,29 +22,28 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.DirectionsBus
-import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.javeriana.javewheels.navigation.Pestana
 import com.javeriana.javewheels.ui.components.BarraNavegacion
 import com.javeriana.javewheels.ui.components.LogoJaveWheels
 import com.javeriana.javewheels.ui.components.PantallaBaseLayout
-import com.javeriana.javewheels.ui.components.BarraNavegacion
+//import com.javeriana.javewheels.ui.components.Pestana
+import com.javeriana.javewheels.navigation.Pestana
 
 @Composable
 fun AdministrarWheelScreen(
@@ -58,41 +57,39 @@ fun AdministrarWheelScreen(
         onBackClick = onBack
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
-            val scrollState = rememberScrollState()
 
+            // Scroll vertical para que quepan las tarjetas en pantallas pequeñas
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .verticalScroll(scrollState)
-                    .padding(horizontal = 20.dp, vertical = 12.dp),
+                    .verticalScroll(rememberScrollState())
+                    .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                // 0. Encabezado: Logo y Título
+                // Header: Logo y Título
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    LogoJaveWheels(modifier = Modifier.size(44.dp))
+                    LogoJaveWheels(modifier = Modifier.size(40.dp))
+                    Spacer(modifier = Modifier.width(10.dp))
                     Text(
                         text = "Administrar Wheel",
-                        fontSize = 22.sp,
+                        fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFF1E3A8A)
                     )
                 }
 
-                // 1. Tarjeta: Resumen del viaje
+                // 1. Tarjeta Resumen del viaje
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .shadow(elevation = 2.dp, shape = RoundedCornerShape(18.dp))
-                        .clip(RoundedCornerShape(18.dp))
+                        .clip(RoundedCornerShape(12.dp))
                         .background(Color.White)
-                        .border(1.dp, Color(0xFFE2E8F0), RoundedCornerShape(18.dp))
-                        .padding(16.dp)
+                        .border(1.dp, Color.LightGray, RoundedCornerShape(12.dp))
+                        .padding(14.dp)
                 ) {
-                    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
@@ -100,145 +97,77 @@ fun AdministrarWheelScreen(
                         ) {
                             Text(
                                 text = "Resumen del viaje",
-                                style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
-                                color = Color(0xFF1E293B)
+                                fontSize = 15.sp
                             )
                             Box(
                                 modifier = Modifier
-                                    .clip(RoundedCornerShape(12.dp))
+                                    .clip(RoundedCornerShape(8.dp))
                                     .background(Color(0xFFFEF3C7))
                                     .padding(horizontal = 8.dp, vertical = 4.dp)
                             ) {
                                 Text(
                                     text = "• Con solicitudes",
-                                    color = Color(0xFFB45309),
                                     fontSize = 11.sp,
-                                    fontWeight = FontWeight.SemiBold
+                                    color = Color(0xFFB45309)
                                 )
                             }
                         }
 
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .width(20.dp)
-                                    .height(56.dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .width(2.dp)
-                                        .height(34.dp)
-                                        .background(Color(0xFFCBD5E1))
-                                )
-                                Box(
-                                    modifier = Modifier
-                                        .align(Alignment.TopCenter)
-                                        .size(10.dp)
-                                        .clip(CircleShape)
-                                        .background(Color(0xFF1E3A8A))
-                                )
-                                Box(
-                                    modifier = Modifier
-                                        .align(Alignment.BottomCenter)
-                                        .size(10.dp)
-                                        .clip(CircleShape)
-                                        .border(2.dp, Color(0xFF1E3A8A), CircleShape)
-                                        .background(Color.White)
-                                )
+                        // Ruta
+                        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                            Row {
+                                Text(text = "Origen: ", fontWeight = FontWeight.SemiBold, fontSize = 12.sp)
+                                Text(text = "Calle 19A # 71D-30", fontSize = 12.sp)
                             }
-
-                            Spacer(modifier = Modifier.width(10.dp))
-
-                            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                                Row {
-                                    Text(text = "Origen  ", fontSize = 11.sp, color = Color(0xFF94A3B8))
-                                    Text(
-                                        text = "Calle 19A # 71D-30",
-                                        fontSize = 12.sp,
-                                        fontWeight = FontWeight.SemiBold,
-                                        color = Color(0xFF1E293B)
-                                    )
-                                }
-                                Row {
-                                    Text(text = "Destino ", fontSize = 11.sp, color = Color(0xFF94A3B8))
-                                    Text(
-                                        text = "Edificio Ciencia Básicas Javeriana",
-                                        fontSize = 12.sp,
-                                        fontWeight = FontWeight.SemiBold,
-                                        color = Color(0xFF1E293B)
-                                    )
-                                }
+                            Row {
+                                Text(text = "Destino: ", fontWeight = FontWeight.SemiBold, fontSize = 12.sp)
+                                Text(text = "Edificio Ciencia Básicas Javeriana", fontSize = 12.sp)
                             }
                         }
 
-                        // Fecha, Hora e indicador de Buseta
+                        // Fecha, hora y modo buseta
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                Icon(
-                                    imageVector = Icons.Default.CalendarMonth,
-                                    contentDescription = null,
-                                    tint = Color(0xFF64748B),
-                                    modifier = Modifier.size(14.dp)
-                                )
+                                Icon(Icons.Default.CalendarMonth, contentDescription = null, modifier = Modifier.size(16.dp), tint = Color.Gray)
                                 Spacer(modifier = Modifier.width(4.dp))
-                                Text(text = "Vie, 2 oct", fontSize = 11.sp, color = Color(0xFF64748B))
+                                Text(text = "Vie, 2 oct", fontSize = 11.sp, color = Color.Gray)
                             }
 
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                Icon(
-                                    imageVector = Icons.Default.Schedule,
-                                    contentDescription = null,
-                                    tint = Color(0xFF64748B),
-                                    modifier = Modifier.size(14.dp)
-                                )
+                                Icon(Icons.Default.Schedule, contentDescription = null, modifier = Modifier.size(16.dp), tint = Color.Gray)
                                 Spacer(modifier = Modifier.width(4.dp))
-                                Text(text = "7:30 p. m.", fontSize = 11.sp, color = Color(0xFF64748B))
+                                Text(text = "7:30 p. m.", fontSize = 11.sp, color = Color.Gray)
                             }
 
                             Box(
                                 modifier = Modifier
-                                    .clip(RoundedCornerShape(12.dp))
+                                    .clip(RoundedCornerShape(6.dp))
                                     .background(Color(0xFFEFF6FF))
-                                    .padding(horizontal = 8.dp, vertical = 4.dp)
+                                    .padding(horizontal = 6.dp, vertical = 3.dp)
                             ) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(
-                                        imageVector = Icons.Default.DirectionsBus,
-                                        contentDescription = null,
-                                        tint = Color(0xFF1E3A8A),
-                                        modifier = Modifier.size(12.dp)
-                                    )
+                                    Icon(Icons.Default.DirectionsBus, contentDescription = null, modifier = Modifier.size(14.dp), tint = Color(0xFF1E3A8A))
                                     Spacer(modifier = Modifier.width(4.dp))
-                                    Text(
-                                        text = "Modo Buseta activo",
-                                        color = Color(0xFF1E3A8A),
-                                        fontSize = 10.sp,
-                                        fontWeight = FontWeight.Medium
-                                    )
+                                    Text(text = "Modo Buseta", fontSize = 10.sp, color = Color(0xFF1E3A8A))
                                 }
                             }
                         }
                     }
                 }
 
-                // 2. Tarjeta: Solicitudes pendientes
+                // 2. Tarjeta Solicitudes pendientes
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .shadow(elevation = 2.dp, shape = RoundedCornerShape(18.dp))
-                        .clip(RoundedCornerShape(18.dp))
+                        .clip(RoundedCornerShape(12.dp))
                         .background(Color.White)
-                        .border(1.dp, Color(0xFFE2E8F0), RoundedCornerShape(18.dp))
-                        .padding(16.dp)
+                        .border(1.dp, Color.LightGray, RoundedCornerShape(12.dp))
+                        .padding(14.dp)
                 ) {
                     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                         Row(
@@ -248,162 +177,107 @@ fun AdministrarWheelScreen(
                         ) {
                             Text(
                                 text = "Solicitudes pendientes",
-                                style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
-                                color = Color(0xFF1E293B)
+                                fontSize = 15.sp
                             )
                             Box(
                                 modifier = Modifier
-                                    .size(22.dp)
+                                    .size(20.dp)
                                     .clip(CircleShape)
                                     .background(Color(0xFFDBEAFE)),
                                 contentAlignment = Alignment.Center
                             ) {
-                                Text(
-                                    text = "1",
-                                    color = Color(0xFF1E3A8A),
-                                    fontSize = 11.sp,
-                                    fontWeight = FontWeight.Bold
-                                )
+                                Text(text = "1", fontSize = 11.sp, color = Color(0xFF1E3A8A), fontWeight = FontWeight.Bold)
                             }
                         }
 
                         Text(
-                            text = "Prioriza recogidas cercanas a tu recorrido en Modo Buseta.",
+                            text = "Prioriza recogidas cercanas a tu recorrido.",
                             fontSize = 11.sp,
-                            color = Color(0xFF94A3B8)
+                            color = Color.Gray
                         )
 
+                        // Info del pasajero
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Box(
                                 modifier = Modifier
-                                    .size(38.dp)
+                                    .size(36.dp)
                                     .clip(CircleShape)
                                     .background(Color(0xFFE2E8F0)),
                                 contentAlignment = Alignment.Center
                             ) {
-                                Icon(
-                                    imageVector = Icons.Default.Person,
-                                    contentDescription = null,
-                                    tint = Color(0xFF64748B),
-                                    modifier = Modifier.size(22.dp)
-                                )
+                                Icon(Icons.Default.Person, contentDescription = null, tint = Color.Gray)
                             }
+
                             Spacer(modifier = Modifier.width(10.dp))
+
                             Column {
-                                Text(
-                                    text = "David Santiago Gomez",
-                                    fontSize = 13.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = Color(0xFF1E293B)
-                                )
+                                Text(text = "David Santiago Gomez", fontWeight = FontWeight.Bold, fontSize = 13.sp)
                                 Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(
-                                        imageVector = Icons.Default.LocationOn,
-                                        contentDescription = null,
-                                        tint = Color(0xFF1E3A8A),
-                                        modifier = Modifier.size(12.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(2.dp))
-                                    Text(
-                                        text = "Parkway Calle 39 con Carrera 21",
-                                        fontSize = 11.sp,
-                                        color = Color(0xFF64748B)
-                                    )
+                                    Icon(Icons.Default.Place, contentDescription = null, tint = Color.Gray, modifier = Modifier.size(12.dp))
+                                    Text(text = "Parkway Calle 39 con Carrera 21", fontSize = 11.sp, color = Color.Gray)
                                 }
                             }
                         }
 
+                        // Botones de acción
                         Row(
                             modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.End
+                            horizontalArrangement = Arrangement.End,
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
                             Box(
                                 modifier = Modifier
-                                    .clip(RoundedCornerShape(8.dp))
+                                    .clip(RoundedCornerShape(6.dp))
                                     .background(Color(0xFFF1F5F9))
-                                    .padding(horizontal = 8.dp, vertical = 6.dp)
+                                    .padding(horizontal = 8.dp, vertical = 4.dp)
                             ) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(
-                                        imageVector = Icons.Default.DirectionsBus,
-                                        contentDescription = null,
-                                        tint = Color(0xFF1E3A8A),
-                                        modifier = Modifier.size(12.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(4.dp))
-                                    Text(
-                                        text = "En tu ruta",
-                                        fontSize = 11.sp,
-                                        color = Color(0xFF1E3A8A),
-                                        fontWeight = FontWeight.Medium
-                                    )
-                                }
+                                Text(text = "En tu ruta", fontSize = 11.sp, color = Color(0xFF1E3A8A))
                             }
 
                             Spacer(modifier = Modifier.width(12.dp))
 
                             Text(
                                 text = "Rechazar",
-                                color = Color(0xFFDC2626),
+                                color = Color.Red,
                                 fontSize = 12.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                modifier = Modifier
-                                    .clickable { }
-                                    .padding(horizontal = 6.dp, vertical = 4.dp)
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.clickable { }
                             )
 
-                            Spacer(modifier = Modifier.width(8.dp))
+                            Spacer(modifier = Modifier.width(10.dp))
 
-                            Box(
-                                modifier = Modifier
-                                    .clip(RoundedCornerShape(14.dp))
-                                    .background(Color(0xFF5CAEE2))
-                                    .clickable { }
-                                    .padding(horizontal = 16.dp, vertical = 6.dp)
+                            Button(
+                                onClick = { },
+                                shape = RoundedCornerShape(8.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF5CAEE2)),
+                                modifier = Modifier.height(34.dp)
                             ) {
-                                Text(
-                                    text = "Aceptar",
-                                    color = Color.White,
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.Bold
-                                )
+                                Text(text = "Aceptar", fontSize = 12.sp)
                             }
                         }
                     }
                 }
 
-                // 3. Tarjeta: Pasajeros confirmados y cupos
+                // 3. Tarjeta Pasajeros confirmados y cupos
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .shadow(elevation = 2.dp, shape = RoundedCornerShape(18.dp))
-                        .clip(RoundedCornerShape(18.dp))
+                        .clip(RoundedCornerShape(12.dp))
                         .background(Color.White)
-                        .border(1.dp, Color(0xFFE2E8F0), RoundedCornerShape(18.dp))
-                        .padding(16.dp)
+                        .border(1.dp, Color.LightGray, RoundedCornerShape(12.dp))
+                        .padding(14.dp)
                 ) {
                     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
+                            horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Text(
-                                text = "Pasajeros confirmados y cupos",
-                                style = MaterialTheme.typography.titleSmall,
-                                fontWeight = FontWeight.Bold,
-                                color = Color(0xFF1E293B)
-                            )
-                            Text(
-                                text = "1 de 3 ocupados",
-                                color = Color(0xFF2563EB),
-                                fontSize = 11.sp,
-                                fontWeight = FontWeight.SemiBold
-                            )
+                            Text(text = "Pasajeros confirmados", fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                            Text(text = "1 de 3 cupos", color = Color(0xFF2563EB), fontSize = 11.sp)
                         }
 
+                        // 3 barritas de cupos simples con Box
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.spacedBy(6.dp)
@@ -411,26 +285,27 @@ fun AdministrarWheelScreen(
                             Box(
                                 modifier = Modifier
                                     .weight(1f)
-                                    .height(5.dp)
-                                    .clip(RoundedCornerShape(3.dp))
+                                    .height(4.dp)
+                                    .clip(RoundedCornerShape(2.dp))
                                     .background(Color(0xFF1E3A8A))
                             )
                             Box(
                                 modifier = Modifier
                                     .weight(1f)
-                                    .height(5.dp)
-                                    .clip(RoundedCornerShape(3.dp))
-                                    .background(Color(0xFFE2E8F0))
+                                    .height(4.dp)
+                                    .clip(RoundedCornerShape(2.dp))
+                                    .background(Color.LightGray)
                             )
                             Box(
                                 modifier = Modifier
                                     .weight(1f)
-                                    .height(5.dp)
-                                    .clip(RoundedCornerShape(3.dp))
-                                    .background(Color(0xFFE2E8F0))
+                                    .height(4.dp)
+                                    .clip(RoundedCornerShape(2.dp))
+                                    .background(Color.LightGray)
                             )
                         }
 
+                        // Pasajero confirmado
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically,
@@ -439,92 +314,57 @@ fun AdministrarWheelScreen(
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Box(
                                     modifier = Modifier
-                                        .size(36.dp)
+                                        .size(32.dp)
                                         .clip(CircleShape)
                                         .background(Color(0xFFE2E8F0)),
                                     contentAlignment = Alignment.Center
                                 ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Person,
-                                        contentDescription = null,
-                                        tint = Color(0xFF64748B),
-                                        modifier = Modifier.size(20.dp)
-                                    )
+                                    Icon(Icons.Default.Person, contentDescription = null, tint = Color.Gray)
                                 }
-                                Spacer(modifier = Modifier.width(10.dp))
+                                Spacer(modifier = Modifier.width(8.dp))
                                 Column {
-                                    Text(
-                                        text = "Fulana Perez",
-                                        fontSize = 13.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        color = Color(0xFF1E293B)
-                                    )
-                                    Text(
-                                        text = "Recogida: Universidad Javeriana",
-                                        fontSize = 10.sp,
-                                        color = Color(0xFF94A3B8)
-                                    )
+                                    Text(text = "Fulana Perez", fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                                    Text(text = "Recogida: Javeriana", fontSize = 10.sp, color = Color.Gray)
                                 }
                             }
-
-                            Icon(
-                                imageVector = Icons.Default.CheckCircle,
-                                contentDescription = "Confirmado",
-                                tint = Color(0xFF16A34A),
-                                modifier = Modifier.size(18.dp)
-                            )
+                            Icon(Icons.Default.CheckCircle, contentDescription = null, tint = Color(0xFF16A34A), modifier = Modifier.size(18.dp))
                         }
                     }
                 }
 
-                Spacer(modifier = Modifier.height(6.dp))
-
-                // Botones de acción principales
+                // Botones inferiores de la pantalla
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    Box(
+                    OutlinedButton(
+                        onClick = onCancelarWheel,
                         modifier = Modifier
                             .weight(1f)
-                            .height(48.dp)
-                            .clip(RoundedCornerShape(12.dp))
-                            .border(1.dp, Color(0xFFEF4444), RoundedCornerShape(12.dp))
-                            .clickable { onCancelarWheel() },
-                        contentAlignment = Alignment.Center
+                            .height(44.dp),
+                        shape = RoundedCornerShape(8.dp),
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Red)
                     ) {
-                        Text(
-                            text = "Cancelar Wheel",
-                            color = Color(0xFFDC2626),
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 14.sp
-                        )
+                        Text(text = "Cancelar Wheel", fontSize = 13.sp, fontWeight = FontWeight.Bold)
                     }
 
                     Button(
                         onClick = onIniciarViaje,
                         modifier = Modifier
                             .weight(1f)
-                            .height(48.dp),
-                        shape = RoundedCornerShape(12.dp),
+                            .height(44.dp),
+                        shape = RoundedCornerShape(8.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0D3B66))
                     ) {
-                        Text(
-                            text = "Iniciar Viaje",
-                            color = Color.White,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 14.sp
-                        )
+                        Text(text = "Iniciar Viaje", fontSize = 13.sp, fontWeight = FontWeight.Bold)
                     }
                 }
-
-                Spacer(modifier = Modifier.height(12.dp))
             }
 
-            // Barra inferior institucional
+            // Barra inferior
             BarraNavegacion(
                 pestanaActual = Pestana.MisViajes,
-                onSeleccionar = onSeleccionarPestana
+            onSeleccionar = onSeleccionarPestana
             )
         }
     }

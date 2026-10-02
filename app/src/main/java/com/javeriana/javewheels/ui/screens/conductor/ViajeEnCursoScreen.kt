@@ -1,5 +1,7 @@
 package com.javeriana.javewheels.ui.screens.conductor
 
+import com.javeriana.javewheels.ui.components.BotonCentradoMapa
+import com.javeriana.javewheels.ui.components.EncabezadoMapaFlotante
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -35,7 +37,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
@@ -51,8 +52,7 @@ import com.javeriana.javewheels.navigation.Pestana
 import com.javeriana.javewheels.ui.components.BarraNavegacion
 import com.javeriana.javewheels.ui.components.LogoJaveWheels
 import com.javeriana.javewheels.ui.components.MapaIlustrativo
-import com.javeriana.javewheels.ui.components.BarraNavegacion
-
+//import com.javeriana.javewheels.ui.components.Pestana
 
 @Composable
 fun ViajeEnCursoScreen(
@@ -63,9 +63,7 @@ fun ViajeEnCursoScreen(
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
 
-        // ====================================================
-        // Capa 1: Fondo del mapa ilustrativo del proyecto
-        // ====================================================
+        // CAPA 1: Mapa Ilustrativo reutilizado
         MapaIlustrativo(
             modifier = Modifier.fillMaxSize(),
             altura = null,
@@ -74,34 +72,30 @@ fun ViajeEnCursoScreen(
             mostrarMarcadorJaveriana = false
         )
 
-        // ====================================================
-        // Capa 2: Trazo continuo de la ruta (desde el carro hacia Javeriana)
-        // ====================================================
+        // CAPA 2: Trazo continuo de la ruta
         val colorRuta = Color(0xFF4FA8E0)
-
         Canvas(modifier = Modifier.fillMaxSize()) {
             val centroX = size.width / 2
             val centroY = size.height / 2
 
-            // Coordenadas calculadas en base a las calles del mapa:
-            // 1. Frente de la buseta (posicionada a la izquierda del centro)
+            // Inicio: frente del carrito a la izquierda
             val inicioX = centroX - 95.dp.toPx()
             val inicioY = centroY - 20.dp.toPx()
 
-            // 2. Giro en la intersección de la avenida central
-            val giroAvenidaX = centroX - 10.dp.toPx()
+            // Cruce con la avenida principal
+            val avenidaX = centroX - 10.dp.toPx()
 
-            // 3. Subida hacia la zona de Javeriana
+            // Destino hacia Javeriana
             val destinoY = centroY - 110.dp.toPx()
 
-            val rutaPath = Path().apply {
+            val ruta = Path().apply {
                 moveTo(inicioX, inicioY)
-                lineTo(giroAvenidaX, inicioY)         // Avanza horizontalmente por la calle
-                lineTo(giroAvenidaX, destinoY)        // Sube hacia la Javeriana
+                lineTo(avenidaX, inicioY) // Avanza por la calle
+                lineTo(avenidaX, destinoY) // Dobla y sube a Javeriana
             }
 
             drawPath(
-                path = rutaPath,
+                path = ruta,
                 color = colorRuta,
                 style = Stroke(
                     width = 6.dp.toPx(),
@@ -111,9 +105,7 @@ fun ViajeEnCursoScreen(
             )
         }
 
-        // ====================================================
-        // Capa 3: Vehículo (R.drawable.carrito) con badge de pasajeros
-        // ====================================================
+        // CAPA 3: Carrito (.png oficial) con badge de pasajeros
         Box(
             modifier = Modifier
                 .align(Alignment.Center)
@@ -125,29 +117,22 @@ fun ViajeEnCursoScreen(
                 modifier = Modifier.size(52.dp)
             )
 
-            // Badge con número de pasajeros ("2")
+            // Badge con "2"
             Box(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
-                    .offset(x = 2.dp, y = (-6).dp)
-                    .size(20.dp)
+                    .offset(x = 2.dp, y = (-4).dp)
+                    .size(18.dp)
                     .clip(CircleShape)
                     .background(Color(0xFF2563EB))
                     .border(1.5.dp, Color.White, CircleShape),
                 contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = "2",
-                    color = Color.White,
-                    fontSize = 10.sp,
-                    fontWeight = FontWeight.Bold
-                )
+                Text(text = "2", color = Color.White, fontSize = 9.sp, fontWeight = FontWeight.Bold)
             }
         }
 
-        // ====================================================
-        // Capa 4: Marcador Javeriana
-        // ====================================================
+        // CAPA 4: Marcador Javeriana
         Column(
             modifier = Modifier
                 .align(Alignment.Center)
@@ -156,124 +141,56 @@ fun ViajeEnCursoScreen(
         ) {
             Box(
                 modifier = Modifier
-                    .size(46.dp)
-                    .shadow(4.dp, CircleShape)
+                    .size(42.dp)
                     .clip(CircleShape)
                     .background(Color(0xFFFBBF24)),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(
-                    imageVector = Icons.Default.School,
-                    contentDescription = "Javeriana",
-                    tint = Color(0xFF1E3A8A),
-                    modifier = Modifier.size(24.dp)
-                )
+                Icon(Icons.Default.School, contentDescription = null, tint = Color(0xFF1E3A8A), modifier = Modifier.size(22.dp))
             }
-            Spacer(modifier = Modifier.height(3.dp))
+            Spacer(modifier = Modifier.height(2.dp))
             Box(
                 modifier = Modifier
-                    .shadow(2.dp, RoundedCornerShape(10.dp))
-                    .clip(RoundedCornerShape(10.dp))
+                    .clip(RoundedCornerShape(8.dp))
                     .background(Color.White)
-                    .padding(horizontal = 10.dp, vertical = 4.dp)
+                    .padding(horizontal = 8.dp, vertical = 2.dp)
             ) {
-                Text(
-                    text = "Javeriana",
-                    color = Color(0xFF0F172A),
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.Bold
-                )
+                Text(text = "Javeriana", fontSize = 11.sp, fontWeight = FontWeight.Bold)
             }
         }
 
-        // ====================================================
-        // Capa 5: Chip flotante "En curso • Modo Buseta"
-        // ====================================================
+        // CAPA 5: Chip flotante "En curso • Modo Buseta"
         Box(
             modifier = Modifier
                 .align(Alignment.TopEnd)
                 .padding(top = 95.dp, end = 16.dp)
-                .shadow(4.dp, RoundedCornerShape(18.dp))
-                .clip(RoundedCornerShape(18.dp))
+                .clip(RoundedCornerShape(16.dp))
                 .background(Color(0xFF0D3B66))
-                .padding(horizontal = 14.dp, vertical = 8.dp)
+                .padding(horizontal = 12.dp, vertical = 6.dp)
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Box(
                     modifier = Modifier
-                        .size(8.dp)
+                        .size(6.dp)
                         .clip(CircleShape)
                         .background(Color(0xFF22C55E))
                 )
                 Spacer(modifier = Modifier.width(6.dp))
-                Text(
-                    text = "En curso • Modo Buseta",
-                    color = Color.White,
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.SemiBold
-                )
+                Text(text = "En curso • Modo Buseta", color = Color.White, fontSize = 11.sp)
             }
         }
 
-        // ====================================================
-        // Capa 6: Botón flotante de centrado / GPS
-        // ====================================================
-        IconButton(
-            onClick = onCentrar,
-            modifier = Modifier
-                .align(Alignment.CenterEnd)
-                .padding(end = 20.dp, bottom = 40.dp)
-                .size(46.dp)
-                .shadow(4.dp, CircleShape)
-                .clip(CircleShape)
-                .background(Color.White)
-        ) {
-            Icon(
-                imageVector = Icons.Default.MyLocation,
-                contentDescription = "Centrar",
-                tint = Color(0xFF0D3B66),
-                modifier = Modifier.size(22.dp)
-            )
-        }
+        // Botón centrado
+        BotonCentradoMapa(onCentrar = onCentrar)
 
-        // ====================================================
-        // Capa 7: Barra superior (Botón volver + Logo + Título)
-        // ====================================================
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 48.dp, start = 20.dp, end = 20.dp)
-                .align(Alignment.TopStart),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            IconButton(
-                onClick = onVolver,
-                modifier = Modifier
-                    .size(44.dp)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(Color(0xFF86C5E8))
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Volver",
-                    tint = Color(0xFF0F3B66)
-                )
-            }
+        // Encabezado superior
+        EncabezadoMapaFlotante(
+            titulo = "Viaje",
+            onVolver = onVolver,
+            modifier = Modifier.align(Alignment.TopStart)
+        )
 
-            Spacer(modifier = Modifier.width(14.dp))
-            LogoJaveWheels(modifier = Modifier.size(42.dp))
-            Spacer(modifier = Modifier.width(10.dp))
-            Text(
-                text = "Viaje",
-                fontSize = 22.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color(0xFF1E3A8A)
-            )
-        }
-
-        // ====================================================
-        // Capa 8: Panel inferior (BottomSheet) con información y BarraNavegacion
-        // ====================================================
+        // CAPA 8: Panel inferior (BottomSheet) con información y BarraNavegacion
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -281,26 +198,25 @@ fun ViajeEnCursoScreen(
         ) {
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                elevation = CardDefaults.cardElevation(defaultElevation = 10.dp)
+                shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
+                colors = CardDefaults.cardColors(containerColor = Color.White)
             ) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 20.dp, vertical = 12.dp)
+                        .padding(horizontal = 16.dp, vertical = 10.dp)
                 ) {
-                    // Manija superior gris
+                    // Manija
                     Box(
                         modifier = Modifier
                             .align(Alignment.CenterHorizontally)
-                            .width(40.dp)
+                            .width(36.dp)
                             .height(4.dp)
                             .clip(RoundedCornerShape(2.dp))
                             .background(Color(0xFFCBD5E1))
                     )
 
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(10.dp))
 
                     // Parada actual
                     Row(
@@ -309,103 +225,72 @@ fun ViajeEnCursoScreen(
                     ) {
                         Box(
                             modifier = Modifier
-                                .size(46.dp)
-                                .clip(RoundedCornerShape(14.dp))
+                                .size(42.dp)
+                                .clip(RoundedCornerShape(12.dp))
                                 .background(Color(0xFFEDF6FD)),
                             contentAlignment = Alignment.Center
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.Place,
-                                contentDescription = null,
-                                tint = Color(0xFF3B82F6),
-                                modifier = Modifier.size(24.dp)
-                            )
+                            Icon(Icons.Default.Place, contentDescription = null, tint = Color(0xFF3B82F6))
                         }
 
-                        Spacer(modifier = Modifier.width(12.dp))
+                        Spacer(modifier = Modifier.width(10.dp))
 
                         Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = "PARADA ACTUAL",
-                                fontSize = 11.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Color(0xFF3B82F6),
-                                letterSpacing = 0.5.sp
-                            )
-                            Text(
-                                text = "Parkway",
-                                fontSize = 20.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Color(0xFF0F172A)
-                            )
+                            Text(text = "PARADA ACTUAL", fontSize = 10.sp, color = Color(0xFF3B82F6), fontWeight = FontWeight.Bold)
+                            Text(text = "Parkway", fontSize = 18.sp, fontWeight = FontWeight.Bold)
                         }
 
-                        Text(
-                            text = "10:18 a. m.",
-                            fontSize = 11.sp,
-                            color = Color(0xFF94A3B8)
-                        )
+                        Text(text = "10:18 a. m.", fontSize = 11.sp, color = Color.Gray)
                     }
 
-                    Spacer(modifier = Modifier.height(14.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
 
-                    // Encabezado de pasajeros
+                    // Pasajeros confirmados
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(
-                            text = "Pasajeros confirmados",
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color(0xFF0F172A)
-                        )
-
+                        Text(text = "Pasajeros confirmados", fontSize = 13.sp, fontWeight = FontWeight.Bold)
                         Box(
                             modifier = Modifier
-                                .clip(RoundedCornerShape(12.dp))
+                                .clip(RoundedCornerShape(8.dp))
                                 .background(Color(0xFFEFF6FF))
-                                .padding(horizontal = 8.dp, vertical = 3.dp)
+                                .padding(horizontal = 6.dp, vertical = 2.dp)
                         ) {
-                            Text(
-                                text = "2 pasajeros",
-                                color = Color(0xFF2563EB),
-                                fontSize = 11.sp,
-                                fontWeight = FontWeight.SemiBold
-                            )
+                            Text(text = "2 pasajeros", fontSize = 10.sp, color = Color(0xFF2563EB))
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(10.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
 
-                    // Pasajero 1: David Santiago Gomez (EN PUNTO)
-                    ItemPasajeroRuta(
+                    // Item 1
+                    ItemPasajeroSimple(
                         nombre = "David Santiago G..",
                         detalle = "Parkway • Calle 39",
-                        etiquetaEstado = "EN PUNTO",
-                        colorEstado = Color(0xFF16A34A),
-                        fondoEstado = Color(0xFFDCFCE7),
-                        onChatClick = { onAbrirChat("David Santiago Gomez") }
+                        etiqueta = "EN PUNTO",
+                        color = Color(0xFF16A34A),
+                        fondo = Color(0xFFDCFCE7),
+                        onChat = { onAbrirChat("David Santiago Gomez") }
+                    )
+
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    // Item 2
+                    ItemPasajeroSimple(
+                        nombre = "Fulana Perez",
+                        detalle = "Av. 39 • Estación",
+                        etiqueta = "A BORDO",
+                        color = Color(0xFF2563EB),
+                        fondo = Color(0xFFDBEAFE),
+                        onChat = { onAbrirChat("Fulana Perez") }
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
-
-                    // Pasajero 2: Fulana Perez (A BORDO)
-                    ItemPasajeroRuta(
-                        nombre = "Fulana Perez",
-                        detalle = "Av. 39 • Estación",
-                        etiquetaEstado = "A BORDO",
-                        colorEstado = Color(0xFF2563EB),
-                        fondoEstado = Color(0xFFDBEAFE),
-                        onChatClick = { onAbrirChat("Fulana Perez") }
-                    )
-
-                    Spacer(modifier = Modifier.height(10.dp))
                 }
             }
 
-            // Barra de navegación institucional
+            // Barra de navegación inferior
             BarraNavegacion(
                 pestanaActual = Pestana.MisViajes,
                 onSeleccionar = onSeleccionarPestana
@@ -415,21 +300,21 @@ fun ViajeEnCursoScreen(
 }
 
 @Composable
-private fun ItemPasajeroRuta(
+private fun ItemPasajeroSimple(
     nombre: String,
     detalle: String,
-    etiquetaEstado: String,
-    colorEstado: Color,
-    fondoEstado: Color,
-    onChatClick: () -> Unit
+    etiqueta: String,
+    color: Color,
+    fondo: Color,
+    onChat: () -> Unit
 ) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(14.dp))
+            .clip(RoundedCornerShape(12.dp))
             .background(Color(0xFFF8FAFC))
-            .border(1.dp, Color(0xFFE2E8F0), RoundedCornerShape(14.dp))
-            .padding(10.dp)
+            .border(1.dp, Color(0xFFE2E8F0), RoundedCornerShape(12.dp))
+            .padding(8.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -437,73 +322,34 @@ private fun ItemPasajeroRuta(
         ) {
             Box(
                 modifier = Modifier
-                    .size(38.dp)
+                    .size(34.dp)
                     .clip(CircleShape)
                     .background(Color(0xFF0F2942)),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(
-                    imageVector = Icons.Default.Person,
-                    contentDescription = null,
-                    tint = Color.White,
-                    modifier = Modifier.size(20.dp)
-                )
+                Icon(Icons.Default.Person, contentDescription = null, tint = Color.White, modifier = Modifier.size(18.dp))
             }
 
-            Spacer(modifier = Modifier.width(10.dp))
+            Spacer(modifier = Modifier.width(8.dp))
 
             Column(modifier = Modifier.weight(1f)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        text = nombre,
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF0F172A)
-                    )
+                    Text(text = nombre, fontSize = 12.sp, fontWeight = FontWeight.Bold)
                     Spacer(modifier = Modifier.width(6.dp))
                     Box(
                         modifier = Modifier
-                            .clip(RoundedCornerShape(6.dp))
-                            .background(fondoEstado)
-                            .padding(horizontal = 6.dp, vertical = 2.dp)
+                            .clip(RoundedCornerShape(4.dp))
+                            .background(fondo)
+                            .padding(horizontal = 4.dp, vertical = 2.dp)
                     ) {
-                        Text(
-                            text = etiquetaEstado,
-                            color = colorEstado,
-                            fontSize = 9.sp,
-                            fontWeight = FontWeight.Bold
-                        )
+                        Text(text = etiqueta, fontSize = 9.sp, color = color, fontWeight = FontWeight.Bold)
                     }
                 }
-                Spacer(modifier = Modifier.height(2.dp))
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        imageVector = Icons.Default.Place,
-                        contentDescription = null,
-                        tint = Color(0xFF94A3B8),
-                        modifier = Modifier.size(12.dp)
-                    )
-                    Spacer(modifier = Modifier.width(2.dp))
-                    Text(
-                        text = detalle,
-                        fontSize = 11.sp,
-                        color = Color(0xFF64748B)
-                    )
-                }
+                Text(text = detalle, fontSize = 10.sp, color = Color.Gray)
             }
 
-            IconButton(
-                onClick = onChatClick,
-                modifier = Modifier
-                    .size(36.dp)
-                    .border(1.dp, Color(0xFFCBD5E1), CircleShape)
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.Chat,
-                    contentDescription = "Chat",
-                    tint = Color(0xFF3B82F6),
-                    modifier = Modifier.size(18.dp)
-                )
+            IconButton(onClick = onChat, modifier = Modifier.size(32.dp)) {
+                Icon(Icons.AutoMirrored.Filled.Chat, contentDescription = null, tint = Color(0xFF3B82F6), modifier = Modifier.size(18.dp))
             }
         }
     }

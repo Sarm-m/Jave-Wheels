@@ -1,5 +1,7 @@
 package com.javeriana.javewheels.ui.screens.pasajero
 
+import com.javeriana.javewheels.ui.components.BotonCentradoMapa
+import com.javeriana.javewheels.ui.components.EncabezadoMapaFlotante
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.Image
@@ -154,72 +156,15 @@ fun VerViajeBusetaScreen(
         // ====================================================
         // Capa 5: Barra superior
         // ====================================================
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 48.dp, start = 20.dp, end = 20.dp)
-                .align(Alignment.TopStart),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            IconButton(
-                onClick = onVolver,
-                modifier = Modifier
-                    .size(46.dp)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(Color(0xFF86C5E8))
-            ) {
-                Icon(
-                    imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "Volver",
-                    tint = Color(0xFF0F3B66)
-                )
-            }
-
-            Spacer(modifier = Modifier.width(16.dp))
-
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(
-                    modifier = Modifier
-                        .size(34.dp)
-                        .clip(CircleShape)
-                        .background(Color(0xFFF9C846)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.DirectionsCar,
-                        contentDescription = null,
-                        tint = Color(0xFF0F3B66),
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = "JaveWheels",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF0F3B66)
-                )
-            }
-        }
-
+        EncabezadoMapaFlotante(
+            titulo = "JaveWheels",
+            onVolver = onVolver,
+            modifier = Modifier.align(Alignment.TopStart)
+        )
         // ====================================================
         // Capa 6: Botón flotante de centrado
         // ====================================================
-        IconButton(
-            onClick = onCentrar,
-            modifier = Modifier
-                .align(Alignment.CenterEnd)
-                .padding(end = 24.dp, top = 20.dp)
-                .size(46.dp)
-                .clip(RoundedCornerShape(12.dp))
-                .background(Color.White)
-        ) {
-            Icon(
-                imageVector = Icons.Default.MyLocation,
-                contentDescription = "Centrar",
-                tint = Color(0xFF0F3B66)
-            )
-        }
+        BotonCentradoMapa(onCentrar = onCentrar)
 
         // ====================================================
         // Capa 7: Tarjeta inferior con botón "Compartir viaje"
