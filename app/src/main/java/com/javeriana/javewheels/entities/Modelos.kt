@@ -28,8 +28,16 @@ data class Viaje(
     val aporte: String = "$4.000",
     val id: String = "conductor-programado-salitre",
     val vehiculo: String = "Renault Sandero · 2022 · Gris · ABC123",
-    val puntoRecogida: String = "Calle 72 con Cra. 11"
-)
+    val puntoRecogida: String = "Calle 72 con Cra. 11",
+    val modoBuseta: Boolean = true,
+    val pasajerosConfirmados: List<PasajeroViaje> = emptyList(),
+    val solicitudes: List<PasajeroViaje> = emptyList()
+) {
+    val totalRecaudado: Int
+        get() = (aporte.filter { it.isDigit() }.toIntOrNull() ?: 0) * cuposOcupados
+}
+
+data class PasajeroViaje(val id: String, val nombre: String, val puntoRecogida: String)
 
 /** Datos básicos del usuario que inició sesión. */
 data class Usuario(

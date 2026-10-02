@@ -19,7 +19,11 @@ data class VehiculoUiState(
     val cupos: String = "",
     val celular: String = "", //c usa en caso de editar
     val mensajeError: String = ""
-)
+) {
+    val resumen: String
+        get() = listOf(marca, modelo, anio, color, placa)
+            .map { it.trim() }.filter { it.isNotBlank() }.joinToString(" · ")
+}
 
 class VehiculoViewModel : ViewModel() {
 

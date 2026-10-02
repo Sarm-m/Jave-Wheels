@@ -31,7 +31,6 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.javeriana.javewheels.entities.Rol
-import com.javeriana.javewheels.entities.viajesProgramadosConductor
 import com.javeriana.javewheels.entities.viajesFinalizadosConductor
 import com.javeriana.javewheels.entities.reservasPasajero
 import com.javeriana.javewheels.entities.wheelsFinalizados
@@ -95,7 +94,8 @@ fun MisViajesScreen(
             color = MaterialTheme.colorScheme.primary
         )
         if (esConductor) {
-            val publicados = if (mostrandoReservas) viajesProgramadosConductor else viajesFinalizadosConductor
+            val publicados = if (mostrandoReservas) uiState.viajesPublicados else viajesFinalizadosConductor
+            if (publicados.isEmpty()) Text("Aún no tienes viajes programados.")
             publicados.forEach { viaje ->
                 TarjetaViajePasajero(
                     conductor = "Tú · Conductor",

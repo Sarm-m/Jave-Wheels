@@ -267,7 +267,7 @@ fun PanelPasajero(
 /** "Panel - Viajes del conductor". */
 @Composable
 fun PanelConductor(
-    proximoViaje: Viaje,
+    proximoViaje: Viaje?,
     onPublicar: () -> Unit,
     onVerViaje: () -> Unit,
     modifier: Modifier = Modifier
@@ -281,7 +281,11 @@ fun PanelConductor(
         Spacer(modifier = Modifier.height(12.dp))
         BotonPrincipal(texto = "Publicar un Wheel", onClick = onPublicar, icono = Icons.Default.Add)
         Spacer(modifier = Modifier.height(12.dp))
-        TarjetaProximoViaje(viaje = proximoViaje, onVerViaje = onVerViaje)
+        if (proximoViaje != null) {
+            TarjetaProximoViaje(viaje = proximoViaje, onVerViaje = onVerViaje)
+        } else {
+            Text("Aún no tienes viajes programados.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
         Spacer(modifier = Modifier.height(12.dp))
     }
 }

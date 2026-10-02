@@ -1,11 +1,14 @@
 package com.javeriana.javewheels.navigation
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -17,7 +20,6 @@ import com.javeriana.javewheels.entities.Rol
 import com.javeriana.javewheels.entities.reservaConfirmada
 import com.javeriana.javewheels.entities.usuarioDePrueba
 import com.javeriana.javewheels.entities.wheelsFinalizados
-import com.javeriana.javewheels.entities.viajesProgramadosConductor
 import com.javeriana.javewheels.entities.viajesFinalizadosConductor
 import com.javeriana.javewheels.entities.wheelsDisponibles
 import com.javeriana.javewheels.ui.components.BarraNavegacion
@@ -73,10 +75,12 @@ fun JWNavHost(modifier: Modifier = Modifier) {
     // ViewModel compartido por Inicio, Perfil y el registro de conductor
     // (así todos saben si el usuario es pasajero o conductor).
     val inicioViewModel: InicioViewModel = viewModel()
+    val estadoInicio by inicioViewModel.uiState.collectAsState()
 
     // ViewModels de Perfil y de Editar vehículo (se limpian al cerrar sesión)
     val perfilViewModel: PerfilViewModel = viewModel()
     val vehiculoViewModel: VehiculoViewModel = viewModel()
+    val estadoVehiculo by vehiculoViewModel.uiState.collectAsState()
 
     // ViewModel de los chats (lista y detalle comparten los mismos datos)
     val chatsViewModel: ChatsViewModel = viewModel()
@@ -124,7 +128,7 @@ fun JWNavHost(modifier: Modifier = Modifier) {
         // Viajes y reservas: sigue marcada la pestaña Mis viajes
         Rutas.DetalleReserva, is Rutas.ResumenWheel,
         is Rutas.DetalleViajeConductor, Rutas.PublicarWheel,
-        Rutas.AdministrarWheel, Rutas.ViajeEnCurso,
+        is Rutas.AdministrarWheel, Rutas.ViajeEnCurso,
         Rutas.VerViajeEnVivo, Rutas.VerViajeBuseta -> Pestana.MisViajes
 
         else -> Pestana.entries.find { it.ruta == rutaActual }
@@ -211,6 +215,7 @@ fun JWNavHost(modifier: Modifier = Modifier) {
                 }
                 entry<Rutas.RegistrarVehiculo> {
                     RegistrarVehiculoScreen(
+                        viewModel = vehiculoViewModel,
                         onVolver = { volver() },
                         onGuardado = { empezarDesde(Rutas.ConductorCompletado) }
                     )
@@ -238,7 +243,9 @@ fun JWNavHost(modifier: Modifier = Modifier) {
                         },
                         onGuardados = { navegarA(Rutas.RutasGuardadas) },
                         onSeleccionarMomento = { navegarA(if (it) Rutas.ProgramarBusqueda else Rutas.BuscarAhora) },
-                        onVerViajeConductor = { navegarA(Rutas.DetalleViajeConductor(inicioViewModel.uiState.value.proximoViaje.id)) },
+                        onVerViajeConductor = {
+                            inicioViewModel.uiState.value.proximoViaje?.let { navegarA(Rutas.DetalleViajeConductor(it.id)) }
+                        },
                         onPublicarWheel = { navegarA(Rutas.PublicarWheel) }
                     )
                 }
@@ -282,11 +289,11 @@ fun JWNavHost(modifier: Modifier = Modifier) {
                     if (wheel != null) DetalleWheelScreen(wheel, onVolver = { volver() }, onSolicitarCupo = {}, finalizado = true)
                 }
                 entry<Rutas.DetalleViajeConductor> { ruta ->
-                    val viaje = (viajesProgramadosConductor + viajesFinalizadosConductor).firstOrNull { it.id == ruta.viajeId }
+                    val viaje = (estadoInicio.viajesPublicados + viajesFinalizadosConductor).firstOrNull { it.id == ruta.viajeId }
                     if (viaje != null) DetalleViajeConductorScreen(
                         viaje = viaje,
                         onVolver = { volver() },
-                        onAdministrar = { navegarA(Rutas.AdministrarWheel) }
+                        onAdministrar = { navegarA(Rutas.AdministrarWheel(viaje.id)) }
                     )
                 }
                 entry<Rutas.RutasGuardadas> {
@@ -311,14 +318,26 @@ fun JWNavHost(modifier: Modifier = Modifier) {
                 entry<Rutas.PublicarWheel> {
                     PublicarWheelScreen(
                         onBack = { volver() },
-                        onPublicar = { navegarA(Rutas.AdministrarWheel) },
-                        mostrarBarraNavegacion = false
+                        onPublicar = { viaje ->
+                            val idViaje = inicioViewModel.publicarViaje(viaje)
+                            navegarA(Rutas.AdministrarWheel(idViaje))
+                        },
+                        mostrarBarraNavegacion = false,
+                        vehiculoRegistrado = estadoVehiculo
                     )
                 }
-                entry<Rutas.AdministrarWheel> {
+                entry<Rutas.AdministrarWheel> { ruta ->
                     AdministrarWheelScreen(
+                        viewModel = inicioViewModel,
+                        idViaje = ruta.viajeId,
                         onBack = { volver() },
                         onIniciarViaje = { navegarA(Rutas.ViajeEnCurso) },
+                        onCancelarWheel = {
+                            if (inicioViewModel.cancelarViaje(ruta.viajeId)) {
+                                Toast.makeText(context, "Wheel cancelado", Toast.LENGTH_SHORT).show()
+                                irAPestana(Pestana.MisViajes)
+                            }
+                        },
                         mostrarBarraNavegacion = false
                     )
                 }

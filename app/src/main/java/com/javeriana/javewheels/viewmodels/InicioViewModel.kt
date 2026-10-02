@@ -5,6 +5,9 @@ import com.javeriana.javewheels.entities.DESTINO_JAVERIANA
 import com.javeriana.javewheels.entities.Rol
 import com.javeriana.javewheels.entities.Viaje
 import com.javeriana.javewheels.entities.proximoViajeConductor
+import com.javeriana.javewheels.entities.solicitudConductorDePrueba
+import com.javeriana.javewheels.entities.viajesProgramadosConductor
+import java.util.UUID
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,12 +25,13 @@ data class InicioUiState(
     val destino: String = "",
     val viajeProgramado: Boolean = false,        // false = "Ahora", true = "Programar"
     val salidaProgramadaMillis: Long = com.javeriana.javewheels.entities.salidaEnDias(1, 450),
-    val proximoViaje: Viaje = proximoViajeConductor
+    val proximoViaje: Viaje? = proximoViajeConductor,
+    val viajesPublicados: List<Viaje> = viajesProgramadosConductor
 )
 
-class InicioViewModel : ViewModel() {
+class InicioViewModel(estadoInicial: InicioUiState = InicioUiState()) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(InicioUiState())
+    private val _uiState = MutableStateFlow(estadoInicial)
     val uiState: StateFlow<InicioUiState> = _uiState.asStateFlow()
 
     /**
@@ -86,6 +90,56 @@ class InicioViewModel : ViewModel() {
             val momento = if (estado.viajeProgramado) "programados" else "para ahora"
             "Buscando Wheels $momento hacia ${estado.destino}..."
         }
+    }
+
+    /** Conserva los datos publicados para Inicio, Mis viajes y Administrar. */
+    fun publicarViaje(viaje: Viaje): String {
+        val publicado = viaje.copy(
+            id = "conductor-publicado-${UUID.randomUUID()}",
+            estado = "Programado",
+            cuposOcupados = 0,
+            pasajerosConfirmados = emptyList(),
+            // Solicitud local para probar el flujo actual sin backend.
+            solicitudes = listOf(solicitudConductorDePrueba)
+        )
+        _uiState.update { it.copy(proximoViaje = publicado, viajesPublicados = listOf(publicado) + it.viajesPublicados) }
+        return publicado.id
+    }
+
+    fun aceptarSolicitud(idViaje: String, idPasajero: String): Boolean {
+        val viaje = _uiState.value.viajesPublicados.firstOrNull { it.id == idViaje } ?: return false
+        val pasajero = viaje.solicitudes.firstOrNull { it.id == idPasajero } ?: return false
+        if (viaje.cuposOcupados >= viaje.cuposTotales) return false
+        guardarViaje(viaje.copy(
+            cuposOcupados = viaje.cuposOcupados + 1,
+            solicitudes = viaje.solicitudes.filter { it.id != idPasajero },
+            pasajerosConfirmados = viaje.pasajerosConfirmados + pasajero
+        ))
+        return true
+    }
+
+    fun rechazarSolicitud(idViaje: String, idPasajero: String) {
+        val viaje = _uiState.value.viajesPublicados.firstOrNull { it.id == idViaje } ?: return
+        guardarViaje(viaje.copy(solicitudes = viaje.solicitudes.filter { it.id != idPasajero }))
+    }
+
+    fun cancelarViaje(idViaje: String): Boolean {
+        if (_uiState.value.viajesPublicados.none { it.id == idViaje }) return false
+        _uiState.update { estado ->
+            val restantes = estado.viajesPublicados.filter { it.id != idViaje }
+            estado.copy(
+                viajesPublicados = restantes,
+                proximoViaje = if (estado.proximoViaje?.id == idViaje) restantes.firstOrNull() else estado.proximoViaje
+            )
+        }
+        return true
+    }
+
+    private fun guardarViaje(viaje: Viaje) {
+        _uiState.update { it.copy(
+            viajesPublicados = it.viajesPublicados.map { actual -> if (actual.id == viaje.id) viaje else actual },
+            proximoViaje = if (it.proximoViaje?.id == viaje.id) viaje else it.proximoViaje
+        ) }
     }
 
     /** Vuelve todo al estado inicial (al cerrar sesión). */

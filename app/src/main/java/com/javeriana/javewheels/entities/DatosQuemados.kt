@@ -45,14 +45,20 @@ val paginasCarga = listOf(
 )
 
 /** Próximo viaje del conductor (tarjeta de "Conductor - Inicio"). */
+val solicitudConductorDePrueba = PasajeroViaje(
+    "david-santiago", "David Santiago Gomez", "Parkway · Calle 39 con Carrera 21"
+)
+
 val proximoViajeConductor = Viaje(
     origen = "Salitre",
     destino = "Javeriana",
     fecha = "Mañana",
     hora = "7:00 a. m.",
-    cuposOcupados = 2,
+    cuposOcupados = 1,
     cuposTotales = 3,
-    estado = "Programado"
+    estado = "Programado",
+    pasajerosConfirmados = listOf(PasajeroViaje("fulana-perez", "Fulana Perez", "Javeriana")),
+    solicitudes = listOf(solicitudConductorDePrueba)
 )
 
 /** Destino del acceso rápido "Ir a la Javeriana". */
@@ -240,11 +246,13 @@ val viajesProgramadosConductor = listOf(
 )
 
 val viajesFinalizadosConductor = listOf(
-    proximoViajeConductor.copy(id = "conductor-finalizado-salitre", fecha = "Mar., 29 sept.", estado = "Finalizado", cuposOcupados = 3),
+    proximoViajeConductor.copy(id = "conductor-finalizado-salitre", fecha = "Mar., 29 sept.", estado = "Finalizado", cuposOcupados = 3,
+        pasajerosConfirmados = emptyList(), solicitudes = emptyList()),
     proximoViajeConductor.copy(
         id = "conductor-finalizado-regreso",
         origen = "Javeriana", destino = "Salitre", fecha = "Lun., 28 sept.",
-        hora = "5:30 p. m.", estado = "Finalizado", cuposOcupados = 2, puntoRecogida = "Entrada principal de la Javeriana"
+        hora = "5:30 p. m.", estado = "Finalizado", cuposOcupados = 2, puntoRecogida = "Entrada principal de la Javeriana",
+        pasajerosConfirmados = emptyList(), solicitudes = emptyList()
     )
 )
 

@@ -53,7 +53,7 @@ sealed class Rutas : NavKey {
     //  pantallas 10,11...
     @Serializable data object VerViajeEnVivo : Rutas()
     @Serializable data object PublicarWheel : Rutas()
-    @Serializable data object AdministrarWheel : Rutas()
+    @Serializable data class AdministrarWheel(val viajeId: String) : Rutas()
     @Serializable data object ViajeEnCurso : Rutas()
 
     @Serializable data object VerViajeBuseta : Rutas()

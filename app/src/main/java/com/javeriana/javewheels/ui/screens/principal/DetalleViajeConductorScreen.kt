@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.javeriana.javewheels.entities.Viaje
+import com.javeriana.javewheels.entities.formatoPesos
 import com.javeriana.javewheels.ui.components.*
 
 @Composable
@@ -33,7 +34,14 @@ fun DetalleViajeConductorScreen(
             Text("Aporte por pasajero: ${viaje.aporte}")
             Text("Punto de encuentro", style = MaterialTheme.typography.titleMedium)
             Text(viaje.puntoRecogida)
-            if (finalizado) Text("Viaje finalizado. Este resumen conserva los datos del recorrido.")
+            if (finalizado) {
+                Text("Total recaudado", style = MaterialTheme.typography.titleMedium)
+                Text(formatoPesos(viaje.totalRecaudado), style = MaterialTheme.typography.headlineMedium,
+                    color = MaterialTheme.colorScheme.primary)
+                Text("${viaje.cuposOcupados} pasajeros × ${viaje.aporte}",
+                    style = MaterialTheme.typography.bodyMedium)
+                Text("Viaje finalizado. Este resumen conserva los datos del recorrido.")
+            }
             if (!finalizado && onAdministrar != null) {
                 BotonPrincipal("Administrar Wheel", onClick = onAdministrar)
             }
