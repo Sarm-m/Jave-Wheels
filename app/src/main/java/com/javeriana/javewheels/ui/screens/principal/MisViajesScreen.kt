@@ -17,6 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -29,8 +30,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.javeriana.javewheels.entities.Rol
+import com.javeriana.javewheels.entities.viajesProgramadosConductor
+import com.javeriana.javewheels.entities.viajesFinalizadosConductor
 import com.javeriana.javewheels.entities.reservasPasajero
 import com.javeriana.javewheels.entities.wheelsFinalizados
+import com.javeriana.javewheels.viewmodels.InicioViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.javeriana.javewheels.ui.components.SelectorRol
 import com.javeriana.javewheels.ui.components.EncabezadoViajes
 import com.javeriana.javewheels.ui.components.TarjetaViajePasajero
 import com.javeriana.javewheels.ui.theme.JaveWheelsTheme
@@ -43,9 +50,15 @@ enum class PestanaViajes {
 @Composable
 fun MisViajesScreen(
     onVerReserva: () -> Unit = {},
-    modifier: Modifier = Modifier
+    onVerResumen: (String) -> Unit = {},
+    onVerViajeConductor: (String) -> Unit = {},
+    modifier: Modifier = Modifier,
+    viewModel: InicioViewModel = viewModel(),
+    onQuiereSerConductor: () -> Unit = {}
 ) {
-    var pestanaSeleccionada by rememberSaveable {
+    val uiState by viewModel.uiState.collectAsState()
+    val esConductor = uiState.rol == Rol.CONDUCTOR
+    var pestanaSeleccionada by rememberSaveable(uiState.rol) {
         mutableStateOf(PestanaViajes.RESERVAS)
     }
     val context = LocalContext.current
@@ -61,19 +74,43 @@ fun MisViajesScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         EncabezadoViajes(
-            titulo = if (mostrandoReservas) "Viajes" else "Mis Wheels",
-            modifier = Modifier
+            titulo = if (esConductor || mostrandoReservas) "Viajes" else "Mis Wheels",
+            modifier = Modifier,
+            accion = {
+                SelectorRol(uiState.rol, onCambiarRol = {
+                    if (!viewModel.cambiarRol()) onQuiereSerConductor()
+                })
+            }
         )
         SelectorPestanasViajes(
+            esConductor = esConductor,
             pestanaSeleccionada = pestanaSeleccionada,
             onSeleccionar = { pestanaSeleccionada = it }
         )
         Text(
-            text = if (mostrandoReservas) "Tus reservas activas" else "Wheels que ya tomaste",
+            text = if (esConductor) {
+                if (mostrandoReservas) "Tus viajes publicados" else "Viajes que ya condujiste"
+            } else if (mostrandoReservas) "Tus reservas activas" else "Wheels que ya tomaste",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.primary
         )
-        viajes.forEach { reserva ->
+        if (esConductor) {
+            val publicados = if (mostrandoReservas) viajesProgramadosConductor else viajesFinalizadosConductor
+            publicados.forEach { viaje ->
+                TarjetaViajePasajero(
+                    conductor = "Tú · Conductor",
+                    subtituloConductor = "Viaje publicado por ti",
+                    ruta = "${viaje.origen} → ${viaje.destino}",
+                    horario = "${viaje.fecha} · ${viaje.hora}",
+                    cupos = "${viaje.cuposOcupados}/${viaje.cuposTotales} cupos ocupados",
+                    aporte = viaje.aporte,
+                    detalle = "${viaje.cuposTotales - viaje.cuposOcupados} cupos libres",
+                    estado = viaje.estado,
+                    textoBoton = if (mostrandoReservas) "Ver viaje" else "Ver resumen",
+                    onClick = { onVerViajeConductor(viaje.id) }
+                )
+            }
+        } else viajes.forEach { reserva ->
             val wheel = reserva.wheel
             val pendiente = reserva.estado == "Pendiente"
             TarjetaViajePasajero(
@@ -96,11 +133,7 @@ fun MisViajesScreen(
                 },
                 onClick = {
                     when {
-                        !mostrandoReservas -> Toast.makeText(
-                            context,
-                            "Wheel finalizado: ${wheel.origen} → ${wheel.destino}.",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        !mostrandoReservas -> onVerResumen(wheel.id)
                         pendiente -> Toast.makeText(
                             context,
                             "Solicitud pendiente de respuesta del conductor.",
@@ -112,7 +145,9 @@ fun MisViajesScreen(
             )
         }
         Text(
-            text = if (mostrandoReservas) {
+            text = if (esConductor) {
+                "Solo se muestran viajes publicados por ti."
+            } else if (mostrandoReservas) {
                 "También puedes consultar tu historial de reservas."
             } else {
                 "Solo se muestran tus viajes finalizados."
@@ -125,6 +160,7 @@ fun MisViajesScreen(
 
 @Composable
 private fun SelectorPestanasViajes(
+    esConductor: Boolean,
     pestanaSeleccionada: PestanaViajes,
     onSeleccionar: (PestanaViajes) -> Unit
 ) {
@@ -154,7 +190,9 @@ private fun SelectorPestanasViajes(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = if (pestana == PestanaViajes.RESERVAS) "Reservas" else "Mis Wheels",
+                    text = if (esConductor) {
+                        if (pestana == PestanaViajes.RESERVAS) "Programados" else "Finalizados"
+                    } else if (pestana == PestanaViajes.RESERVAS) "Reservas" else "Mis Wheels",
                     style = MaterialTheme.typography.bodyMedium,
                     color = if (seleccionada) MaterialTheme.colorScheme.onPrimary
                     else MaterialTheme.colorScheme.primary

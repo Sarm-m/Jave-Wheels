@@ -103,7 +103,7 @@ fun BotonTexto(
     }
 }
 
-/** Botón cuadrado con flecha para volver atrás ("Volver" en Figma). */
+/** Botón cuadrado con flecha para volver atrás ("Volver" en diseño). */
 @Composable
 fun BotonVolver(
     onClick: () -> Unit,

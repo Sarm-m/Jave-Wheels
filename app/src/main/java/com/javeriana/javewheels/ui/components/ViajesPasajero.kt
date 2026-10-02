@@ -1,13 +1,11 @@
 package com.javeriana.javewheels.ui.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.ButtonDefaults
@@ -18,10 +16,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.javeriana.javewheels.R
 import com.javeriana.javewheels.entities.WheelPasajero
 import com.javeriana.javewheels.ui.theme.JWAmarilloSuave
 import com.javeriana.javewheels.ui.theme.JWCelesteContenedor
@@ -32,24 +28,22 @@ import com.javeriana.javewheels.ui.theme.JWCelesteSuave
 fun EncabezadoViajes(
     titulo: String,
     onVolver: (() -> Unit)? = null,
-    modifier: Modifier = Modifier.padding(horizontal = 24.dp, vertical = 12.dp)
+    modifier: Modifier = Modifier.padding(horizontal = 24.dp, vertical = 12.dp),
+    accion: @Composable () -> Unit = {}
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Image(
-            painter = painterResource(R.drawable.logo_movilidad),
-            contentDescription = "JaveWheels",
-            modifier = Modifier.size(44.dp)
-        )
+        LogoJaveWheels()
         Text(
             text = titulo,
             style = MaterialTheme.typography.headlineSmall,
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.weight(1f)
         )
+        accion()
         if (onVolver != null) BotonVolver(onClick = onVolver)
     }
 }
@@ -74,11 +68,7 @@ fun DatosConductorPasajero(nombre: String, subtitulo: String) {
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Image(
-            painter = painterResource(R.drawable.avatar_conductor),
-            contentDescription = null,
-            modifier = Modifier.size(44.dp)
-        )
+        AvatarUsuario()
         Column(modifier = Modifier.weight(1f)) {
             Text(nombre, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.primary)
             Text(subtitulo, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -99,7 +89,8 @@ fun TarjetaViajePasajero(
     resaltado: Boolean = false,
     textoBoton: String,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    subtituloConductor: String = "Conductor · Comunidad Javeriana"
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -110,7 +101,7 @@ fun TarjetaViajePasajero(
             modifier = Modifier.padding(14.dp),
             verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
-            DatosConductorPasajero(conductor, "Conductor · Comunidad Javeriana")
+            DatosConductorPasajero(conductor, subtituloConductor)
             Text(ruta, style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.primary)
             Text(horario, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {

@@ -12,6 +12,9 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import com.javeriana.javewheels.entities.Rol
+import com.javeriana.javewheels.entities.wheelsFinalizados
+import com.javeriana.javewheels.entities.viajesProgramadosConductor
+import com.javeriana.javewheels.entities.viajesFinalizadosConductor
 import com.javeriana.javewheels.entities.wheelsDisponibles
 import com.javeriana.javewheels.ui.components.BarraNavegacion
 import com.javeriana.javewheels.ui.screens.acceso.ConfirmacionScreen
@@ -25,6 +28,9 @@ import com.javeriana.javewheels.ui.screens.bienvenida.BienvenidaScreen
 import com.javeriana.javewheels.ui.screens.conductor.ConductorCompletadoScreen
 import com.javeriana.javewheels.ui.screens.conductor.QuieresConducirScreen
 import com.javeriana.javewheels.ui.screens.conductor.RegistrarVehiculoScreen
+import com.javeriana.javewheels.ui.screens.principal.DetalleViajeConductorScreen
+import com.javeriana.javewheels.ui.screens.principal.RutasGuardadasScreen
+import com.javeriana.javewheels.ui.screens.principal.BuscarMomentoScreen
 import com.javeriana.javewheels.ui.screens.principal.InicioScreen
 import com.javeriana.javewheels.ui.screens.principal.MensajesScreen
 import com.javeriana.javewheels.ui.screens.principal.MisViajesScreen
@@ -79,8 +85,8 @@ fun JWNavHost(modifier: Modifier = Modifier) {
 
     val rutaActual = backStack.lastOrNull()
     val pestanaActual = when (rutaActual) {
-        Rutas.WheelsDisponibles, is Rutas.DetalleWheel -> Pestana.Inicio
-        Rutas.DetalleReserva -> Pestana.MisViajes
+        is Rutas.WheelsDisponibles, is Rutas.DetalleWheel, Rutas.RutasGuardadas, Rutas.BuscarAhora, Rutas.ProgramarBusqueda -> Pestana.Inicio
+        Rutas.DetalleReserva, is Rutas.ResumenWheel, is Rutas.DetalleViajeConductor -> Pestana.MisViajes
         else -> Pestana.entries.find { it.ruta == rutaActual }
     }
 
@@ -184,14 +190,35 @@ fun JWNavHost(modifier: Modifier = Modifier) {
                     InicioScreen(
                         viewModel = inicioViewModel,
                         onQuiereSerConductor = { navegarA(Rutas.QuieresConducir(desdeRegistro = false)) },
-                        onBuscarWheels = { navegarA(Rutas.WheelsDisponibles) }
+                        onBuscarWheels = {
+                            navegarA(if (inicioViewModel.uiState.value.viajeProgramado) Rutas.ProgramarBusqueda else Rutas.BuscarAhora)
+                        },
+                        onGuardados = { navegarA(Rutas.RutasGuardadas) },
+                        onSeleccionarMomento = { navegarA(if (it) Rutas.ProgramarBusqueda else Rutas.BuscarAhora) },
+                        onVerViajeConductor = { navegarA(Rutas.DetalleViajeConductor(inicioViewModel.uiState.value.proximoViaje.id)) }
                     )
                 }
-                entry<Rutas.MisViajes> {
-                    MisViajesScreen(onVerReserva = { navegarA(Rutas.DetalleReserva) })
+                entry<Rutas.BuscarAhora> {
+                    BuscarMomentoScreen(programado = false, viewModel = inicioViewModel, onVolver = { volver() },
+                        onBuscar = { origen, destino, salida -> navegarA(Rutas.WheelsDisponibles(origen, destino, salida, false)) })
                 }
-                entry<Rutas.WheelsDisponibles> {
+                entry<Rutas.ProgramarBusqueda> {
+                    BuscarMomentoScreen(programado = true, viewModel = inicioViewModel, onVolver = { volver() },
+                        onBuscar = { origen, destino, salida -> navegarA(Rutas.WheelsDisponibles(origen, destino, salida, true)) })
+                }
+                entry<Rutas.MisViajes> {
+                    MisViajesScreen(
+                        viewModel = inicioViewModel,
+                        onVerReserva = { navegarA(Rutas.DetalleReserva) },
+                        onVerResumen = { navegarA(Rutas.ResumenWheel(it)) },
+                        onVerViajeConductor = { navegarA(Rutas.DetalleViajeConductor(it)) },
+                        onQuiereSerConductor = { navegarA(Rutas.QuieresConducir(desdeRegistro = false)) }
+                    )
+                }
+                entry<Rutas.WheelsDisponibles> { ruta -> // Si la ruta actual es WheelsDisponibles, dibuja esa pantalla; cuando el usuario elija un Wheel, abre su detalle
                     WheelsDisponiblesScreen(
+                        origen = ruta.origen, destino = ruta.destino,
+                        desdeMillis = ruta.desdeMillis, programado = ruta.programado,
                         onVolver = { volver() },
                         onVerWheel = { navegarA(Rutas.DetalleWheel(it)) }
                     )
@@ -205,6 +232,20 @@ fun JWNavHost(modifier: Modifier = Modifier) {
                             onSolicitarCupo = { irAPestana(Pestana.MisViajes) }
                         )
                     }
+                }
+                entry<Rutas.ResumenWheel> { ruta ->
+                    val wheel = wheelsFinalizados.firstOrNull { it.wheel.id == ruta.wheelId }?.wheel
+                    if (wheel != null) DetalleWheelScreen(wheel, onVolver = { volver() }, onSolicitarCupo = {}, finalizado = true)
+                }
+                entry<Rutas.DetalleViajeConductor> { ruta ->
+                    val viaje = (viajesProgramadosConductor + viajesFinalizadosConductor).firstOrNull { it.id == ruta.viajeId }
+                    if (viaje != null) DetalleViajeConductorScreen(viaje, onVolver = { volver() })
+                }
+                entry<Rutas.RutasGuardadas> {
+                    RutasGuardadasScreen(onVolver = { volver() }, onElegirRuta = {
+                        inicioViewModel.seleccionarRutaGuardada(it)
+                        volver()
+                    })
                 }
                 entry<Rutas.DetalleReserva> {
                     DetalleReservaScreen(onVolver = { volver() })

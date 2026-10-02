@@ -24,7 +24,7 @@ import com.javeriana.javewheels.ui.theme.JWBlanco
 import com.javeriana.javewheels.ui.theme.JaveWheelsTheme
 
 // ============================================================
-// "Pantalla Inicio" de Figma (bienvenida).
+// "Pantalla Inicio" (bienvenida).
 // Se queda en pantalla hasta que el usuario la toque;
 // ahí pasa a la pantalla de carga.
 // ============================================================

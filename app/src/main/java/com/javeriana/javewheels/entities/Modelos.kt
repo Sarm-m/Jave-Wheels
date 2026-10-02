@@ -12,7 +12,7 @@ enum class Rol(val titulo: String) {
     CONDUCTOR("Conductor")
 }
 
-/** Una página de la pantalla de carga (Pantalla Carga 1, 2 y 3 de Figma). */
+/** Una página de la pantalla de carga (Pantalla Carga 1, 2 y 3). */
 data class PaginaCarga(
     val titulo: String,
     val descripcion: String,
@@ -27,7 +27,11 @@ data class Viaje(
     val hora: String,
     val cuposOcupados: Int,
     val cuposTotales: Int,
-    val estado: String
+    val estado: String,
+    val aporte: String = "$4.000",
+    val id: String = "conductor-programado-salitre",
+    val vehiculo: String = "Renault Sandero · 2022 · Gris · ABC123",
+    val puntoRecogida: String = "Calle 72 con Cra. 11"
 )
 
 /** Datos básicos del usuario que inició sesión. */
@@ -54,7 +58,11 @@ data class WheelPasajero(
     val puntoRecogida: String = "Calle 72 con Cra. 11",
     val distancia: String = "350 m",
     val tiempoAPie: String = "4 min",
-    val horaRecogida: String = "7:42 a. m."
+    val horaRecogida: String = "7:42 a. m.",
+    val distanciaMetros: Int = 350,
+    val aportePesos: Int = 4000,
+    val salidaMinutos: Int = 450,
+    val salidaMillis: Long = salidaEnDias(1, salidaMinutos)
 )
 
 /** Reserva o solicitud del pasajero para un Wheel. */

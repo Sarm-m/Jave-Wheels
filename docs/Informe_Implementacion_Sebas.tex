@@ -1,6 +1,6 @@
 \documentclass[11pt,a4paper]{article}
-\usepackage[utf8]{inputenc}
-\usepackage[T1]{fontenc}
+\usepackage{fontspec}
+\setmainfont{Latin Modern Roman}
 \usepackage[spanish,es-nodecimaldot]{babel}
 \usepackage[margin=2.2cm,headheight=14pt]{geometry}
 \usepackage{graphicx}
@@ -52,7 +52,7 @@
 \vspace{1.3cm}
 \rule{\textwidth}{0.5pt}
 \vspace{0.5cm}
-{\large Informe de la implementación del flujo de pasajero,\par
+{\large Informe de la implementación de las vistas por rol,\par
 sus componentes y su validación en el emulador.\par}
 \vfill
 {\large Bogotá\par 1 de octubre de 2026\par}
@@ -92,12 +92,10 @@ Pantallas nuevas &
 \archivo{WheelsDisponiblesScreen.kt}, \archivo{DetalleWheelScreen.kt} y
 \archivo{DetalleReservaScreen.kt}: resultados y detalles del pasajero. \\
 Componente nuevo &
-\archivo{ViajesPasajero.kt}: encabezados, tarjetas, etiquetas y datos de
-conductor, recorrido y recogida. \\
+\archivo{ViajesPasajero.kt}: tarjetas y detalles. \archivo{AvatarUsuario.kt},
+\archivo{SelectorRol.kt} y \archivo{MapaIlustrativo.kt}: componentes compartidos. \\
 Recursos locales &
-Cuatro PNG en \archivo{drawable-nodpi}: \archivo{logo_movilidad},
-\archivo{avatar_conductor}, \archivo{mapa_recorrido_wheel} y
-\archivo{mapa_recorrido_reserva}. \\
+Logo, mapas y avatares se dibujan mediante componentes de Compose, sin PNG. \\
 Navegación &
 \archivo{Rutas.kt} y \archivo{JWNavHost.kt}: rutas, identificador del Wheel,
 acciones de navegación y selección de la barra inferior. \\
@@ -107,13 +105,13 @@ Pantallas y botón &
 compartidos de botones. \\
 Datos y modelos &
 \archivo{Modelos.kt} y \archivo{DatosQuemados.kt}: modelos del pasajero y
-listas de Wheels disponibles, reservas e historial. \\
+listas de Wheels disponibles, reservas, historial y viajes publicados por el conductor. \\
 Comentarios &
 Cambios únicamente en comentarios de \archivo{InicioViewModel.kt},
 \archivo{OnboardingViewModel.kt}, \archivo{RecuperarContrasenaViewModel.kt},
 \archivo{Validaciones.kt} y \archivo{app/build.gradle.kts}. \\
 Documentación &
-\archivo{README.md}, seis capturas en \archivo{docs/images} y la fuente
+\archivo{README.md}, ocho capturas en \archivo{docs/images} y la fuente
 \archivo{Informe_Implementacion_Sebas.tex}. \\
 \bottomrule
 \end{tabularx}
@@ -152,7 +150,8 @@ El detalle del Wheel presenta el conductor, la calificación, el vehículo,
 los cupos y el aporte. El bloque de recogida incluye punto de encuentro,
 distancia, tiempo a pie y hora aproximada. El detalle de reserva muestra el
 estado confirmado y las acciones visuales de mensaje, compartir y cancelar.
-Los mapas se muestran como imágenes locales ilustrativas.
+Los mapas se dibujan con \archivo{MapaIlustrativo}, compartido con Inicio.
+En los detalles se ajustan la altura y la etiqueta de recogida, sin botón de centrar.
 
 \vspace{0.4cm}
 \noindent
@@ -169,8 +168,8 @@ Los mapas se muestran como imágenes locales ilustrativas.
 \small
 
 Las pestañas \emph{Reservas} y \emph{Mis Wheels} separan las solicitudes activas
-del historial. La primera muestra una reserva confirmada y una solicitud
-pendiente; la segunda, dos recorridos finalizados.
+del historial en modo pasajero. La primera muestra una reserva confirmada y una solicitud
+pendiente; la segunda, dos recorridos finalizados. El selector de rol se comparte con Inicio.
 
 \noindent
 \captura{mis-viajes-reservas.png}{Pestaña Reservas}{0.48}{Reserva confirmada y solicitud pendiente.}
@@ -189,8 +188,9 @@ La compilación de depuración del 1 de octubre de 2026 terminó con
 \end{verbatim}
 }
 El APK se genera en \archivo{app/build/outputs/apk/debug/app-debug.apk}.
-En el emulador se comprobó el flujo completo del pasajero, ambas pestañas,
-los detalles, los retrocesos y la selección de la barra inferior.
+En el emulador se comprobó el flujo del pasajero, los detalles, los retrocesos,
+ambos roles y sus pestañas, el acceso al registro de conductor y el estado compartido
+con Inicio y Perfil. Los detalles utilizan el mapa de Compose.
 
 \textbf{Limitación de la validación}
 
@@ -200,10 +200,33 @@ de lint aprobado. El proyecto no contiene pruebas automatizadas existentes.
 
 \textbf{Conclusión}
 
-El flujo visual y la navegación del pasajero quedan integrados y compilados.
+Las vistas por rol y la navegación quedan integradas y compiladas.
 La búsqueda, los filtros, la gestión efectiva de cupos, la persistencia,
 la mensajería y la ubicación en tiempo real requieren una implementación
 posterior. Los estados actuales permiten revisar el comportamiento de las
 pantallas con datos demostrativos.
+
+\clearpage
+\normalsize
+\tituloPagina{Mis viajes del conductor y componentes compartidos}
+
+El selector conserva el rol compartido con Inicio y Perfil. Si el usuario aún no
+registró un vehículo, abre el flujo existente de registro. En modo conductor,
+\emph{Programados} y \emph{Finalizados} muestran recorridos publicados por el usuario,
+con horario, cupos ocupados y totales, aporte y estado. Al cambiar de rol se
+selecciona la primera pestaña. Los botones de consulta muestran un aviso pendiente.
+
+\medskip
+\noindent
+\captura{mis-viajes-conductor-programados.png}{Viajes publicados programados}{0.58}{Vista local del conductor.}
+\hfill
+\captura{mis-viajes-conductor-finalizados.png}{Viajes publicados finalizados}{0.58}{Historial local del conductor.}
+
+\medskip
+\archivo{LogoJaveWheels} dibuja un círculo amarillo y un carro azul mediante Compose.\par
+\archivo{AvatarUsuario} dibuja el icono de persona
+sobre un círculo celeste en Inicio, Perfil, tarjetas y detalles.\par
+\archivo{MapaIlustrativo} conserva 300 dp en Inicio y utiliza 230 y 200 dp en
+los detalles del Wheel y de la reserva, respectivamente.
 
 \end{document}

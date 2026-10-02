@@ -36,6 +36,9 @@ private const val PROXIMAMENTE = "Disponible en la próxima entrega"
 fun InicioScreen(
     onQuiereSerConductor: () -> Unit,
     onBuscarWheels: () -> Unit = {},
+    onGuardados: () -> Unit = {},
+    onSeleccionarMomento: (Boolean) -> Unit = {},
+    onVerViajeConductor: () -> Unit = {},
     modifier: Modifier = Modifier,
     viewModel: InicioViewModel = viewModel()
 ) {
@@ -70,12 +73,14 @@ fun InicioScreen(
 
             if (uiState.rol == Rol.PASAJERO) {
                 PanelPasajero(
+                    origen = uiState.origen,
                     destino = uiState.destino,
                     viajeProgramado = uiState.viajeProgramado,
+                    resumenProgramado = "${com.javeriana.javewheels.entities.fechaBusqueda(uiState.salidaProgramadaMillis)} · ${com.javeriana.javewheels.entities.horaBusqueda(uiState.salidaProgramadaMillis)}",
                     onDestinoChange = { viewModel.actualizarDestino(it) },
-                    onSeleccionarMomento = { viewModel.seleccionarMomento(it) },
+                    onSeleccionarMomento = onSeleccionarMomento,
                     onIrALaJaveriana = { viewModel.irALaJaveriana() },
-                    onGuardados = { mostrarMensaje(PROXIMAMENTE) },
+                    onGuardados = onGuardados,
                     onBuscar = onBuscarWheels,
                     modifier = modificadorPanel
                 )
@@ -83,7 +88,7 @@ fun InicioScreen(
                 PanelConductor(
                     proximoViaje = uiState.proximoViaje,
                     onPublicar = { mostrarMensaje(PROXIMAMENTE) },
-                    onVerViaje = { mostrarMensaje(PROXIMAMENTE) },
+                    onVerViaje = onVerViajeConductor,
                     modifier = modificadorPanel
                 )
             }
