@@ -64,7 +64,7 @@ fun MapaIlustrativo(
         if (modoEnVivo) {
             // ==================== MODO EN VIVO ====================
 
-            // 1. Avenida central vertical asfaltada
+            // 1. Avenida 
             Box(
                 modifier = Modifier
                     .align(Alignment.Center)
@@ -110,10 +110,10 @@ fun MapaIlustrativo(
                                 .background(Color(0xFFE4E9ED))
                         )
 
-                        // Espacio sobre la avenida central
+                        // Espacio sobre la avenida 
                         Spacer(modifier = Modifier.width(42.dp))
 
-                        // Manzana lado derecho
+                        // cuadra lado derecho
                         Box(
                             modifier = Modifier
                                 .weight(1.1f)
@@ -122,7 +122,7 @@ fun MapaIlustrativo(
                                 .background(Color(0xFFE4E9ED))
                         )
 
-                        // Margen para no pisar el parque
+                        // Margen parque
                         Spacer(modifier = Modifier.fillMaxWidth(0.22f))
                     }
                 }

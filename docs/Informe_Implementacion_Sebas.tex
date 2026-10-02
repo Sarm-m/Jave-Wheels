@@ -1,0 +1,232 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{fontspec}
+\setmainfont{Latin Modern Roman}
+\usepackage[spanish,es-nodecimaldot]{babel}
+\usepackage[margin=2.2cm,headheight=14pt]{geometry}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{fancyhdr}
+\usepackage{caption}
+\usepackage[hidelinks]{hyperref}
+
+\definecolor{azulJW}{HTML}{002D62}
+\definecolor{grisJW}{HTML}{536D85}
+\graphicspath{{images/}}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+\renewcommand{\arraystretch}{1.2}
+\captionsetup{font=small,labelfont=bf,justification=centering,hypcap=false}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\color{grisJW}JaveWheels}
+\fancyhead[R]{\small\color{grisJW}Informe de implementación}
+\fancyfoot[C]{\small\thepage}
+\renewcommand{\headrulewidth}{0.3pt}
+
+\newcommand{\tituloPagina}[1]{%
+  {\Large\bfseries\color{azulJW}#1}\par\medskip
+}
+\newcommand{\archivo}[1]{\texttt{\detokenize{#1}}}
+\newcommand{\captura}[4]{%
+  \begin{minipage}[t]{0.47\textwidth}
+    \centering
+    \includegraphics[width=\linewidth,height=#3\textheight,keepaspectratio]{#1}
+    \captionof{figure}{#2}
+    {\small\color{grisJW}#4\par}
+  \end{minipage}%
+}
+
+\begin{document}
+
+% Página 1: portada.
+\thispagestyle{empty}
+\vspace*{3cm}
+{\large\color{grisJW}JaveWheels\par}
+\vspace{0.7cm}
+{\Huge\bfseries\color{azulJW}Implementación de navegación y vistas de JaveWheels\par}
+\vspace{0.7cm}
+{\large Aplicación Android de movilidad compartida\par}
+\vspace{1.3cm}
+\rule{\textwidth}{0.5pt}
+\vspace{0.5cm}
+{\large Informe de la implementación de las vistas por rol,\par
+sus componentes y su validación en el emulador.\par}
+\vfill
+{\large Bogotá\par 1 de octubre de 2026\par}
+\clearpage
+
+% Página 2: alcance y estructura.
+\tituloPagina{Alcance y organización de la implementación}
+
+Se completó el recorrido visual del pasajero para consultar Wheels, abrir el
+detalle de un recorrido, acceder a sus viajes y consultar una reserva confirmada.
+La solución conserva la estructura de Kotlin, Jetpack Compose, Material 3 y
+Navigation 3 del proyecto.
+
+\textbf{Navegación implementada}
+
+\begin{center}
+\color{azulJW}
+Inicio $\rightarrow$ Wheels disponibles $\rightarrow$ Detalle del Wheel\par
+\smallskip
+$\rightarrow$ Mis viajes / Reservas $\rightarrow$ Detalle de reserva
+\end{center}
+
+\emph{Buscar Wheels} abre los resultados. Cada botón \emph{Ver Wheel} transmite
+el identificador del recorrido para mostrar sus datos. \emph{Solicitar cupo}
+abre Mis viajes; la reserva confirmada permite consultar su detalle.
+Los retrocesos retornan a la lista correspondiente. Una única barra inferior
+selecciona Inicio en el flujo de Wheels y Mis viajes en el flujo de reservas.
+
+\textbf{Archivos y recursos entregados}
+
+{\small
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}X@{}}
+\toprule
+\textbf{Tipo} & \textbf{Archivos y responsabilidad} \\
+\midrule
+Pantallas nuevas &
+\archivo{WheelsDisponiblesScreen.kt}, \archivo{DetalleWheelScreen.kt} y
+\archivo{DetalleReservaScreen.kt}: resultados y detalles del pasajero. \\
+Componente nuevo &
+\archivo{ViajesPasajero.kt}: tarjetas y detalles. \archivo{AvatarUsuario.kt},
+\archivo{SelectorRol.kt} y \archivo{MapaIlustrativo.kt}: componentes compartidos. \\
+Recursos locales &
+Logo, mapas y avatares se dibujan mediante componentes de Compose, sin PNG. \\
+Navegación &
+\archivo{Rutas.kt} y \archivo{JWNavHost.kt}: rutas, identificador del Wheel,
+acciones de navegación y selección de la barra inferior. \\
+Pantallas y botón &
+\archivo{InicioScreen.kt}, \archivo{MisViajesScreen.kt} y
+\archivo{Botones.kt}: acceso a resultados, pestañas internas y estilos
+compartidos de botones. \\
+Datos y modelos &
+\archivo{Modelos.kt} y \archivo{DatosQuemados.kt}: modelos del pasajero y
+listas de Wheels disponibles, reservas, historial y viajes publicados por el conductor. \\
+Comentarios &
+Cambios únicamente en comentarios de \archivo{InicioViewModel.kt},
+\archivo{OnboardingViewModel.kt}, \archivo{RecuperarContrasenaViewModel.kt},
+\archivo{Validaciones.kt} y \archivo{app/build.gradle.kts}. \\
+Documentación &
+\archivo{README.md}, ocho capturas en \archivo{docs/images} y la fuente
+\archivo{Informe_Implementacion_Sebas.tex}. \\
+\bottomrule
+\end{tabularx}
+}
+
+\textbf{Reutilización y datos}
+
+Las pantallas reutilizan el tema, los botones y el panel existentes.
+\archivo{WheelPasajero} reúne conductor, ruta, vehículo, cupos, aporte y
+recogida; \archivo{ReservaPasajero} agrega el estado y el detalle de recogida.
+Los datos son locales: navegar no crea reservas ni modifica la disponibilidad.
+\clearpage
+
+% Página 3: capturas de Inicio y resultados.
+\tituloPagina{Inicio y consulta de Wheels}
+
+Inicio mantiene el cambio de rol y el panel del pasajero. Los resultados
+muestran dos recorridos con conductor, ruta, horario, aporte, cupos y tipo de
+recogida. La pantalla admite desplazamiento vertical y una fila horizontal
+de filtros visuales. Cada tarjeta abre el detalle del Wheel seleccionado.
+
+\vspace{0.4cm}
+\noindent
+\captura{inicio-pasajero.png}{Inicio del pasajero}{0.69}{Acceso a la búsqueda desde el panel principal.}
+\hfill
+\captura{wheels-disponibles.png}{Wheels disponibles}{0.69}{Tarjetas de recogida directa y Modo Buseta.}
+
+\vfill
+{\small\color{grisJW}Las capturas documentan la aplicación ejecutada en el emulador Android.}
+\clearpage
+
+% Página 4: capturas de los detalles.
+\tituloPagina{Consulta del recorrido y de la reserva}
+
+El detalle del Wheel presenta el conductor, la calificación, el vehículo,
+los cupos y el aporte. El bloque de recogida incluye punto de encuentro,
+distancia, tiempo a pie y hora aproximada. El detalle de reserva muestra el
+estado confirmado y las acciones visuales de mensaje, compartir y cancelar.
+Los mapas se dibujan con \archivo{MapaIlustrativo}, compartido con Inicio.
+En los detalles se ajustan la altura y la etiqueta de recogida, sin botón de centrar.
+
+\vspace{0.4cm}
+\noindent
+\captura{detalle-wheel.png}{Detalle del Wheel}{0.69}{Información del recorrido y acceso a Mis viajes.}
+\hfill
+\captura{detalle-reserva.png}{Detalle de reserva}{0.69}{Reserva confirmada y punto acordado de recogida.}
+
+\vfill
+{\small\color{grisJW}Las acciones pendientes muestran avisos breves y conservan los datos locales.}
+\clearpage
+
+% Página 5: pestañas y validación.
+\tituloPagina{Mis viajes y resultado de la validación}
+\small
+
+Las pestañas \emph{Reservas} y \emph{Mis Wheels} separan las solicitudes activas
+del historial en modo pasajero. La primera muestra una reserva confirmada y una solicitud
+pendiente; la segunda, dos recorridos finalizados. El selector de rol se comparte con Inicio.
+
+\noindent
+\captura{mis-viajes-reservas.png}{Pestaña Reservas}{0.48}{Reserva confirmada y solicitud pendiente.}
+\hfill
+\captura{mis-viajes-wheels.png}{Pestaña Mis Wheels}{0.48}{Historial de recorridos finalizados.}
+
+\medskip
+\textbf{Compilación y comprobación del flujo}
+
+La compilación de depuración del 1 de octubre de 2026 terminó con
+\textbf{BUILD SUCCESSFUL}. Se ejecutó:
+
+{\footnotesize
+\begin{verbatim}
+.\gradlew.bat :app:assembleDebug --max-workers=2 --no-configuration-cache
+\end{verbatim}
+}
+El APK se genera en \archivo{app/build/outputs/apk/debug/app-debug.apk}.
+En el emulador se comprobó el flujo del pasajero, los detalles, los retrocesos,
+ambos roles y sus pestañas, el acceso al registro de conductor y el estado compartido
+con Inicio y Perfil. Los detalles utilizan el mapa de Compose.
+
+\textbf{Limitación de la validación}
+
+\archivo{:app:lintDebug} no terminó: su análisis de comentarios entró en un
+bucle en \archivo{BidirectionalTextDetector}. No se dispone de un resultado
+de lint aprobado. El proyecto no contiene pruebas automatizadas existentes.
+
+\textbf{Conclusión}
+
+Las vistas por rol y la navegación quedan integradas y compiladas.
+La búsqueda, los filtros, la gestión efectiva de cupos, la persistencia,
+la mensajería y la ubicación en tiempo real requieren una implementación
+posterior. Los estados actuales permiten revisar el comportamiento de las
+pantallas con datos demostrativos.
+
+\clearpage
+\normalsize
+\tituloPagina{Mis viajes del conductor y componentes compartidos}
+
+El selector conserva el rol compartido con Inicio y Perfil. Si el usuario aún no
+registró un vehículo, abre el flujo existente de registro. En modo conductor,
+\emph{Programados} y \emph{Finalizados} muestran recorridos publicados por el usuario,
+con horario, cupos ocupados y totales, aporte y estado. Al cambiar de rol se
+selecciona la primera pestaña. Los botones de consulta muestran un aviso pendiente.
+
+\medskip
+\noindent
+\captura{mis-viajes-conductor-programados.png}{Viajes publicados programados}{0.58}{Vista local del conductor.}
+\hfill
+\captura{mis-viajes-conductor-finalizados.png}{Viajes publicados finalizados}{0.58}{Historial local del conductor.}
+
+\medskip
+\archivo{LogoJaveWheels} dibuja un círculo amarillo y un carro azul mediante Compose.\par
+\archivo{AvatarUsuario} dibuja el icono de persona
+sobre un círculo celeste en Inicio, Perfil, tarjetas y detalles.\par
+\archivo{MapaIlustrativo} conserva 300 dp en Inicio y utiliza 230 y 200 dp en
+los detalles del Wheel y de la reserva, respectivamente.
+
+\end{document}

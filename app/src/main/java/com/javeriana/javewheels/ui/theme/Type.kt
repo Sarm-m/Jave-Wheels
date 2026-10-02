@@ -8,8 +8,8 @@ import androidx.compose.ui.unit.sp
 
 // ============================================================
 // Tipografía de JaveWheels
-// FontFamily.Default en Android es Roboto (la fuente principal del Figma).
-// Los tamaños salen de las variables "tipografia/tamano/..." de Figma.
+// FontFamily.Default en Android es Roboto (la fuente principal del diseño).
+// Los tamaños salen de las variables "tipografia/tamano/...".
 // Recordatorio: .sp para textos, .dp para tamaños y espacios.
 // ============================================================
 

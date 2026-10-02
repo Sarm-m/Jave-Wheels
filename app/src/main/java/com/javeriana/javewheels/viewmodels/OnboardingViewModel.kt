@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.update
 
 // ============================================================
 // Estado de la pantalla de Carga (Carga 1, 2 y 3)
-// data class inmutable: se cambia con copy() (Clase 5).
+// Estado inmutable: se actualiza con copy().
 // ============================================================
 data class CargaUiState(
     val paginaActual: Int = 0,

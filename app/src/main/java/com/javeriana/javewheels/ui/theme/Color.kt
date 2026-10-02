@@ -4,7 +4,7 @@ import androidx.compose.ui.graphics.Color
 
 // ============================================================
 // Colores de JaveWheels
-// Son los mismos de la colección de variables "JaveWheels" en Figma.
+// Son los mismos de la colección de variables "JaveWheels" en diseño.
 // Formato: 0xFF + código hexadecimal (FF = totalmente opaco).
 // ============================================================
 
@@ -32,3 +32,8 @@ val MapaParque = Color(0xFFDFEAD9)
 
 // --- Error ---
 val JWError = Color(0xFFBA1A1A)
+
+// --- Diálogo de foto de perfil ---
+val FotoPanelFondo = Color(0xFFDADADA)
+val FotoCirculoFondo = Color(0xFFEDEDED)
+val FotoSilueta = Color(0xFFBDBDBD)

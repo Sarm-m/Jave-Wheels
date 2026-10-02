@@ -38,7 +38,7 @@ android {
 }
 
 dependencies {
-    // Jetpack Compose (Clase 3)
+    // Jetpack Compose
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.foundation)
@@ -48,14 +48,15 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.material3)
 
-    // Navegación con Navigation 3 (Clase 4) + ViewModel (Clase 5)
+    // Navigation 3 y ViewModel
     implementation(libs.androidx.navigation3.runtime)
     implementation(libs.androidx.navigation3.ui)
     implementation(libs.androidx.lifecycle.viewmodel.navigation3)
     implementation(libs.kotlinx.serialization.json)
 
-    // Íconos de Material (Clase 6)
+    // Íconos de Material
     implementation(libs.compose.material.icons.core)
     implementation(libs.compose.material.icons.extended)
 

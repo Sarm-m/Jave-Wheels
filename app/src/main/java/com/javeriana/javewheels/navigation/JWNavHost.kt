@@ -213,7 +213,7 @@ fun JWNavHost(modifier: Modifier = Modifier) {
                 }
 
                 entry<Rutas.ViajeEnCurso> {
-                    ViajeEnCursoScreen(onBack = { volver() })
+                    ViajeEnCursoScreen(onVolver = { volver() })
                 }
 
             }
