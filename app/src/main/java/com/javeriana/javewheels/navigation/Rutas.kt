@@ -44,6 +44,14 @@ sealed class Rutas : NavKey {
     @Serializable data object MisViajes : Rutas()
     @Serializable data object Mensajes : Rutas()
     @Serializable data object Perfil : Rutas()
+    //  pantallas 10,11...
+    @Serializable data object VerViajeEnVivo : Rutas()
+    @Serializable data object PublicarWheel : Rutas()
+    @Serializable data object AdministrarWheel : Rutas()
+    @Serializable data object ViajeEnCurso : Rutas()
+
+    @Serializable data object VerViajeBuseta : Rutas()
+
 }
 
 // ============================================================

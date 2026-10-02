@@ -13,6 +13,8 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import com.javeriana.javewheels.entities.Rol
 import com.javeriana.javewheels.ui.components.BarraNavegacion
+import com.javeriana.javewheels.ui.screens.pasajero.VerViajeBusetaScreen
+import com.javeriana.javewheels.ui.screens.VerViajeEnVivoScreen
 import com.javeriana.javewheels.ui.screens.acceso.ConfirmacionScreen
 import com.javeriana.javewheels.ui.screens.acceso.LoginScreen
 import com.javeriana.javewheels.ui.screens.acceso.RecuperarContrasenaScreen
@@ -28,6 +30,9 @@ import com.javeriana.javewheels.ui.screens.principal.InicioScreen
 import com.javeriana.javewheels.ui.screens.principal.MensajesScreen
 import com.javeriana.javewheels.ui.screens.principal.MisViajesScreen
 import com.javeriana.javewheels.ui.screens.principal.PerfilScreen
+import com.javeriana.javewheels.ui.screens.conductor.PublicarWheelScreen
+import com.javeriana.javewheels.ui.screens.conductor.AdministrarWheelScreen
+import com.javeriana.javewheels.ui.screens.conductor.ViajeEnCursoScreen
 import com.javeriana.javewheels.ui.theme.JWAzul
 import com.javeriana.javewheels.viewmodels.InicioViewModel
 
@@ -191,6 +196,26 @@ fun JWNavHost(modifier: Modifier = Modifier) {
                         onCerrarSesion = { empezarDesde(Rutas.IniciarSesion) }
                     )
                 }
+
+                // ==================== VIAJEs  ====================
+                entry<Rutas.VerViajeEnVivo> {
+                    VerViajeEnVivoScreen(onVolver = { volver() })
+                }
+                entry<Rutas.VerViajeEnVivo> {
+                    VerViajeBusetaScreen(onVolver = { volver() })
+                }
+                entry<Rutas.PublicarWheel> {
+                    PublicarWheelScreen(onBack = { volver() })
+                }
+
+                entry<Rutas.AdministrarWheel> {
+                    AdministrarWheelScreen(onBack = { volver() })
+                }
+
+                entry<Rutas.ViajeEnCurso> {
+                    ViajeEnCursoScreen(onBack = { volver() })
+                }
+
             }
         )
     }
