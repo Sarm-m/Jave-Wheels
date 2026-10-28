@@ -25,22 +25,11 @@ val JWCelesteContenedor = Color(0xFFE3F2FA) // color/superficie-contenedor
 val JWCelesteSuave = Color(0xFFE8F4FA)      // color/superficie-suave
 val JWBordeSuave = Color(0xFFCFDCE5)
 
-// --- Colores del mapa ilustrativo ---
-val MapaFondo = Color(0xFFEDF2F3)
-val MapaManzana = Color(0xFFE1E7E9)
-val MapaParque = Color(0xFFDFEAD9)
-
 // --- Error ---
 val JWError = Color(0xFFBA1A1A)
 
-// --- Diálogo de foto de perfil ---
-val FotoPanelFondo = Color(0xFFDADADA)
-val FotoCirculoFondo = Color(0xFFEDEDED)
-val FotoSilueta = Color(0xFFBDBDBD)
 val PlacaAmarillo = Color(0xFFFFD600)
 val PlacaNegro = Color(0xFF000000)
-val MapaCalle = Color(0xFFD6DEE4)
-val MapaRuta = Color(0xFF4FA8E0)
 
 val JWErrorContenedor = Color(0xFFFFDAD6)
 val JWTextoErrorContenedor = Color(0xFF410002)

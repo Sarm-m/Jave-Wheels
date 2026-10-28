@@ -45,9 +45,7 @@
     <string name="ui_ocultar_contrasena">Ocultar contraseña</string>
     <string name="ui_mostrar_contrasena">Mostrar contraseña</string>
     <string name="ui_confirmacion_exitosa">Confirmación exitosa</string>
-    <string name="ui_tu_ubicacion">Tu ubicación</string>
     <string name="ui_javeriana">Javeriana</string>
-    <string name="ui_centrar_ubicacion">Centrar ubicación</string>
     <string name="ui_logo_javewheels">Logo JaveWheels</string>
     <string name="ui_avatar">Avatar</string>
     <string name="ui_hola_javeriano">¡Hola, javeriano!</string>
@@ -63,13 +61,10 @@
     <string name="ui_aun_no_tienes_viajes_programados">Aún no tienes viajes programados.</string>
     <string name="ui_tu_proximo_viaje">Tu próximo viaje</string>
     <string name="ui_ver_viaje">Ver viaje</string>
-    <string name="ui_regresar">Regresar</string>
     <string name="ui_esta_seccion_estara_disponible_en_la_proxima_entrega">Esta sección estará disponible en la próxima entrega.</string>
     <string name="ui_modo_buseta">Modo Buseta</string>
     <string name="ui_tu_viaje_actual">Tu viaje actual</string>
     <string name="ui_vehiculo_en_ruta">Vehículo en ruta</string>
-    <string name="ui_te_recogeran_en_5_minutos">Te recogerán en 5 minutos.</string>
-    <string name="ui_llegada_en_2_minutos">Llegada en 2 minutos.</string>
     <string name="ui_1_cupo_reservado">1 cupo reservado</string>
     <string name="ui_compartir_viaje">Compartir viaje</string>
     <string name="ui_cambiar_rol">Cambiar rol</string>
@@ -215,7 +210,6 @@
     <string name="ui_buseta_en_ruta">Buseta en ruta</string>
     <string name="ui_en_curso_modo_buseta">En curso • Modo Buseta</string>
     <string name="ui_viaje">Viaje</string>
-    <string name="ui_parada_actual">PARADA ACTUAL</string>
     <string name="ui_parkway">Parkway</string>
     <string name="ui_10_18_a_m">10:18 a. m.</string>
     <string name="ui_2_pasajeros">2 pasajeros</string>
@@ -246,7 +240,6 @@
     <string name="ui_accion_disponible_proximamente">Acción disponible próximamente</string>
     <string name="ui_detalle_de_reserva">Detalle de reserva</string>
     <string name="ui_solicitud_aceptada_modo_buseta">Solicitud aceptada · Modo Buseta</string>
-    <string name="ui_recogida">Recogida</string>
     <string name="ui_enviar_mensaje">Enviar mensaje</string>
     <string name="ui_ver_viaje_en_vivo">Ver viaje en vivo</string>
     <string name="ui_cancelar_reserva">Cancelar reserva</string>
@@ -274,7 +267,6 @@
     <string name="ui_cerrar_sesion">Cerrar sesión</string>
     <string name="ui_vamos_en_wheels">Vamos en Wheels</string>
     <string name="ui_comparte_tu_ruta">Comparte tu ruta</string>
-    <string name="ui_ubicacion_centrada">Ubicación centrada</string>
     <string name="ui_buscar_chat">Buscar chat</string>
     <string name="ui_buscar">Buscar</string>
     <string name="ui_no_hay_chats_que_coincidan_con_tu_busqueda">No hay chats que coincidan con tu búsqueda.</string>

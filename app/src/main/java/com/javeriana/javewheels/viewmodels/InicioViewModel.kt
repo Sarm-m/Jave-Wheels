@@ -73,23 +73,8 @@ class InicioViewModel(estadoInicial: InicioUiState = InicioUiState()) : ViewMode
         _uiState.update { it.copy(destino = valor) }
     }
 
-    fun seleccionarMomento(programado: Boolean) {
-        _uiState.update { it.copy(viajeProgramado = programado) }
-    }
-
     fun irALaJaveriana() {
         _uiState.update { it.copy(destino = DESTINO_JAVERIANA) }
-    }
-
-    /** Devuelve el mensaje que la UI muestra en un Toast. */
-    fun buscarWheels(): String {
-        val estado = _uiState.value
-        return if (estado.destino.isBlank()) {
-            "Primero escribe tu destino."
-        } else {
-            val momento = if (estado.viajeProgramado) "programados" else "para ahora"
-            "Buscando Wheels $momento hacia ${estado.destino}..."
-        }
     }
 
     /** Conserva los datos publicados para Inicio, Mis viajes y Administrar. */
