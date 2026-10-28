@@ -1,5 +1,6 @@
 package com.javeriana.javewheels.ui.screens.principal
 
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -43,6 +44,7 @@ fun ListaChatsScreen(
 
         CampoTexto(
             etiqueta = "",
+            accionTeclado = ImeAction.Search,
             valor = estado.busqueda,
             alCambiar = viewModel::actualizarBusqueda,
             placeholder = stringResource(R.string.ui_buscar_chat),

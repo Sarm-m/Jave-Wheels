@@ -26,7 +26,7 @@ import com.javeriana.javewheels.ui.components.BotonTexto
 import com.javeriana.javewheels.ui.components.DatosDetallePasajero
 import com.javeriana.javewheels.ui.components.EncabezadoViajes
 import com.javeriana.javewheels.ui.components.EtiquetaViaje
-import com.javeriana.javewheels.ui.components.MapaIlustrativo
+import com.javeriana.javewheels.ui.components.MapaJaveWheels
 import com.javeriana.javewheels.ui.components.PuntoRecogidaPasajero
 import com.javeriana.javewheels.ui.components.compartirViaje
 import com.javeriana.javewheels.ui.theme.JaveWheelsTheme
@@ -55,7 +55,7 @@ fun DetalleReservaScreen(
             EtiquetaViaje(reservaConfirmada.estado, resaltado = true)
             Text(stringResource(R.string.ui_solicitud_aceptada_modo_buseta), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
-        MapaIlustrativo(altura = 200.dp, textoUbicacion = stringResource(R.string.ui_recogida), mostrarCentrar = false)
+        MapaJaveWheels(altura = 200.dp, mostrarCentrar = false)
         Column(
             modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)

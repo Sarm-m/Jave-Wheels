@@ -1,6 +1,5 @@
 package com.javeriana.javewheels.ui.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -8,7 +7,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.javeriana.javewheels.R
@@ -29,16 +27,10 @@ fun SeguimientoViajePasajero(
         // El mapa conserva espacio propio: el panel puede desplazarse con letra grande.
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState())) {
             EncabezadoViajes(if (modoBuseta) stringResource(R.string.ui_modo_buseta) else stringResource(R.string.ui_tu_viaje_actual), onVolver)
-            Box(Modifier.fillMaxWidth().height(230.dp)) {
-                MapaIlustrativo(altura = 230.dp, modoEnVivo = true,
-                    textoDestino = wheel.destino, mostrarCentrar = false)
-                Image(painterResource(R.drawable.carrito), stringResource(R.string.ui_vehiculo_en_ruta),
-                    Modifier.size(46.dp).align(Alignment.Center))
-                BotonCentradoMapa(onCentrar)
-            }
+            MapaJaveWheels(altura = 230.dp, alCentrar = { onCentrar() })
             Column(Modifier.padding(24.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                Text(if (modoBuseta) stringResource(R.string.ui_te_recogeran_en_5_minutos) else stringResource(R.string.ui_llegada_en_2_minutos),
-                    style = MaterialTheme.typography.titleMedium)
+                Text(stringResource(R.string.mapa_viaje_sin_seguimiento),
+                    style = MaterialTheme.typography.bodyMedium)
                 DatosDetallePasajero(wheel, stringResource(R.string.ui_1_cupo_reservado))
                 if (modoBuseta) PuntoRecogidaPasajero(wheel, acordado = true)
                 if (onCompartir != null) BotonPrincipal(stringResource(R.string.ui_compartir_viaje), onCompartir)

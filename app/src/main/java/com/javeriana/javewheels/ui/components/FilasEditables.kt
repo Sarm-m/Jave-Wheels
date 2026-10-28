@@ -1,12 +1,15 @@
 package com.javeriana.javewheels.ui.components
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -14,6 +17,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -28,8 +33,22 @@ fun FilaConBoton(
     textoBoton: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    valor: String = ""
+    valor: String = "",
+    accionCompacta: Boolean = false
 ) {
+    if (accionCompacta) {
+        Row(modifier.fillMaxWidth().padding(vertical = 6.dp), verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            Column(Modifier.weight(1f)) {
+                Text(etiqueta, style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary)
+                if (valor.isNotBlank()) Text(valor, style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+            TextButton(onClick = onClick) { Text(textoBoton) }
+        }
+        return
+    }
     FilaAdaptable(
         modifier = modifier.padding(vertical = 6.dp),
         principal = {
@@ -70,10 +89,14 @@ fun FilaEditable(
     obligatorio: Boolean = true,
     hayError: Boolean = false,
     mensajeApoyo: String? = null,
+    solicitanteFoco: FocusRequester? = null,
+    siguienteFoco: FocusRequester? = null,
+    alCambiarEdicion: (Boolean) -> Unit = {},
     contenidoExtra: @Composable () -> Unit = {}
 ) {
     var editando by rememberSaveable { mutableStateOf(false) }
     LaunchedEffect(hayError) { if (hayError) editando = true }
+    LaunchedEffect(editando) { alCambiarEdicion(editando) }
     val focusManager = LocalFocusManager.current
 
     Column(modifier = modifier.fillMaxWidth()) {
@@ -96,6 +119,8 @@ fun FilaEditable(
                 esContrasena = esContrasena,
                 obligatorio = obligatorio,
                 hayError = hayError,
+                solicitanteFoco = solicitanteFoco,
+                siguienteFoco = siguienteFoco,
                 mensajeApoyo = mensajeApoyo
             )
             contenidoExtra()

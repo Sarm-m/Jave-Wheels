@@ -1,5 +1,6 @@
 package com.javeriana.javewheels.ui.screens.principal
 
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -43,6 +44,14 @@ fun EditarPerfilScreen(
     modifier: Modifier = Modifier
 ) {
     val estado by viewModel.uiState.collectAsState()
+    val focos = remember { List(4) { FocusRequester() } }
+    var camposAbiertos by remember { mutableStateOf(emptySet<Int>()) }
+    fun actualizarEdicion(indices: Set<Int>, abierto: Boolean) {
+        camposAbiertos = if (abierto) camposAbiertos + indices else camposAbiertos - indices
+    }
+    fun siguiente(indice: Int): FocusRequester? = camposAbiertos.sorted()
+        .firstOrNull { it > indice }?.let { focos[it] }
+
     // Estado visual: si el diálogo de la foto está abierto
     var mostrarDialogoFoto by remember { mutableStateOf(false) }
 
@@ -90,6 +99,8 @@ fun EditarPerfilScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         FilaEditable(
+            solicitanteFoco = focos[0], siguienteFoco = siguiente(0),
+            alCambiarEdicion = { actualizarEdicion(setOf(0), it) },
             etiqueta = stringResource(R.string.ui_nombre_completo),
             valor = estado.nombreEditado,
             hayError = estado.mensajeError != 0 && (!esNombreValido(estado.nombreEditado)),
@@ -100,6 +111,8 @@ fun EditarPerfilScreen(
             placeholder = stringResource(R.string.ui_escribe_tu_nombre_completo)
         )
         FilaEditable(
+            solicitanteFoco = focos[1], siguienteFoco = siguiente(1),
+            alCambiarEdicion = { actualizarEdicion(setOf(1), it) },
             etiqueta = stringResource(R.string.ui_correo_institucional),
             valor = estado.correoEditado,
             hayError = estado.mensajeError != 0 && (!esCorreoInstitucional(estado.correoEditado)),
@@ -112,6 +125,8 @@ fun EditarPerfilScreen(
         )
         // La contraseña es opcional: solo se pide si el usuario toca Editar
         FilaEditable(
+            solicitanteFoco = focos[2], siguienteFoco = focos[3],
+            alCambiarEdicion = { actualizarEdicion(setOf(2, 3), it) },
             etiqueta = stringResource(R.string.ui_contrasena),
             etiquetaCampo = stringResource(R.string.ui_nueva_contrasena),
             valor = estado.contrasena,
@@ -125,7 +140,7 @@ fun EditarPerfilScreen(
             obligatorio = false,
             contenidoExtra = {
                 Spacer(modifier = Modifier.height(12.dp))
-                CampoTexto(
+                CampoTexto(solicitanteFoco = focos[3],
                     etiqueta = stringResource(R.string.ui_confirmar_contrasena),
                     valor = estado.confirmarContrasena,
             hayError = estado.mensajeError != 0 && (estado.confirmarContrasena != estado.contrasena),

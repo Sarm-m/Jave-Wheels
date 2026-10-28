@@ -1,6 +1,7 @@
 package com.javeriana.javewheels.ui.screens.principal
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -52,7 +54,7 @@ fun InformacionUsuarioScreen(
             .padding(horizontal = 24.dp, vertical = 12.dp)
     ) {
         MarcaJaveWheels()
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = stringResource(R.string.ui_hola_javeriano),
             style = MaterialTheme.typography.titleLarge,
@@ -60,38 +62,40 @@ fun InformacionUsuarioScreen(
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
         )
-        Spacer(modifier = Modifier.height(24.dp))
-
-        AvatarUsuario(
-            foto = estadoPerfil.fotoPerfil,
-            descripcion = stringResource(R.string.ui_foto_de_perfil),
-            modifier = Modifier
-                .size(180.dp)
-                .align(Alignment.CenterHorizontally)
-        )
         Spacer(modifier = Modifier.height(12.dp))
-        Text(
-            text = estadoPerfil.nombre,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        )
-        if (tieneVehiculo) InformacionVehiculo(vehiculo.resumen)
-        Spacer(modifier = Modifier.height(32.dp))
-
-        FilaConBoton(
-            etiqueta = stringResource(R.string.ui_datos_de_perfil),
-            textoBoton = stringResource(R.string.editar),
-            onClick = onEditarPerfil
-        )
-        // Si todavía no es conductor, el botón lo manda a registrar su vehículo
-        FilaConBoton(
-            etiqueta = stringResource(R.string.ui_datos_de_vehiculo),
-            textoBoton = if (tieneVehiculo) stringResource(R.string.editar) else stringResource(R.string.ui_registrar),
-            onClick = if (tieneVehiculo) onEditarVehiculo else onRegistrarVehiculo
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
+        OutlinedCard(Modifier.fillMaxWidth()) {
+            Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                AvatarUsuario(
+                    foto = estadoPerfil.fotoPerfil,
+                    descripcion = stringResource(R.string.ui_foto_de_perfil),
+                    modifier = Modifier.size(112.dp).align(Alignment.CenterHorizontally)
+                )
+                Text(estadoPerfil.nombre, style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.align(Alignment.CenterHorizontally))
+                FilaConBoton(stringResource(R.string.ui_datos_de_perfil), stringResource(R.string.editar), onEditarPerfil,
+                    accionCompacta = true)
+            }
+        }
+        Spacer(Modifier.height(12.dp))
+        OutlinedCard(Modifier.fillMaxWidth()) {
+            Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                FilaConBoton(
+                    etiqueta = stringResource(R.string.ui_datos_de_vehiculo),
+                    textoBoton = stringResource(if (tieneVehiculo) R.string.editar else R.string.ui_registrar),
+                    onClick = if (tieneVehiculo) onEditarVehiculo else onRegistrarVehiculo,
+                    accionCompacta = true
+                )
+                if (tieneVehiculo) {
+                    val marcaModelo = listOf(vehiculo.marca, vehiculo.modelo).map { it.trim() }
+                        .filter { it.isNotBlank() }.joinToString(" ")
+                    val resumen = listOf(marcaModelo, vehiculo.anio, vehiculo.color, vehiculo.placa)
+                        .map { it.trim() }.filter { it.isNotBlank() }.joinToString(" · ")
+                    InformacionVehiculo(resumen)
+                }
+            }
+        }
+        Spacer(modifier = Modifier.height(16.dp))
         BotonPrincipal(
             texto = stringResource(R.string.ui_cerrar_sesion),
             onClick = {

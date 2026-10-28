@@ -41,6 +41,7 @@ fun VerificarCodigoScreen(
     viewModel: RecuperarContrasenaViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    fun verificarCodigo() { if (viewModel.verificarCodigo()) onCodigoVerificado() }
 
     Column(
         modifier = modifier
@@ -56,6 +57,7 @@ fun VerificarCodigoScreen(
         Spacer(modifier = Modifier.height(24.dp))
 
         CampoTexto(
+            alCompletar = ::verificarCodigo,
             etiqueta = stringResource(R.string.ui_codigo_de_verificacion),
             valor = uiState.codigo,
             alCambiar = { viewModel.actualizarCodigo(it) },
@@ -71,7 +73,7 @@ fun VerificarCodigoScreen(
 
         BotonPrincipal(
             texto = stringResource(R.string.ui_verificar_codigo),
-            onClick = { if (viewModel.verificarCodigo()) onCodigoVerificado() }
+            onClick = ::verificarCodigo
         )
         Spacer(modifier = Modifier.height(32.dp))
         TextoAyuda(texto = stringResource(R.string.ui_no_llego_revisa_tu_correo_no_deseado), centrado = true)

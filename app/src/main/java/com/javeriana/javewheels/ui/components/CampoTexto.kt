@@ -5,6 +5,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -17,14 +21,21 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -59,18 +70,38 @@ fun CampoTexto(
     iconoFinal: ImageVector? = null,   // ícono al final del campo (ej. lupa del buscador)
     descripcionIconoFinal: String? = null,
     mensajeApoyo: String? = null,
-    accionTeclado: ImeAction = ImeAction.Next
+    accionTeclado: ImeAction = ImeAction.Done,
+    solicitanteFoco: FocusRequester? = null,
+    siguienteFoco: FocusRequester? = null,
+    alCompletar: (() -> Unit)? = null
 ) {
     // Estado visual (mostrar u ocultar la contraseña).
     var mostrarContrasena by rememberSaveable { mutableStateOf(false) }
     val foco = LocalFocusManager.current
+    val teclado = LocalSoftwareKeyboardController.current
+    val solicitante = solicitanteFoco ?: remember { FocusRequester() }
+    val visibilidad = remember { BringIntoViewRequester() }
+    var tieneFoco by remember { mutableStateOf(false) }
+    val altoTeclado = WindowInsets.ime.getBottom(LocalDensity.current)
+    LaunchedEffect(tieneFoco, altoTeclado) {
+        if (tieneFoco) {
+            withFrameNanos { }
+            visibilidad.bringIntoView()
+        }
+    }
+    fun terminar() {
+        foco.clearFocus(force = true)
+        teclado?.hide()
+        alCompletar?.invoke()
+    }
     val colorError = MaterialTheme.colorScheme.error
 
     Column(modifier = modifier.fillMaxWidth()) {
         OutlinedTextField(
             value = valor,
             onValueChange = alCambiar,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().focusRequester(solicitante)
+                .bringIntoViewRequester(visibilidad).onFocusChanged { tieneFoco = it.isFocused },
             placeholder = { Text(placeholder, maxLines = 1, overflow = TextOverflow.Ellipsis) },
             label = {
                 Text(buildAnnotatedString {
@@ -87,11 +118,14 @@ fun CampoTexto(
             // Tipo de teclado: correo, números, teléfono...
             keyboardOptions = KeyboardOptions(
                 keyboardType = if (esContrasena) KeyboardType.Password else tipoTeclado,
-                imeAction = accionTeclado
+                imeAction = if (siguienteFoco != null) ImeAction.Next else accionTeclado
             ),
             keyboardActions = KeyboardActions(
-                onNext = { foco.moveFocus(FocusDirection.Down) },
-                onDone = { foco.clearFocus() }
+                onNext = { if (siguienteFoco != null) siguienteFoco.requestFocus() else terminar() },
+                onDone = { terminar() },
+                onSearch = { terminar() },
+                onGo = { terminar() },
+                onSend = { if (alCompletar != null) alCompletar() else terminar() }
             ),
             // Si es contraseña y está oculta, se muestran puntos (••••)
             visualTransformation = if (esContrasena && !mostrarContrasena) {

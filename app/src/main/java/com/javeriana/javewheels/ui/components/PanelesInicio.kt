@@ -1,5 +1,6 @@
 package com.javeriana.javewheels.ui.components
 
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -24,6 +25,8 @@ import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.filled.TripOrigin
 import androidx.compose.material3.Card
+import androidx.compose.material3.BottomSheetDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
@@ -116,31 +119,22 @@ fun AccesoRapido(
     }
 }
 
-/** Contenedor blanco con esquinas redondeadas arriba y el tirador gris. */
+/** Cabecera completa visible también cuando la hoja está recogida. */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PanelInferior(
-    modifier: Modifier = Modifier,
-    contenido: @Composable () -> Unit
-) {
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp))
-            .background(MaterialTheme.colorScheme.surface)
-            .padding(horizontal = 24.dp, vertical = 12.dp)
-    ) {
-        // Tirador del panel
-        Box(
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .width(36.dp)
-                .height(5.dp)
-                .clip(RoundedCornerShape(3.dp))
-                .background(MaterialTheme.colorScheme.outlineVariant)
-        )
-        Spacer(modifier = Modifier.height(12.dp))
-        contenido()
+fun CabeceraPanelInicio(rol: Rol, modifier: Modifier = Modifier) {
+    Column(modifier.fillMaxWidth().padding(bottom = 16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+        BottomSheetDefaults.DragHandle()
+        Text(stringResource(if (rol == Rol.PASAJERO) R.string.ui_a_donde_vas else R.string.ui_comparte_tu_camino),
+            Modifier.fillMaxWidth().padding(horizontal = 24.dp),
+            style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.primary)
     }
+}
+
+/** El cuerpo comparte espaciado; la hoja de Material 3 administra fondo, altura y gestos. */
+@Composable
+fun PanelInferior(modifier: Modifier = Modifier, contenido: @Composable () -> Unit) {
+    Column(modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 12.dp)) { contenido() }
 }
 
 /** "Panel - Buscar un Wheel" del pasajero. */
@@ -155,15 +149,15 @@ fun PanelPasajero(
     onBuscar: () -> Unit,
     modifier: Modifier = Modifier,
     origen: String = "Mi ubicación",
-    resumenProgramado: String = ""
+    resumenProgramado: String = "",
+    mostrarEncabezado: Boolean = true
 ) {
-    PanelInferior(modifier = modifier) {
-        Text(
-            text = stringResource(R.string.ui_a_donde_vas),
-            style = MaterialTheme.typography.headlineSmall,
-            color = MaterialTheme.colorScheme.primary
-        )
-        Spacer(modifier = Modifier.height(12.dp))
+    PanelInferior(modifier) {
+        if (mostrarEncabezado) {
+            Text(stringResource(R.string.ui_a_donde_vas), style = MaterialTheme.typography.headlineSmall,
+                color = MaterialTheme.colorScheme.primary)
+            Spacer(Modifier.height(12.dp))
+        }
 
         // Momento del viaje
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -205,6 +199,8 @@ fun PanelPasajero(
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
             CampoTexto(
                 etiqueta = stringResource(R.string.ui_destino),
+                accionTeclado = ImeAction.Search,
+                alCompletar = onBuscar,
                 valor = destino,
                 alCambiar = onDestinoChange,
                 placeholder = stringResource(R.string.ui_escribe_tu_destino),
@@ -242,15 +238,15 @@ fun PanelConductor(
     proximoViaje: Viaje?,
     onPublicar: () -> Unit,
     onVerViaje: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    mostrarEncabezado: Boolean = true
 ) {
-    PanelInferior(modifier = modifier) {
-        Text(
-            text = stringResource(R.string.ui_comparte_tu_camino),
-            style = MaterialTheme.typography.headlineSmall,
-            color = MaterialTheme.colorScheme.primary
-        )
-        Spacer(modifier = Modifier.height(12.dp))
+    PanelInferior(modifier) {
+        if (mostrarEncabezado) {
+            Text(stringResource(R.string.ui_comparte_tu_camino), style = MaterialTheme.typography.headlineSmall,
+                color = MaterialTheme.colorScheme.primary)
+            Spacer(Modifier.height(12.dp))
+        }
         BotonPrincipal(texto = stringResource(R.string.ui_publicar_un_wheel), onClick = onPublicar, icono = Icons.Default.Add)
         Spacer(modifier = Modifier.height(12.dp))
         if (proximoViaje != null) {

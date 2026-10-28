@@ -1,8 +1,21 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     // Necesario para que las rutas (@Serializable) funcionen con Navigation 3
     alias(libs.plugins.kotlin.serialization)
+}
+
+// El token público se toma del equipo local o del entorno de CI; nunca del repositorio del profesor.
+val propiedadesLocales = Properties().apply {
+    rootProject.file("local.properties").takeIf { it.isFile }?.inputStream()?.use { load(it) }
+}
+val tokenMapbox = providers.environmentVariable("MAPBOX_ACCESS_TOKEN")
+    .orElse(providers.provider { propiedadesLocales.getProperty("MAPBOX_ACCESS_TOKEN", "") })
+    .get().trim()
+require(tokenMapbox.isEmpty() || Regex("pk\\.[A-Za-z0-9._-]+").matches(tokenMapbox)) {
+    "MAPBOX_ACCESS_TOKEN debe ser un token público de Mapbox (pk.). No se admiten tokens privados."
 }
 
 android {
@@ -17,6 +30,7 @@ android {
         targetSdk = 37
         versionCode = 1
         versionName = "1.0"
+        resValue("string", "mapbox_access_token", tokenMapbox)
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -34,10 +48,16 @@ android {
     }
     buildFeatures {
         compose = true
+        resValues = true
     }
 }
 
 dependencies {
+    // Solo renderizado de mapas con Compose y consultas puntuales de ubicación.
+    implementation(libs.mapbox.maps)
+    implementation(libs.mapbox.compose)
+    implementation(libs.play.services.location)
+
     // Jetpack Compose
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)

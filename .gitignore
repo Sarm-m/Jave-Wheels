@@ -15,6 +15,10 @@
 .cxx
 local.properties
 
+# Pruebas locales de Android
+/app/src/test/
+/app/src/androidTest/
+
 # Archivos generados del informe de implementación
 /docs/Informe_Implementacion_Sebas.pdf
 /docs/Informe_Implementacion_Sebas.aux

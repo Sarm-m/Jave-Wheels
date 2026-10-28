@@ -1,5 +1,7 @@
 package com.javeriana.javewheels.ui.screens.acceso
 
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.runtime.remember
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -41,6 +43,8 @@ fun RegistroScreen(
     viewModel: RegistroViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    fun crearCuenta() { if (viewModel.crearCuenta()) onCuentaCreada() }
+    val focos = remember { List(5) { FocusRequester() } }
 
     Column(
         modifier = modifier
@@ -58,6 +62,7 @@ fun RegistroScreen(
 
         // Formulario de registro
         CampoTexto(
+            solicitanteFoco = focos[0], siguienteFoco = focos[1],
             etiqueta = stringResource(R.string.ui_nombre_completo),
             valor = uiState.nombre,
             obligatorio = true,
@@ -68,6 +73,7 @@ fun RegistroScreen(
         )
         Spacer(modifier = Modifier.height(12.dp))
         CampoTexto(
+            solicitanteFoco = focos[1], siguienteFoco = focos[2],
             etiqueta = stringResource(R.string.ui_correo_institucional),
             valor = uiState.correo,
             obligatorio = true,
@@ -79,6 +85,7 @@ fun RegistroScreen(
         )
         Spacer(modifier = Modifier.height(12.dp))
         CampoTexto(
+            solicitanteFoco = focos[2], siguienteFoco = focos[3],
             etiqueta = stringResource(R.string.ui_numero_de_celular),
             valor = uiState.celular,
             obligatorio = true,
@@ -90,6 +97,7 @@ fun RegistroScreen(
         )
         Spacer(modifier = Modifier.height(12.dp))
         CampoTexto(
+            solicitanteFoco = focos[3], siguienteFoco = focos[4],
             etiqueta = stringResource(R.string.ui_contrasena),
             valor = uiState.contrasena,
             obligatorio = true,
@@ -101,6 +109,7 @@ fun RegistroScreen(
         )
         Spacer(modifier = Modifier.height(12.dp))
         CampoTexto(
+            solicitanteFoco = focos[4], alCompletar = ::crearCuenta,
             etiqueta = stringResource(R.string.ui_confirmar_contrasena),
             valor = uiState.confirmarContrasena,
             obligatorio = true,
@@ -118,7 +127,7 @@ fun RegistroScreen(
 
         BotonPrincipal(
             texto = stringResource(R.string.ui_crear_cuenta),
-            onClick = { if (viewModel.crearCuenta()) onCuentaCreada() }
+            onClick = ::crearCuenta
         )
         Spacer(modifier = Modifier.height(16.dp))
         BotonTexto(texto = stringResource(R.string.ui_ya_tienes_una_cuenta_inicia_sesion), onClick = onVolver)

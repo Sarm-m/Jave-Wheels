@@ -1,5 +1,6 @@
 package com.javeriana.javewheels.ui.screens.conductor
 
+import androidx.compose.ui.focus.FocusRequester
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import androidx.compose.foundation.layout.*
@@ -49,7 +50,34 @@ fun PublicarWheelScreen(
     var modoBuseta by rememberSaveable { mutableStateOf(true) }
     var puntoRecogida by rememberSaveable { mutableStateOf("") }
     var error by rememberSaveable { mutableStateOf("") }
+    val focos = remember { List(5) { FocusRequester() } }
     val capacidad = vehiculoRegistrado.cupos.toIntOrNull() ?: 9
+
+    fun publicarWheel() {
+        val aportePesos = aporte.toIntOrNull()
+        val cuposOfrecidos = cupos.toIntOrNull()
+        error = when {
+            origen.isBlank() || destino.isBlank() -> recursos.getString(R.string.ui_completa_el_origen_y_el_destino)
+            origen.trim().equals(destino.trim(), ignoreCase = true) -> recursos.getString(R.string.ui_el_origen_y_el_destino_deben_ser_diferentes)
+            salida <= System.currentTimeMillis() -> recursos.getString(R.string.ui_selecciona_una_fecha_y_hora_futuras)
+            aportePesos == null || aportePesos <= 0 -> recursos.getString(R.string.ui_escribe_un_aporte_valido_mayor_a_cero)
+            vehiculo.isBlank() -> recursos.getString(R.string.ui_completa_los_datos_del_vehiculo)
+            cuposOfrecidos == null || cuposOfrecidos !in 1..capacidad -> recursos.getString(R.string.ui_ofrece_entre_1_y_1_s_cupos, capacidad)
+            modoBuseta && puntoRecogida.isBlank() -> recursos.getString(R.string.ui_escribe_el_punto_de_recogida)
+            else -> ""
+        }
+        if (error.isEmpty()) {
+            focusManager.clearFocus()
+            onPublicar(Viaje(
+                origen = origen.trim(), destino = destino.trim(),
+                fecha = fechaBusqueda(salida), hora = horaBusqueda(salida),
+                cuposOcupados = 0, cuposTotales = cuposOfrecidos!!,
+                estado = "Programado", aporte = formatoPesos(aportePesos!!),
+                vehiculo = vehiculo.trim(), modoBuseta = modoBuseta,
+                puntoRecogida = if (modoBuseta) puntoRecogida.trim() else origen.trim()
+            ))
+        }
+    }
 
     fun elegirFecha() {
         val fecha = Calendar.getInstance().apply { timeInMillis = salida }
@@ -91,10 +119,10 @@ fun PublicarWheelScreen(
             SeccionPublicacion(stringResource(R.string.ui_recorrido)) {
                 CampoTexto(stringResource(R.string.ui_origen), origen, { origen = it; error = "" },
                     placeholder = stringResource(R.string.ui_direccion_o_punto_de_salida), obligatorio = true,
-                    hayError = error.isNotEmpty() && origen.isBlank())
+                    hayError = error.isNotEmpty() && origen.isBlank(), solicitanteFoco = focos[0], siguienteFoco = focos[1])
                 CampoTexto(stringResource(R.string.ui_destino), destino, { destino = it; error = "" },
                     placeholder = stringResource(R.string.ui_a_donde_vas), obligatorio = true,
-                    hayError = error.isNotEmpty() && destino.isBlank())
+                    hayError = error.isNotEmpty() && destino.isBlank(), solicitanteFoco = focos[1], siguienteFoco = focos[2])
             }
             SeccionPublicacion(stringResource(R.string.ui_detalles_del_viaje)) {
                 BotonSecundario(stringResource(R.string.ui_fecha_1_s, fechaBusqueda(salida)), onClick = { elegirFecha() })
@@ -102,14 +130,14 @@ fun PublicarWheelScreen(
                 CampoTexto(stringResource(R.string.ui_aporte_por_pasajero_cop), aporte,
                     { aporte = it.filter { caracter -> caracter.isDigit() }; error = "" },
                     tipoTeclado = KeyboardType.Number, obligatorio = true,
-                    hayError = error.isNotEmpty() && (aporte.toIntOrNull() ?: 0) <= 0)
+                    hayError = error.isNotEmpty() && (aporte.toIntOrNull() ?: 0) <= 0, solicitanteFoco = focos[2], siguienteFoco = focos[3])
                 Text(stringResource(R.string.ui_vehiculo_registrado), style = MaterialTheme.typography.titleSmall,
                     color = MaterialTheme.colorScheme.primary)
                 InformacionVehiculo(vehiculo)
                 CampoTexto(stringResource(R.string.ui_cupos_disponibles), cupos,
                     { cupos = it.filter { caracter -> caracter.isDigit() }.take(1); error = "" },
                     tipoTeclado = KeyboardType.Number, obligatorio = true,
-                    hayError = error.isNotEmpty() && (cupos.toIntOrNull() ?: 0) !in 1..capacidad)
+                    hayError = error.isNotEmpty() && (cupos.toIntOrNull() ?: 0) !in 1..capacidad, solicitanteFoco = focos[3], siguienteFoco = if (modoBuseta) focos[4] else null, alCompletar = ::publicarWheel)
                 Text(stringResource(R.string.ui_hasta_1_s_cupos_segun_tu_vehiculo, capacidad),
                     style = MaterialTheme.typography.bodySmall)
             }
@@ -120,34 +148,10 @@ fun PublicarWheelScreen(
                 }
                 if (modoBuseta) CampoTexto(stringResource(R.string.ui_punto_de_recogida), puntoRecogida,
                     { puntoRecogida = it; error = "" }, placeholder = stringResource(R.string.ui_direccion_de_encuentro),
-                    obligatorio = true, hayError = error.isNotEmpty() && puntoRecogida.isBlank())
+                    obligatorio = true, hayError = error.isNotEmpty() && puntoRecogida.isBlank(), solicitanteFoco = focos[4], alCompletar = ::publicarWheel)
             }
             MensajeError(error)
-            BotonPrincipal(stringResource(R.string.ui_publicar_wheel), onClick = {
-                val aportePesos = aporte.toIntOrNull()
-                val cuposOfrecidos = cupos.toIntOrNull()
-                error = when {
-                    origen.isBlank() || destino.isBlank() -> recursos.getString(R.string.ui_completa_el_origen_y_el_destino)
-                    origen.trim().equals(destino.trim(), ignoreCase = true) -> recursos.getString(R.string.ui_el_origen_y_el_destino_deben_ser_diferentes)
-                    salida <= System.currentTimeMillis() -> recursos.getString(R.string.ui_selecciona_una_fecha_y_hora_futuras)
-                    aportePesos == null || aportePesos <= 0 -> recursos.getString(R.string.ui_escribe_un_aporte_valido_mayor_a_cero)
-                    vehiculo.isBlank() -> recursos.getString(R.string.ui_completa_los_datos_del_vehiculo)
-                    cuposOfrecidos == null || cuposOfrecidos !in 1..capacidad -> recursos.getString(R.string.ui_ofrece_entre_1_y_1_s_cupos, capacidad)
-                    modoBuseta && puntoRecogida.isBlank() -> recursos.getString(R.string.ui_escribe_el_punto_de_recogida)
-                    else -> ""
-                }
-                if (error.isEmpty()) {
-                    focusManager.clearFocus()
-                    onPublicar(Viaje(
-                        origen = origen.trim(), destino = destino.trim(),
-                        fecha = fechaBusqueda(salida), hora = horaBusqueda(salida),
-                        cuposOcupados = 0, cuposTotales = cuposOfrecidos!!,
-                        estado = "Programado", aporte = formatoPesos(aportePesos!!),
-                        vehiculo = vehiculo.trim(), modoBuseta = modoBuseta,
-                        puntoRecogida = if (modoBuseta) puntoRecogida.trim() else origen.trim()
-                    ))
-                }
-            })
+            BotonPrincipal(stringResource(R.string.ui_publicar_wheel), onClick = ::publicarWheel)
             BotonTexto(stringResource(R.string.ui_cancelar_publicacion), onClick = {
                 focusManager.clearFocus()
                 onBack()

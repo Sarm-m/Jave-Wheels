@@ -26,6 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.sp
 import com.javeriana.javewheels.R
 import com.javeriana.javewheels.ui.theme.JaveWheelsTheme
@@ -34,7 +35,7 @@ import com.javeriana.javewheels.ui.theme.PlacaNegro
 import com.javeriana.javewheels.viewmodels.esPlacaValida
 
 @Composable
-fun PlacaColombiana(placa: String, modifier: Modifier = Modifier) {
+fun PlacaColombiana(placa: String, modifier: Modifier = Modifier, ancho: Dp = 104.dp) {
     if (!esPlacaValida(placa)) {
         Text(stringResource(R.string.placa_incompleta), modifier, color = MaterialTheme.colorScheme.onSurfaceVariant)
         return
@@ -43,10 +44,10 @@ fun PlacaColombiana(placa: String, modifier: Modifier = Modifier) {
     val texto = "${normalizada.take(3)} ${normalizada.takeLast(3)}"
     val descripcion = stringResource(R.string.placa_accesible, texto)
     val escala = LocalDensity.current.fontScale
-    val forma = RoundedCornerShape(8.dp)
+    val forma = RoundedCornerShape(10.dp)
     BoxWithConstraints(
-        modifier.widthIn(max = 220.dp).fillMaxWidth().aspectRatio(2.8f)
-            .clip(forma).background(PlacaAmarillo).border(2.dp, PlacaNegro, forma)
+        modifier.widthIn(max = ancho).width(ancho).aspectRatio(2.8f)
+            .clip(forma).background(PlacaAmarillo).border(1.dp, PlacaNegro, forma)
             .semantics(mergeDescendants = true) { contentDescription = descripcion },
         contentAlignment = Alignment.Center
     ) {
@@ -73,7 +74,7 @@ fun InformacionVehiculo(resumen: String, modifier: Modifier = Modifier) {
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
-        if (esPlacaValida(placa)) PlacaColombiana(placa, Modifier.width(132.dp))
+        if (esPlacaValida(placa)) PlacaColombiana(placa)
     }
 }
 

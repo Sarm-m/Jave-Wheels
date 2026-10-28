@@ -1,5 +1,8 @@
 package com.javeriana.javewheels.ui.screens.conductor
 
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -39,6 +42,14 @@ fun EditarVehiculoScreen(
     modifier: Modifier = Modifier
 ) {
     val estado by viewModel.uiState.collectAsState()
+    val focos = remember { List(7) { FocusRequester() } }
+    var camposAbiertos by remember { mutableStateOf(emptySet<Int>()) }
+    fun actualizarEdicion(indices: Set<Int>, abierto: Boolean) {
+        camposAbiertos = if (abierto) camposAbiertos + indices else camposAbiertos - indices
+    }
+    fun siguiente(indice: Int): FocusRequester? = camposAbiertos.sorted()
+        .firstOrNull { it > indice }?.let { focos[it] }
+
 
     Column(
         modifier = modifier
@@ -64,6 +75,8 @@ fun EditarVehiculoScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         FilaEditable(
+            solicitanteFoco = focos[0], siguienteFoco = siguiente(0),
+            alCambiarEdicion = { actualizarEdicion(setOf(0), it) },
             etiqueta = stringResource(R.string.ui_numero_telefonico),
             valor = estado.celular,
             hayError = estado.mensajeError != 0 && (!esCelularValido(estado.celular)),
@@ -75,6 +88,8 @@ fun EditarVehiculoScreen(
             tipoTeclado = KeyboardType.Phone
         )
         FilaEditable(
+            solicitanteFoco = focos[1], siguienteFoco = siguiente(1),
+            alCambiarEdicion = { actualizarEdicion(setOf(1), it) },
             etiqueta = stringResource(R.string.ui_placa_del_automovil),
             etiquetaCampo = stringResource(R.string.ui_placa_del_vehiculo),
             valor = estado.placa,
@@ -86,9 +101,12 @@ fun EditarVehiculoScreen(
             placeholder = stringResource(R.string.ui_escribe_la_placa_del_carro)
         )
         Text(stringResource(R.string.placa_vista_previa), style = MaterialTheme.typography.labelLarge)
-        PlacaColombiana(estado.placa)
+        Spacer(Modifier.height(8.dp))
+        PlacaColombiana(estado.placa, ancho = 120.dp)
         Spacer(Modifier.height(12.dp))
         FilaEditable(
+            solicitanteFoco = focos[2], siguienteFoco = siguiente(2),
+            alCambiarEdicion = { actualizarEdicion(setOf(2), it) },
             etiqueta = stringResource(R.string.ui_marca_del_automovil),
             valor = estado.marca,
             hayError = estado.mensajeError != 0 && (estado.marca.isBlank()),
@@ -99,6 +117,8 @@ fun EditarVehiculoScreen(
             placeholder = stringResource(R.string.ui_escribe_la_marca)
         )
         FilaEditable(
+            solicitanteFoco = focos[3], siguienteFoco = siguiente(3),
+            alCambiarEdicion = { actualizarEdicion(setOf(3), it) },
             etiqueta = stringResource(R.string.ui_color_del_vehiculo),
             valor = estado.color,
             hayError = estado.mensajeError != 0 && (estado.color.isBlank()),
@@ -109,6 +129,8 @@ fun EditarVehiculoScreen(
             placeholder = stringResource(R.string.ui_escribe_el_color)
         )
         FilaEditable(
+            solicitanteFoco = focos[4], siguienteFoco = siguiente(4),
+            alCambiarEdicion = { actualizarEdicion(setOf(4), it) },
             etiqueta = stringResource(R.string.ui_modelo_linea),
             valor = estado.modelo,
             hayError = estado.mensajeError != 0 && (estado.modelo.isBlank()),
@@ -119,6 +141,8 @@ fun EditarVehiculoScreen(
             placeholder = stringResource(R.string.ui_escribe_el_modelo_o_la_linea)
         )
         FilaEditable(
+            solicitanteFoco = focos[5], siguienteFoco = siguiente(5),
+            alCambiarEdicion = { actualizarEdicion(setOf(5), it) },
             etiqueta = stringResource(R.string.ui_ano_del_vehiculo),
             valor = estado.anio,
             hayError = estado.mensajeError != 0 && (!esAnioValido(estado.anio)),
@@ -130,6 +154,8 @@ fun EditarVehiculoScreen(
             tipoTeclado = KeyboardType.Number
         )
         FilaEditable(
+            solicitanteFoco = focos[6], siguienteFoco = siguiente(6),
+            alCambiarEdicion = { actualizarEdicion(setOf(6), it) },
             etiqueta = stringResource(R.string.ui_cupos_del_automovil),
             valor = estado.cupos,
             hayError = estado.mensajeError != 0 && ((estado.cupos.toIntOrNull() ?: 0) < 1),

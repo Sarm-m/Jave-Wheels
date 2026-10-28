@@ -25,7 +25,7 @@ fun DetalleViajeConductorScreen(
     val finalizado = viaje.estado == "Finalizado"
     Column(modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
         EncabezadoViajes(if (finalizado) stringResource(R.string.ui_resumen_del_viaje) else stringResource(R.string.ui_detalle_del_viaje), onVolver)
-        MapaIlustrativo(altura = 230.dp, textoUbicacion = viaje.origen, textoDestino = viaje.destino, mostrarCentrar = false)
+        MapaJaveWheels(altura = 230.dp, mostrarCentrar = false)
         Column(Modifier.padding(24.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
             EtiquetaViaje(viaje.estado)
             Text(stringResource(R.string.ruta_busqueda, viaje.origen, viaje.destino), style = MaterialTheme.typography.headlineSmall)

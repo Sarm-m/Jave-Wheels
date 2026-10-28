@@ -18,7 +18,7 @@ import com.javeriana.javewheels.ui.components.BotonPrincipal
 import com.javeriana.javewheels.ui.components.DatosDetallePasajero
 import com.javeriana.javewheels.ui.components.EncabezadoViajes
 import com.javeriana.javewheels.ui.components.EtiquetaViaje
-import com.javeriana.javewheels.ui.components.MapaIlustrativo
+import com.javeriana.javewheels.ui.components.MapaJaveWheels
 import com.javeriana.javewheels.ui.components.PuntoRecogidaPasajero
 import com.javeriana.javewheels.ui.theme.JaveWheelsTheme
 
@@ -32,8 +32,8 @@ fun DetalleWheelScreen(
 ) {
     Column(modifier = modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
         EncabezadoViajes(if (finalizado) stringResource(R.string.ui_resumen_del_wheel) else stringResource(R.string.ui_detalle_del_wheel), onVolver)
-        // Mapa local dibujado con componentes de Compose.
-        MapaIlustrativo(altura = 230.dp, textoUbicacion = stringResource(R.string.ui_recogida), mostrarCentrar = false, textoDestino = wheel.destino)
+        // Sin coordenadas del viaje se utiliza la referencia geográfica inicial.
+        MapaJaveWheels(altura = 230.dp, mostrarCentrar = false)
         Column(
             modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)

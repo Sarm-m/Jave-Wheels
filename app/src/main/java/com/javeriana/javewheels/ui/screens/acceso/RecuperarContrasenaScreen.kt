@@ -45,6 +45,7 @@ fun RecuperarContrasenaScreen(
     viewModel: RecuperarContrasenaViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    fun enviarCodigo() { if (viewModel.enviarCodigo()) onCodigoEnviado() }
 
     Column(
         modifier = modifier
@@ -60,6 +61,7 @@ fun RecuperarContrasenaScreen(
         Spacer(modifier = Modifier.height(24.dp))
 
         CampoTexto(
+            alCompletar = ::enviarCodigo,
             etiqueta = stringResource(R.string.ui_correo_institucional),
             valor = uiState.correo,
             alCambiar = { viewModel.actualizarCorreo(it) },
@@ -71,7 +73,7 @@ fun RecuperarContrasenaScreen(
         Spacer(modifier = Modifier.height(16.dp))
         BotonPrincipal(
             texto = stringResource(R.string.ui_enviar_codigo),
-            onClick = { if (viewModel.enviarCodigo()) onCodigoEnviado() }
+            onClick = ::enviarCodigo
         )
         Spacer(modifier = Modifier.height(32.dp))
 

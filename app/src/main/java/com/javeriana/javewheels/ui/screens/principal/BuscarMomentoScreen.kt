@@ -1,5 +1,12 @@
 package com.javeriana.javewheels.ui.screens.principal
 
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.KeyboardActions
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import androidx.compose.foundation.layout.*
@@ -40,11 +47,31 @@ fun BuscarMomentoScreen(
     val estado by viewModel.uiState.collectAsState()
     val context = LocalContext.current
     val recursos = LocalResources.current
+    val focos = remember { List(2) { FocusRequester() } }
+    val foco = LocalFocusManager.current
+    val teclado = LocalSoftwareKeyboardController.current
     // El borrador pertenece a esta pantalla: Atrás no cambia la búsqueda confirmada.
     var origen by rememberSaveable { mutableStateOf(estado.origen) }
     var destino by rememberSaveable { mutableStateOf(estado.destino) }
     var salida by rememberSaveable { mutableLongStateOf(estado.salidaProgramadaMillis) }
     var error by rememberSaveable { mutableStateOf<String?>(null) }
+
+    fun buscarWheels() {
+        foco.clearFocus(force = true)
+        teclado?.hide()
+        val momento = if (programado) salida else System.currentTimeMillis()
+        error = when {
+            origen.isBlank() -> recursos.getString(R.string.ui_escribe_el_origen_del_viaje)
+            destino.isBlank() -> recursos.getString(R.string.ui_escribe_el_destino_del_viaje)
+            origen.trim().equals(destino.trim(), ignoreCase = true) -> recursos.getString(R.string.ui_el_origen_y_el_destino_deben_ser_diferentes)
+            programado && momento <= System.currentTimeMillis() -> recursos.getString(R.string.ui_selecciona_una_fecha_y_hora_futuras)
+            else -> null
+        }
+        if (error == null) {
+            viewModel.actualizarBusqueda(origen, destino, programado, momento)
+            onBuscar(origen.trim(), destino.trim(), momento)
+        }
+    }
 
     fun elegirFecha() {
         val fecha = Calendar.getInstance().apply { timeInMillis = salida }
@@ -77,20 +104,22 @@ fun BuscarMomentoScreen(
 
     Column(modifier.fillMaxSize().imePadding().verticalScroll(rememberScrollState())) {
         EncabezadoViajes(if (programado) stringResource(R.string.ui_programar_busqueda) else stringResource(R.string.ui_buscar_ahora), onVolver)
-        MapaIlustrativo(altura = 170.dp, mostrarCentrar = false,
-            textoUbicacion = if (origen == "Mi ubicación") stringResource(R.string.ui_tu_ubicacion) else origen,
-            textoDestino = destino.ifBlank { stringResource(R.string.ui_destino) })
+        MapaJaveWheels(altura = 170.dp, mostrarCentrar = false)
         Column(Modifier.padding(24.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
             Text(if (programado) stringResource(R.string.ui_cuando_quieres_viajar) else stringResource(R.string.ui_a_donde_vas_ahora),
                 style = MaterialTheme.typography.headlineSmall)
             Text(if (programado) stringResource(R.string.ui_elige_fecha_y_hora_buscaremos_salidas_durante_la_hora_siguiente)
                 else stringResource(R.string.ui_buscaremos_wheels_que_salen_durante_los_proximos_60_minutos))
-            OutlinedTextField(origen, { origen = it; error = null }, Modifier.fillMaxWidth(),
+            OutlinedTextField(origen, { origen = it; error = null }, Modifier.fillMaxWidth().focusRequester(focos[0]),
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                keyboardActions = KeyboardActions(onNext = { focos[1].requestFocus() }),
                 label = { Text(stringResource(R.string.ui_origen)) }, singleLine = true,
                 isError = error != null && origen.isBlank(),
                 leadingIcon = { Icon(Icons.Default.TripOrigin, contentDescription = null) })
             TextButton(onClick = { origen = "Mi ubicación"; error = null }) { Text(stringResource(R.string.ui_usar_mi_ubicacion)) }
-            OutlinedTextField(destino, { destino = it; error = null }, Modifier.fillMaxWidth(),
+            OutlinedTextField(destino, { destino = it; error = null }, Modifier.fillMaxWidth().focusRequester(focos[1]),
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                keyboardActions = KeyboardActions(onSearch = { buscarWheels() }),
                 label = { Text(stringResource(R.string.ui_destino)) }, singleLine = true,
                 isError = error != null && destino.isBlank(),
                 leadingIcon = { Icon(Icons.Default.Place, contentDescription = null) })
@@ -123,20 +152,7 @@ fun BuscarMomentoScreen(
                 }
             }
             error?.let { MensajeError(it) }
-            BotonPrincipal(if (programado) stringResource(R.string.ui_buscar_wheels_programados) else stringResource(R.string.ui_buscar_wheels_ahora), onClick = {
-                val momento = if (programado) salida else System.currentTimeMillis()
-                error = when {
-                    origen.isBlank() -> recursos.getString(R.string.ui_escribe_el_origen_del_viaje)
-                    destino.isBlank() -> recursos.getString(R.string.ui_escribe_el_destino_del_viaje)
-                    origen.trim().equals(destino.trim(), ignoreCase = true) -> recursos.getString(R.string.ui_el_origen_y_el_destino_deben_ser_diferentes)
-                    programado && momento <= System.currentTimeMillis() -> recursos.getString(R.string.ui_selecciona_una_fecha_y_hora_futuras)
-                    else -> null
-                }
-                if (error == null) {
-                    viewModel.actualizarBusqueda(origen, destino, programado, momento)
-                    onBuscar(origen.trim(), destino.trim(), momento)
-                }
-            })
+            BotonPrincipal(if (programado) stringResource(R.string.ui_buscar_wheels_programados) else stringResource(R.string.ui_buscar_wheels_ahora), onClick = ::buscarWheels)
             Text(stringResource(R.string.ui_datos_locales_de_demostracion_mi_ubicacion_no_utiliza_gps_hay_via),
                 style = MaterialTheme.typography.bodySmall)
         }

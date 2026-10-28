@@ -1,5 +1,7 @@
 package com.javeriana.javewheels.ui.screens.acceso
 
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.runtime.remember
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -49,6 +51,8 @@ fun LoginScreen(
     viewModel: LoginViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    fun iniciarSesion() { if (viewModel.iniciarSesion()) onIniciarSesion() }
+    val focos = remember { List(2) { FocusRequester() } }
     val hayError = uiState.mensajeError != 0
 
     Column(
@@ -65,6 +69,7 @@ fun LoginScreen(
 
         // Formulario de acceso
         CampoTexto(
+            solicitanteFoco = focos[0], siguienteFoco = focos[1],
             etiqueta = stringResource(R.string.ui_correo_institucional),
             valor = uiState.correo,
             alCambiar = { viewModel.actualizarCorreo(it) },   // evento -> ViewModel
@@ -74,6 +79,7 @@ fun LoginScreen(
         )
         Spacer(modifier = Modifier.height(16.dp))
         CampoTexto(
+            solicitanteFoco = focos[1], alCompletar = ::iniciarSesion,
             etiqueta = stringResource(R.string.ui_contrasena),
             valor = uiState.contrasena,
             alCambiar = { viewModel.actualizarContrasena(it) },
@@ -99,10 +105,7 @@ fun LoginScreen(
         // Acciones de acceso
         BotonPrincipal(
             texto = stringResource(R.string.ui_iniciar_sesion),
-            onClick = {
-                // El ViewModel valida; si todo está bien, se navega
-                if (viewModel.iniciarSesion()) onIniciarSesion()
-            }
+            onClick = ::iniciarSesion
         )
         Spacer(modifier = Modifier.height(16.dp))
         TextoAyuda(texto = stringResource(R.string.ui_primera_vez_en_javewheels), centrado = true)

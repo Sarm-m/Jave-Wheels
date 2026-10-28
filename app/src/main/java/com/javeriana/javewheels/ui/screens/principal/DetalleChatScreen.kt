@@ -1,5 +1,6 @@
 package com.javeriana.javewheels.ui.screens.principal
 
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -43,6 +44,7 @@ fun DetalleChatScreen(
     modifier: Modifier = Modifier
 ) {
     val estado by viewModel.uiState.collectAsState()
+    fun enviarMensaje() { viewModel.enviarMensaje(idChat) }
     val chat = estado.chats.find { chatActual -> chatActual.id == idChat }
     val estadoLista = rememberLazyListState()
 
@@ -92,12 +94,14 @@ fun DetalleChatScreen(
             ) {
                 CampoTexto(
                     etiqueta = "",
+                    accionTeclado = ImeAction.Send,
+                    alCompletar = ::enviarMensaje,
                     valor = estado.borrador,
                     alCambiar = viewModel::actualizarBorrador,
                     placeholder = stringResource(R.string.ui_escribe_un_mensaje),
                     modifier = Modifier.weight(1f)
                 )
-                FilledIconButton(onClick = { viewModel.enviarMensaje(idChat) }, enabled = estado.borrador.isNotBlank()) {
+                FilledIconButton(onClick = ::enviarMensaje, enabled = estado.borrador.isNotBlank()) {
                     Icon(Icons.AutoMirrored.Filled.Send, contentDescription = stringResource(R.string.ui_enviar))
                 }
             }

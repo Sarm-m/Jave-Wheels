@@ -94,7 +94,7 @@ Nueve pruebas verifican fechas, ventanas de búsqueda (incluido el cruce de medi
 - Vistas de Wheels, conductor, vehículo, aporte, cupos y recogida.
 - Detalle del Wheel seleccionado y navegación hacia Mis viajes.
 - Reservas confirmadas y pendientes, historial de Wheels finalizados y detalle de reserva.
-- MapaIlustrativo compartido por Inicio y ambos detalles, con altura y marcador configurables.
+- MapaJaveWheels compartido por Inicio, búsqueda, detalles y vistas de viaje; usa Mapbox con cámara y marcadores geográficos configurables.
 - LogoJaveWheels dibuja el círculo amarillo y el carro azul con Compose; AvatarUsuario dibuja los avatares con iconos de Compose. Estos componentes no utilizan PNG. SelectorRol se comparte entre Inicio y Mis viajes.
 - Resúmenes del historial del pasajero y detalles de los viajes publicados y finalizados del conductor.
 - Filtros combinables de cercanía, horario, cupos, aporte y Modo Buseta sobre seis Wheels locales. Los filtros se conservan al volver del detalle y pueden restablecerse.
@@ -108,13 +108,36 @@ Nueve pruebas verifican fechas, ventanas de búsqueda (incluido el cruce de medi
 - Solicitud y gestión efectiva de cupos.
 - Publicación y administración de recorridos del conductor.
 - Búsqueda y filtros conectados a recorridos reales; la versión actual filtra únicamente datos locales.
-- Mapas, ubicación y seguimiento en tiempo real.
+- Cálculo de rutas y seguimiento de vehículos en tiempo real.
 - Mensajería completa y acciones efectivas de compartir y cancelar reservas.
 
 ## Buscar ahora y programar
 
 Desde Inicio pasajero, **Ahora** y **Programar** abren formularios con origen y destino editables. Programar agrega selectores de fecha y hora y rechaza horarios pasados. Buscar Wheels abre el formulario del modo confirmado anteriormente. Al confirmar, el resultado usa una ventana de 60 minutos desde la hora elegida y combina todos los filtros existentes. Atrás conserva el formulario al volver de resultados; cancelar el formulario no altera la búsqueda de Inicio.
 
-Los datos de demostración incluyen salidas próximas, mañana y pasado mañana. Fechas distintas pueden no tener resultados. Mi ubicación no usa GPS y permite consultar distintos orígenes. La búsqueda usa la fecha y zona horaria del dispositivo. El mapa sigue siendo ilustrativo.
+Los datos de demostración incluyen salidas próximas, mañana y pasado mañana. Fechas distintas pueden no tener resultados. El campo Mi ubicación continúa siendo un valor de búsqueda en texto; el botón de centrar del mapa sí puede consultar la ubicación del dispositivo. La búsqueda usa la fecha y zona horaria del dispositivo. El mapa usa Mapbox cuando se configura un token propio; no geocodifica los textos de origen o destino.
 
 El reparto del equipo y los pendientes del código se detallan en [Pendientes funcionales](docs/Pendientes_Funcionales.md).
+
+
+## Mapbox: mapas reales, primera fase
+
+Se adapta el ejemplo `09-Mapas/maps` del profesor: Maps y Compose **11.31.1**, artefactos `-ndk27`, y `play-services-location` **21.4.0** para consultas puntuales. No se agregan Directions, Navigation SDK, sensores ni grabación de recorridos.
+
+Configura un token **público propio** de Mapbox en `local.properties` (archivo ignorado por Git), conservando `sdk.dir`:
+
+```properties
+MAPBOX_ACCESS_TOKEN=<tu token público que empieza por pk.>
+```
+
+También puedes definir la variable de entorno `MAPBOX_ACCESS_TOKEN`, que tiene prioridad. Gradle genera `mapbox_access_token` en los recursos de `app/build`; no crees un XML versionado con credenciales. Los tokens privados se rechazan. Un token público del SDK queda incluido en el APK; debe pertenecer al proyecto y usar los permisos apropiados de Mapbox.
+
+Después de configurarlo, sincroniza y vuelve a compilar e instalar la aplicación. Sin token aparece un aviso de configuración; eso no significa que se haya verificado el mapa en línea. Con token, los errores de conexión o autorización aparecen sobre el mapa.
+
+`MapaJaveWheels` conserva el estado de cámara con `rememberMapViewportState`, utiliza `MapboxStandardStyle` en modo día y mantiene visibles logo y atribuciones. La referencia inicial es la Universidad Javeriana de Bogotá: longitud `-74.0641630119028`, latitud `4.627389316647156`. Esa posición **no es la ubicación del usuario**. Las direcciones de los viajes siguen siendo texto y no se convierten en marcadores inventados.
+
+Al tocar centrar se solicita permiso únicamente si hace falta. Con permiso aproximado o preciso se realiza una consulta cancelable, de hasta diez segundos; no hay seguimiento continuo ni ubicación en segundo plano. Si no hay permiso, el servicio está apagado o no se obtiene ubicación reciente, se vuelve a la referencia inicial y se indica el motivo. La consulta se cancela al salir de la pantalla o pasar la app a segundo plano.
+
+El componente admite `posicionInicial`, `zoomInicial`, `marcadores`, `estadoCamara`, `alCambiarCamara` y `alCentrar`. Una cámara se asocia con un único mapa a la vez. Para una fase posterior harán falta coordenadas reales de origen, destino y recogidas, además de un servicio de rutas y su polilínea; nada de eso se calcula en esta fase.
+
+Verificación del 28 de octubre de 2026: compilación del APK y del APK de pruebas correctas, 33 pruebas unitarias aprobadas y Lint sin errores (31 advertencias y 4 sugerencias). En el emulador API 36 se aprobaron 50 casos instrumentados distintos entre las configuraciones sin token, con token propio y con distintos permisos y estados del servicio de ubicación. Se comprobó la carga real de Mapbox en las ocho pantallas con conexión, logo y atribuciones visibles, desplazamiento, ampliación y reducción mediante dos dedos, navegación entre roles y centrado de la cámara en una ubicación obtenida del emulador. También se verificó el retorno a la referencia inicial sin permiso y con el servicio apagado. Las pruebas de mapas en línea se omiten cuando falta token; las de configuración pendiente se omiten cuando ya existe uno.

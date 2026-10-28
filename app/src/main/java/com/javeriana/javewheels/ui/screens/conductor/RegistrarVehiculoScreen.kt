@@ -1,5 +1,7 @@
 package com.javeriana.javewheels.ui.screens.conductor
 
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.runtime.remember
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -43,6 +45,8 @@ fun RegistrarVehiculoScreen(
     viewModel: VehiculoViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    fun guardarVehiculo() { if (viewModel.guardar()) onGuardado() }
+    val focos = remember { List(6) { FocusRequester() } }
 
     Column(
         modifier = modifier
@@ -60,6 +64,7 @@ fun RegistrarVehiculoScreen(
         TextoAyuda(stringResource(R.string.campos_obligatorios))
 
         CampoTexto(
+            solicitanteFoco = focos[0], siguienteFoco = focos[1],
             etiqueta = stringResource(R.string.ui_placa),
             valor = uiState.placa,
             obligatorio = true,
@@ -69,10 +74,12 @@ fun RegistrarVehiculoScreen(
             placeholder = stringResource(R.string.ui_ej_abc123)
         )
         Text(stringResource(R.string.placa_vista_previa), style = MaterialTheme.typography.labelLarge)
-        PlacaColombiana(uiState.placa)
+        Spacer(Modifier.height(8.dp))
+        PlacaColombiana(uiState.placa, ancho = 120.dp)
         Spacer(Modifier.height(12.dp))
         Spacer(modifier = Modifier.height(12.dp))
         CampoTexto(
+            solicitanteFoco = focos[1], siguienteFoco = focos[2],
             etiqueta = stringResource(R.string.ui_marca),
             valor = uiState.marca,
             obligatorio = true,
@@ -83,6 +90,7 @@ fun RegistrarVehiculoScreen(
         )
         Spacer(modifier = Modifier.height(12.dp))
         CampoTexto(
+            solicitanteFoco = focos[2], siguienteFoco = focos[3],
             etiqueta = stringResource(R.string.ui_modelo),
             valor = uiState.modelo,
             obligatorio = true,
@@ -93,6 +101,7 @@ fun RegistrarVehiculoScreen(
         )
         Spacer(modifier = Modifier.height(12.dp))
         CampoTexto(
+            solicitanteFoco = focos[3], siguienteFoco = focos[4],
             etiqueta = stringResource(R.string.ui_ano),
             valor = uiState.anio,
             obligatorio = true,
@@ -104,6 +113,7 @@ fun RegistrarVehiculoScreen(
         )
         Spacer(modifier = Modifier.height(12.dp))
         CampoTexto(
+            solicitanteFoco = focos[4], siguienteFoco = focos[5],
             etiqueta = stringResource(R.string.ui_color),
             valor = uiState.color,
             obligatorio = true,
@@ -114,6 +124,7 @@ fun RegistrarVehiculoScreen(
         )
         Spacer(modifier = Modifier.height(12.dp))
         CampoTexto(
+            solicitanteFoco = focos[5], alCompletar = ::guardarVehiculo,
             etiqueta = stringResource(R.string.ui_cupos_disponibles),
             valor = uiState.cupos,
             obligatorio = true,
@@ -129,7 +140,7 @@ fun RegistrarVehiculoScreen(
 
         BotonPrincipal(
             texto = stringResource(R.string.ui_guardar_vehiculo),
-            onClick = { if (viewModel.guardar()) onGuardado() }
+            onClick = ::guardarVehiculo
         )
     }
 }

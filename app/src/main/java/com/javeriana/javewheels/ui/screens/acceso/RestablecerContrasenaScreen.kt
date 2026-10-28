@@ -1,5 +1,7 @@
 package com.javeriana.javewheels.ui.screens.acceso
 
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.runtime.remember
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -41,6 +43,8 @@ fun RestablecerContrasenaScreen(
     viewModel: RecuperarContrasenaViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    fun restablecer() { if (viewModel.restablecerContrasena()) onContrasenaRestablecida() }
+    val focos = remember { List(2) { FocusRequester() } }
 
     Column(
         modifier = modifier
@@ -57,6 +61,7 @@ fun RestablecerContrasenaScreen(
         TextoAyuda(stringResource(R.string.campos_obligatorios))
 
         CampoTexto(
+            solicitanteFoco = focos[0], siguienteFoco = focos[1],
             etiqueta = stringResource(R.string.ui_nueva_contrasena),
             valor = uiState.nuevaContrasena,
             hayError = uiState.mensajeError != 0 && (!esContrasenaValida(uiState.nuevaContrasena)),
@@ -67,6 +72,7 @@ fun RestablecerContrasenaScreen(
         )
         Spacer(modifier = Modifier.height(16.dp))
         CampoTexto(
+            solicitanteFoco = focos[1], alCompletar = ::restablecer,
             etiqueta = stringResource(R.string.ui_confirmar_contrasena),
             valor = uiState.confirmarContrasena,
             hayError = uiState.mensajeError != 0 && (uiState.confirmarContrasena != uiState.nuevaContrasena),
@@ -82,7 +88,7 @@ fun RestablecerContrasenaScreen(
 
         BotonPrincipal(
             texto = stringResource(R.string.ui_restablecer_contrasena),
-            onClick = { if (viewModel.restablecerContrasena()) onContrasenaRestablecida() }
+            onClick = ::restablecer
         )
         Spacer(modifier = Modifier.height(32.dp))
         BotonTexto(texto = stringResource(R.string.ui_volver_a_iniciar_sesion), onClick = onIrALogin)
