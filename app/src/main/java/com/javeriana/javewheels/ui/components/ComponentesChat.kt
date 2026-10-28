@@ -18,11 +18,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.javeriana.javewheels.ui.theme.JWCelesteContenedor
-import com.javeriana.javewheels.ui.theme.JWCelesteSuave
 import com.javeriana.javewheels.ui.theme.JaveWheelsTheme
 
 @Composable
@@ -51,16 +48,14 @@ fun FilaConAvatar(
                 text = titulo,
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.primary,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+
             )
             if (subtitulo.isNotBlank()) {
                 Text(
                     text = subtitulo,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+
                 )
             }
         }
@@ -84,7 +79,7 @@ fun BurbujaMensaje(
             modifier = Modifier
                 .widthIn(max = 260.dp)
                 .clip(RoundedCornerShape(12.dp))
-                .background(if (esMio) JWCelesteContenedor else JWCelesteSuave)
+                .background(if (esMio) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainerLow)
                 .padding(horizontal = 14.dp, vertical = 10.dp)
         )
     }

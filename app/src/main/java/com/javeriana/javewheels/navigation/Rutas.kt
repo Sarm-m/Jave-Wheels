@@ -11,6 +11,7 @@ import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation3.runtime.NavKey
+import com.javeriana.javewheels.R
 import kotlinx.serialization.Serializable
 
 // ============================================================
@@ -75,13 +76,13 @@ sealed class Rutas : NavKey {
 // ============================================================
 
 enum class Pestana(
-    val titulo: String,
+    @androidx.annotation.StringRes val titulo: Int,
     val icono: ImageVector,
     val iconoSeleccionado: ImageVector,
     val ruta: Rutas
 ) {
-    Inicio("Inicio", Icons.Outlined.Home, Icons.Filled.Home, Rutas.Inicio),
-    MisViajes("Mis viajes", Icons.Outlined.DateRange, Icons.Filled.DateRange, Rutas.MisViajes),
-    Mensajes("Mensajes", Icons.Outlined.ChatBubbleOutline, Icons.Filled.ChatBubble, Rutas.Mensajes),
-    Perfil("Perfil", Icons.Outlined.Person, Icons.Filled.Person, Rutas.Perfil)
+    Inicio(R.string.ui_inicio, Icons.Outlined.Home, Icons.Filled.Home, Rutas.Inicio),
+    MisViajes(R.string.ui_mis_viajes, Icons.Outlined.DateRange, Icons.Filled.DateRange, Rutas.MisViajes),
+    Mensajes(R.string.ui_mensajes, Icons.Outlined.ChatBubbleOutline, Icons.Filled.ChatBubble, Rutas.Mensajes),
+    Perfil(R.string.ui_perfil, Icons.Outlined.Person, Icons.Filled.Person, Rutas.Perfil)
 }

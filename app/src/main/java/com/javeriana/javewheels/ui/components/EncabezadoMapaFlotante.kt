@@ -12,15 +12,17 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.javeriana.javewheels.R
 
 @Composable
 fun EncabezadoMapaFlotante(
@@ -39,12 +41,12 @@ fun EncabezadoMapaFlotante(
             modifier = Modifier
                 .size(44.dp)
                 .clip(RoundedCornerShape(12.dp))
-                .background(Color(0xFF86C5E8))
+                .background(MaterialTheme.colorScheme.primaryContainer)
         ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = "Volver",
-                tint = Color(0xFF0F3B66)
+                contentDescription = stringResource(R.string.ui_volver),
+                tint = MaterialTheme.colorScheme.primary
             )
         }
 
@@ -55,7 +57,7 @@ fun EncabezadoMapaFlotante(
             text = titulo,
             fontSize = 22.sp,
             fontWeight = FontWeight.Bold,
-            color = Color(0xFF1E3A8A)
+            color = MaterialTheme.colorScheme.primary
         )
     }
 }

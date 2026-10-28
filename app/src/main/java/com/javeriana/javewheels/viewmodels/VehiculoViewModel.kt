@@ -1,6 +1,7 @@
 package com.javeriana.javewheels.viewmodels
 
 import androidx.lifecycle.ViewModel
+import com.javeriana.javewheels.R
 import com.javeriana.javewheels.entities.Usuario
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,7 +19,7 @@ data class VehiculoUiState(
     val color: String = "",
     val cupos: String = "",
     val celular: String = "", //c usa en caso de editar
-    val mensajeError: String = ""
+    @androidx.annotation.StringRes val mensajeError: Int = 0
 ) {
     val resumen: String
         get() = listOf(marca, modelo, anio, color, placa)
@@ -33,37 +34,37 @@ class VehiculoViewModel : ViewModel() {
     fun actualizarPlaca(valor: String) {
         // La placa se guarda en mayúsculas (ABC123), max 6 char
         if (valor.length <= 6) {
-            _uiState.update { estadoActual -> estadoActual.copy(placa = valor.uppercase(), mensajeError = "") }
+            _uiState.update { estadoActual -> estadoActual.copy(placa = valor.uppercase(), mensajeError = 0) }
         }
     }
 
     fun actualizarMarca(valor: String) {
-        _uiState.update { estadoActual -> estadoActual.copy(marca = valor, mensajeError = "") }
+        _uiState.update { estadoActual -> estadoActual.copy(marca = valor, mensajeError = 0) }
     }
 
     fun actualizarModelo(valor: String) {
-        _uiState.update { estadoActual -> estadoActual.copy(modelo = valor, mensajeError = "") }
+        _uiState.update { estadoActual -> estadoActual.copy(modelo = valor, mensajeError = 0) }
     }
 
     fun actualizarAnio(valor: String) {
         if (valor.length <= 4 && valor.all { caracter -> caracter.isDigit() }) {
-            _uiState.update { estadoActual -> estadoActual.copy(anio = valor, mensajeError = "") }
+            _uiState.update { estadoActual -> estadoActual.copy(anio = valor, mensajeError = 0) }
         }
     }
 
     fun actualizarColor(valor: String) {
-        _uiState.update { estadoActual -> estadoActual.copy(color = valor, mensajeError = "") }
+        _uiState.update { estadoActual -> estadoActual.copy(color = valor, mensajeError = 0) }
     }
 
     fun actualizarCupos(valor: String) {
         if (valor.length <= 1 && valor.all { caracter -> caracter.isDigit() }) {
-            _uiState.update { estadoActual -> estadoActual.copy(cupos = valor, mensajeError = "") }
+            _uiState.update { estadoActual -> estadoActual.copy(cupos = valor, mensajeError = 0) }
         }
     }
 
     fun actualizarCelular(valor: String) {
         if (valor.length <= 10 && valor.all { caracter -> caracter.isDigit() }) {
-            _uiState.update { estadoActual -> estadoActual.copy(celular = valor, mensajeError = "") }
+            _uiState.update { estadoActual -> estadoActual.copy(celular = valor, mensajeError = 0) }
         }
     }
 
@@ -79,7 +80,7 @@ class VehiculoViewModel : ViewModel() {
                 celular = estadoActual.celular.ifBlank {
                     usuario.celular.filter { caracter -> caracter.isDigit() }
                 },
-                mensajeError = ""
+                mensajeError = 0
             )
         }
     }
@@ -92,15 +93,15 @@ class VehiculoViewModel : ViewModel() {
         val camposVacios = listOf(estado.placa, estado.marca, estado.modelo, estado.anio, estado.color, estado.cupos)
             .any { campo -> campo.isBlank() }
         val mensaje = when {
-            camposVacios -> "Completa todos los campos para continuar."
-            !esPlacaValida(estado.placa) -> "La placa debe tener 3 letras y 3 números (ej. ABC123)."
-            !esAnioValido(estado.anio) -> "Escribe un año válido del vehículo."
-            estado.cupos.toInt() == 0 -> "Debes ofrecer al menos 1 cupo."
-            exigirCelular && !esCelularValido(estado.celular) -> "Escribe un celular válido de 10 dígitos."
-            else -> ""
+            camposVacios -> R.string.error_completa_todos_los_campos_para_continuar
+            !esPlacaValida(estado.placa) -> R.string.error_la_placa_debe_tener_3_letras_y_3_numeros_ej_abc123
+            !esAnioValido(estado.anio) -> R.string.error_escribe_un_ano_valido_del_vehiculo
+            estado.cupos.toInt() == 0 -> R.string.error_debes_ofrecer_al_menos_1_cupo
+            exigirCelular && !esCelularValido(estado.celular) -> R.string.error_escribe_un_celular_valido_de_10_digitos
+            else -> 0
         }
         _uiState.update { estadoActual -> estadoActual.copy(mensajeError = mensaje) }
-        return mensaje.isEmpty()
+        return mensaje == 0
     }
 
     fun reiniciar() {

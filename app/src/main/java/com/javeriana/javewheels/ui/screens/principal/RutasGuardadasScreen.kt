@@ -9,24 +9,25 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.javeriana.javewheels.R
 import com.javeriana.javewheels.entities.RutaGuardada
 import com.javeriana.javewheels.entities.rutasGuardadas
 import com.javeriana.javewheels.ui.components.*
-import com.javeriana.javewheels.ui.theme.JWCelesteSuave
 
 @Composable
 fun RutasGuardadasScreen(onVolver: () -> Unit, onElegirRuta: (RutaGuardada) -> Unit, modifier: Modifier = Modifier) {
     Column(modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
-        EncabezadoViajes("Rutas guardadas", onVolver)
+        EncabezadoViajes(stringResource(R.string.ui_rutas_guardadas), onVolver)
         Column(Modifier.padding(24.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            Text("Elige una ruta para preparar tu búsqueda de Wheels.")
+            Text(stringResource(R.string.ui_elige_una_ruta_para_preparar_tu_busqueda_de_wheels))
             rutasGuardadas.forEach { ruta ->
-                Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = JWCelesteSuave)) {
+                Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
                     Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Text(ruta.nombre, style = MaterialTheme.typography.titleMedium)
-                        Text("${ruta.origen} → ${ruta.destino}")
-                        BotonSecundario("Usar ruta", onClick = { onElegirRuta(ruta) })
+                        Text(stringResource(R.string.ruta_busqueda, ruta.origen, ruta.destino))
+                        BotonSecundario(stringResource(R.string.ui_usar_ruta), onClick = { onElegirRuta(ruta) })
                     }
                 }
             }

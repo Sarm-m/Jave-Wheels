@@ -44,7 +44,10 @@ private val esquemaClaro = lightColorScheme(
     inversePrimary = JWCelesteContenedor,
     outline = JWCeleste,
     outlineVariant = JWBordeSuave,
-    error = JWError
+    error = JWError,
+    onError = JWBlanco,
+    errorContainer = JWErrorContenedor,
+    onErrorContainer = JWTextoErrorContenedor
 )
 
 @Composable

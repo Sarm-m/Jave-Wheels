@@ -8,18 +8,24 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.javeriana.javewheels.R
 import com.javeriana.javewheels.ui.components.AvatarUsuario
 import com.javeriana.javewheels.ui.components.BotonPrincipal
 import com.javeriana.javewheels.ui.components.FilaConBoton
+import com.javeriana.javewheels.ui.components.InformacionVehiculo
 import com.javeriana.javewheels.ui.components.MarcaJaveWheels
 import com.javeriana.javewheels.viewmodels.InicioViewModel
 import com.javeriana.javewheels.viewmodels.PerfilViewModel
@@ -32,6 +38,7 @@ fun InformacionUsuarioScreen(
     onEditarVehiculo: () -> Unit,
     onRegistrarVehiculo: () -> Unit,
     onCerrarSesion: () -> Unit,
+    vehiculo: com.javeriana.javewheels.viewmodels.VehiculoUiState,
     modifier: Modifier = Modifier
 ) {
     val estadoInicio by inicioViewModel.uiState.collectAsState()
@@ -41,12 +48,13 @@ fun InformacionUsuarioScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .padding(horizontal = 24.dp, vertical = 12.dp)
     ) {
         MarcaJaveWheels()
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = "¡Hola, javeriano!",
+            text = stringResource(R.string.ui_hola_javeriano),
             style = MaterialTheme.typography.titleLarge,
             color = MaterialTheme.colorScheme.primary,
             textAlign = TextAlign.Center,
@@ -56,7 +64,7 @@ fun InformacionUsuarioScreen(
 
         AvatarUsuario(
             foto = estadoPerfil.fotoPerfil,
-            descripcion = "Foto de perfil",
+            descripcion = stringResource(R.string.ui_foto_de_perfil),
             modifier = Modifier
                 .size(180.dp)
                 .align(Alignment.CenterHorizontally)
@@ -68,23 +76,24 @@ fun InformacionUsuarioScreen(
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
+        if (tieneVehiculo) InformacionVehiculo(vehiculo.resumen)
         Spacer(modifier = Modifier.height(32.dp))
 
         FilaConBoton(
-            etiqueta = "Datos de perfil",
-            textoBoton = "Editar",
+            etiqueta = stringResource(R.string.ui_datos_de_perfil),
+            textoBoton = stringResource(R.string.editar),
             onClick = onEditarPerfil
         )
         // Si todavía no es conductor, el botón lo manda a registrar su vehículo
         FilaConBoton(
-            etiqueta = "Datos de vehículo",
-            textoBoton = if (tieneVehiculo) "Editar" else "Registrar",
+            etiqueta = stringResource(R.string.ui_datos_de_vehiculo),
+            textoBoton = if (tieneVehiculo) stringResource(R.string.editar) else stringResource(R.string.ui_registrar),
             onClick = if (tieneVehiculo) onEditarVehiculo else onRegistrarVehiculo
         )
 
-        Spacer(modifier = Modifier.weight(1f))
+        Spacer(modifier = Modifier.height(24.dp))
         BotonPrincipal(
-            texto = "Cerrar sesión",
+            texto = stringResource(R.string.ui_cerrar_sesion),
             onClick = {
                 inicioViewModel.cerrarSesion()
                 onCerrarSesion()

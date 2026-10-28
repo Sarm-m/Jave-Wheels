@@ -12,8 +12,8 @@ enum class Rol(val titulo: String) {
 }
 
 data class PaginaCarga(
-    val titulo: String,
-    val descripcion: String,
+    @androidx.annotation.StringRes val titulo: Int,
+    @androidx.annotation.StringRes val descripcion: Int,
     val icono: ImageVector
 )
 

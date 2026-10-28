@@ -27,18 +27,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.javeriana.javewheels.ui.theme.JWAmarillo
-import com.javeriana.javewheels.ui.theme.JWAzul
-import com.javeriana.javewheels.ui.theme.JWBlanco
-import com.javeriana.javewheels.ui.theme.JWCeleste
+import com.javeriana.javewheels.R
 import com.javeriana.javewheels.ui.theme.JaveWheelsTheme
+import com.javeriana.javewheels.ui.theme.MapaCalle
 import com.javeriana.javewheels.ui.theme.MapaFondo
 import com.javeriana.javewheels.ui.theme.MapaManzana
 import com.javeriana.javewheels.ui.theme.MapaParque
+import com.javeriana.javewheels.ui.theme.MapaRuta
 
 @Composable
 fun MapaIlustrativo(
@@ -48,9 +47,9 @@ fun MapaIlustrativo(
     modoEnVivo: Boolean = false,
     mostrarRutaPredeterminada: Boolean = true,
     mostrarMarcadorJaveriana: Boolean = true,
-    textoUbicacion: String = "Tu ubicación",
+    textoUbicacion: String = stringResource(R.string.ui_tu_ubicacion),
     mostrarCentrar: Boolean = true,
-    textoDestino: String = "Javeriana"
+    textoDestino: String = stringResource(R.string.ui_javeriana)
 ) {
     val escala = (altura?.value ?: 300f) / 300f
     val boxModifier = if (altura != null) {
@@ -63,7 +62,7 @@ fun MapaIlustrativo(
 
     Box(
         modifier = boxModifier
-            .background(if (modoEnVivo) Color(0xFFF3F5F7) else MapaFondo)
+            .background(if (modoEnVivo) MapaFondo else MapaFondo)
     ) {
         if (modoEnVivo) {
             // ==================== MODO EN VIVO ====================
@@ -74,7 +73,7 @@ fun MapaIlustrativo(
                     .align(Alignment.Center)
                     .width(42.dp)
                     .fillMaxHeight()
-                    .background(Color(0xFFD6DEE4))
+                    .background(MapaCalle)
             )
 
             // 2. Parque verde a la derecha (más ancho)
@@ -83,7 +82,7 @@ fun MapaIlustrativo(
                     .align(Alignment.CenterEnd)
                     .fillMaxWidth(0.28f)
                     .fillMaxHeight()
-                    .background(Color(0xFFDCEAD4))
+                    .background(MapaParque)
             )
 
             // 3. cuadra en cuadrícula alargada que cubre toda la pantalla
@@ -104,14 +103,14 @@ fun MapaIlustrativo(
                                 .weight(1f)
                                 .height(90.dp)
                                 .clip(RoundedCornerShape(4.dp))
-                                .background(Color(0xFFE4E9ED))
+                                .background(MapaManzana)
                         )
                         Box(
                             modifier = Modifier
                                 .weight(1f)
                                 .height(90.dp)
                                 .clip(RoundedCornerShape(4.dp))
-                                .background(Color(0xFFE4E9ED))
+                                .background(MapaManzana)
                         )
 
                         // Espacio sobre la avenida
@@ -123,7 +122,7 @@ fun MapaIlustrativo(
                                 .weight(1.1f)
                                 .height(90.dp)
                                 .clip(RoundedCornerShape(4.dp))
-                                .background(Color(0xFFE4E9ED))
+                                .background(MapaManzana)
                         )
 
                         // Margen parque
@@ -141,7 +140,7 @@ fun MapaIlustrativo(
                         .width(6.dp)
                         .height(130.dp)
                         .clip(RoundedCornerShape(3.dp))
-                        .background(Color(0xFF4FA8E0))
+                        .background(MapaRuta)
                 )
             }
 
@@ -157,13 +156,13 @@ fun MapaIlustrativo(
                         modifier = Modifier
                             .size(46.dp)
                             .clip(CircleShape)
-                            .background(Color(0xFFF9C846)),
+                            .background(MaterialTheme.colorScheme.tertiary),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             imageVector = Icons.Default.School,
                             contentDescription = textoDestino,
-                            tint = Color(0xFF1E3A8A),
+                            tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(24.dp)
                         )
                     }
@@ -171,10 +170,10 @@ fun MapaIlustrativo(
                     Text(
                         text = textoDestino,
                         style = MaterialTheme.typography.labelSmall,
-                        color = Color(0xFF1E3A8A),
+                        color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier
                             .clip(RoundedCornerShape(12.dp))
-                            .background(Color.White)
+                            .background(MaterialTheme.colorScheme.surface)
                             .padding(horizontal = 14.dp, vertical = 4.dp)
                     )
                 }
@@ -224,19 +223,19 @@ fun MapaIlustrativo(
                     modifier = Modifier
                         .size(44.dp)
                         .clip(CircleShape)
-                        .background(JWAmarillo),
+                        .background(MaterialTheme.colorScheme.tertiary),
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(Icons.Default.School, contentDescription = null, tint = JWAzul)
+                    Icon(Icons.Default.School, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                 }
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = textoDestino,
                     style = MaterialTheme.typography.labelMedium,
-                    color = JWAzul,
+                    color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier
                         .clip(RoundedCornerShape(8.dp))
-                        .background(JWBlanco)
+                        .background(MaterialTheme.colorScheme.surface)
                         .padding(horizontal = 12.dp, vertical = 6.dp)
                 )
             }
@@ -251,14 +250,14 @@ fun MapaIlustrativo(
                     modifier = Modifier
                         .size(22.dp)
                         .clip(CircleShape)
-                        .background(JWAzul)
-                        .border(4.dp, JWCeleste, CircleShape)
+                        .background(MaterialTheme.colorScheme.primary)
+                        .border(4.dp, MaterialTheme.colorScheme.outline, CircleShape)
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = textoUbicacion,
                     style = MaterialTheme.typography.labelMedium,
-                    color = JWAzul
+                    color = MaterialTheme.colorScheme.primary
                 )
             }
 
@@ -268,11 +267,11 @@ fun MapaIlustrativo(
                     .padding(end = 24.dp, bottom = 48.dp)
                     .size(44.dp)
                     .clip(CircleShape)
-                    .background(JWBlanco)
+                    .background(MaterialTheme.colorScheme.surface)
                     .clickable { onCentrarUbicacion() },
                 contentAlignment = Alignment.Center
             ) {
-                Icon(Icons.Default.MyLocation, contentDescription = "Centrar ubicación", tint = JWAzul)
+                Icon(Icons.Default.MyLocation, contentDescription = stringResource(R.string.ui_centrar_ubicacion), tint = MaterialTheme.colorScheme.primary)
             }
         }
     }

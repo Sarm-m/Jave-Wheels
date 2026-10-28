@@ -2,18 +2,18 @@ package com.javeriana.javewheels.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -25,29 +25,25 @@ import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.filled.TripOrigin
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.javeriana.javewheels.R
 import com.javeriana.javewheels.entities.Rol
 import com.javeriana.javewheels.entities.Viaje
 import com.javeriana.javewheels.entities.proximoViajeConductor
-import com.javeriana.javewheels.ui.theme.JWAmarillo
-import com.javeriana.javewheels.ui.theme.JWAmarilloSuave
-import com.javeriana.javewheels.ui.theme.JWBlanco
-import com.javeriana.javewheels.ui.theme.JWBordeSuave
-import com.javeriana.javewheels.ui.theme.JWCeleste
-import com.javeriana.javewheels.ui.theme.JWCelesteContenedor
-import com.javeriana.javewheels.ui.theme.JWCelesteSuave
 import com.javeriana.javewheels.ui.theme.JaveWheelsTheme
 
 // ============================================================
@@ -62,35 +58,22 @@ fun EncabezadoInicio(
     onCambiarRol: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 24.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        AvatarUsuario(
-            foto = null,
-            descripcion = "Avatar",
-            modifier = Modifier.size(44.dp)
-        )
-        Spacer(modifier = Modifier.width(12.dp))
-
-        // Saludo (weight(1f) = ocupa todo el espacio que sobra)
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = "¡Hola, javeriano!",
-                style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.primary
-            )
-            Text(
-                text = subtitulo,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
-
-        SelectorRol(rol = rol, onCambiarRol = onCambiarRol)
-    }
+    FilaAdaptable(
+        modifier = modifier.padding(horizontal = 24.dp, vertical = 12.dp),
+        principal = {
+            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                AvatarUsuario(descripcion = stringResource(R.string.ui_avatar))
+                Column(Modifier.weight(1f)) {
+                    Text(stringResource(R.string.ui_hola_javeriano),
+                        style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.primary)
+                    Text(subtitulo, style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            }
+        },
+        secundario = { SelectorRol(rol, onCambiarRol) }
+    )
 }
 
 /** Chip seleccionable ("Ahora" / "Programar"). Relleno azul si está seleccionado. */
@@ -102,21 +85,18 @@ fun ChipOpcion(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val colorFondo = if (seleccionado) MaterialTheme.colorScheme.primary else JWCelesteSuave
-    val colorContenido = if (seleccionado) JWBlanco else MaterialTheme.colorScheme.primary
-
-    Row(
-        modifier = modifier
-            .clip(RoundedCornerShape(18.dp))
-            .background(colorFondo)
-            .clickable { onClick() }
-            .padding(horizontal = 18.dp, vertical = 9.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(icono, contentDescription = null, tint = colorContenido, modifier = Modifier.size(18.dp))
-        Spacer(modifier = Modifier.width(8.dp))
-        Text(texto, style = MaterialTheme.typography.bodyMedium, color = colorContenido)
-    }
+    FilterChip(
+        selected = seleccionado,
+        onClick = onClick,
+        label = { Text(texto) },
+        leadingIcon = { Icon(icono, null, Modifier.size(18.dp)) },
+        modifier = modifier,
+        colors = FilterChipDefaults.filterChipColors(
+            selectedContainerColor = MaterialTheme.colorScheme.primary,
+            selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
+            selectedLeadingIconColor = MaterialTheme.colorScheme.onPrimary
+        )
+    )
 }
 
 /** Acceso rápido con borde ("Ir a la Javeriana", "Guardados"). */
@@ -127,17 +107,12 @@ fun AccesoRapido(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Row(
-        modifier = modifier
-            .clip(RoundedCornerShape(12.dp))
-            .border(1.dp, JWBordeSuave, RoundedCornerShape(12.dp))
-            .clickable { onClick() }
-            .padding(horizontal = 10.dp, vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(icono, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
-        Spacer(modifier = Modifier.width(8.dp))
-        Text(texto, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.primary)
+    OutlinedButton(onClick = onClick, modifier = modifier.heightIn(min = 48.dp),
+        shape = RoundedCornerShape(12.dp)) {
+        Icon(icono, null, Modifier.size(20.dp))
+        Spacer(Modifier.width(8.dp))
+        Text(texto, style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.weight(1f, fill = false))
     }
 }
 
@@ -151,7 +126,7 @@ fun PanelInferior(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp))
-            .background(JWBlanco)
+            .background(MaterialTheme.colorScheme.surface)
             .padding(horizontal = 24.dp, vertical = 12.dp)
     ) {
         // Tirador del panel
@@ -161,7 +136,7 @@ fun PanelInferior(
                 .width(36.dp)
                 .height(5.dp)
                 .clip(RoundedCornerShape(3.dp))
-                .background(JWBordeSuave)
+                .background(MaterialTheme.colorScheme.outlineVariant)
         )
         Spacer(modifier = Modifier.height(12.dp))
         contenido()
@@ -184,22 +159,22 @@ fun PanelPasajero(
 ) {
     PanelInferior(modifier = modifier) {
         Text(
-            text = "¿A dónde vas?",
+            text = stringResource(R.string.ui_a_donde_vas),
             style = MaterialTheme.typography.headlineSmall,
             color = MaterialTheme.colorScheme.primary
         )
         Spacer(modifier = Modifier.height(12.dp))
 
         // Momento del viaje
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             ChipOpcion(
-                texto = "Ahora",
+                texto = stringResource(R.string.ui_ahora),
                 icono = Icons.Default.Schedule,
                 seleccionado = !viajeProgramado,
                 onClick = { onSeleccionarMomento(false) }
             )
             ChipOpcion(
-                texto = "Programar",
+                texto = stringResource(R.string.ui_programar),
                 icono = Icons.Default.CalendarMonth,
                 seleccionado = viajeProgramado,
                 onClick = { onSeleccionarMomento(true) }
@@ -217,49 +192,46 @@ fun PanelPasajero(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(16.dp))
-                .border(1.dp, JWBordeSuave, RoundedCornerShape(16.dp))
+                .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(16.dp))
                 .padding(horizontal = 14.dp, vertical = 8.dp)
         ) {
             Row(
-                modifier = Modifier.padding(vertical = 10.dp),
-                verticalAlignment = Alignment.CenterVertically
+                modifier = Modifier.padding(vertical = 10.dp)
             ) {
-                Icon(Icons.Default.TripOrigin, contentDescription = null, tint = JWCeleste, modifier = Modifier.size(20.dp))
+                Icon(Icons.Default.TripOrigin, contentDescription = null, tint = MaterialTheme.colorScheme.outline, modifier = Modifier.size(20.dp))
                 Spacer(modifier = Modifier.width(12.dp))
                 Text(origen, style = MaterialTheme.typography.bodyLarge)
             }
-            HorizontalDivider(color = JWBordeSuave)
-            OutlinedTextField(
-                value = destino,
-                onValueChange = onDestinoChange,
-                modifier = Modifier.fillMaxWidth(),
-                placeholder = { Text("Escribe tu destino") },
-                singleLine = true,
-                leadingIcon = { Icon(Icons.Default.Place, contentDescription = null, tint = JWAmarillo) },
-                shape = RoundedCornerShape(12.dp)
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+            CampoTexto(
+                etiqueta = stringResource(R.string.ui_destino),
+                valor = destino,
+                alCambiar = onDestinoChange,
+                placeholder = stringResource(R.string.ui_escribe_tu_destino),
+                iconoFinal = Icons.Default.Place
             )
             Spacer(modifier = Modifier.height(6.dp))
         }
         Spacer(modifier = Modifier.height(12.dp))
 
         // Destinos rápidos
-        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             AccesoRapido(
-                texto = "Ir a la Javeriana",
+                texto = stringResource(R.string.ui_ir_a_la_javeriana),
                 icono = Icons.Default.School,
                 onClick = onIrALaJaveriana,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.fillMaxWidth()
             )
             AccesoRapido(
-                texto = "Guardados",
+                texto = stringResource(R.string.ui_guardados),
                 icono = Icons.Default.BookmarkBorder,
                 onClick = onGuardados,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.fillMaxWidth()
             )
         }
         Spacer(modifier = Modifier.height(12.dp))
 
-        BotonPrincipal(texto = "Buscar Wheels", onClick = onBuscar)
+        BotonPrincipal(texto = stringResource(R.string.ui_buscar_wheels), onClick = onBuscar)
         Spacer(modifier = Modifier.height(12.dp))
     }
 }
@@ -274,17 +246,17 @@ fun PanelConductor(
 ) {
     PanelInferior(modifier = modifier) {
         Text(
-            text = "Comparte tu camino",
+            text = stringResource(R.string.ui_comparte_tu_camino),
             style = MaterialTheme.typography.headlineSmall,
             color = MaterialTheme.colorScheme.primary
         )
         Spacer(modifier = Modifier.height(12.dp))
-        BotonPrincipal(texto = "Publicar un Wheel", onClick = onPublicar, icono = Icons.Default.Add)
+        BotonPrincipal(texto = stringResource(R.string.ui_publicar_un_wheel), onClick = onPublicar, icono = Icons.Default.Add)
         Spacer(modifier = Modifier.height(12.dp))
         if (proximoViaje != null) {
             TarjetaProximoViaje(viaje = proximoViaje, onVerViaje = onVerViaje)
         } else {
-            Text("Aún no tienes viajes programados.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(stringResource(R.string.ui_aun_no_tienes_viajes_programados), color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         Spacer(modifier = Modifier.height(12.dp))
     }
@@ -300,17 +272,16 @@ fun TarjetaProximoViaje(
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = JWCelesteSuave)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)
     ) {
         Column(modifier = Modifier.padding(14.dp)) {
             // Título + estado
-            Row(
+            FlowRow(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Text(
-                    text = "Tu próximo viaje",
+                    text = stringResource(R.string.ui_tu_proximo_viaje),
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -320,24 +291,24 @@ fun TarjetaProximoViaje(
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier
                         .clip(RoundedCornerShape(11.dp))
-                        .background(JWAmarilloSuave)
+                        .background(MaterialTheme.colorScheme.tertiaryContainer)
                         .padding(horizontal = 12.dp, vertical = 3.dp)
                 )
             }
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "${viaje.origen} → ${viaje.destino}",
+                text = stringResource(R.string.ruta_busqueda, viaje.origen, viaje.destino),
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.primary
             )
             Spacer(modifier = Modifier.height(8.dp))
-            Row(
+            FlowRow(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                Text("${viaje.fecha} · ${viaje.hora}", style = MaterialTheme.typography.bodyMedium)
+                Text(stringResource(R.string.fecha_y_hora, viaje.fecha, viaje.hora), style = MaterialTheme.typography.bodyMedium)
                 Text(
-                    "${viaje.cuposOcupados} de ${viaje.cuposTotales} cupos",
+                    stringResource(R.string.cupos_ocupados_total, viaje.cuposOcupados, viaje.cuposTotales),
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
@@ -347,7 +318,7 @@ fun TarjetaProximoViaje(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp)
             ) {
-                Text("Ver viaje")
+                Text(stringResource(R.string.ui_ver_viaje))
             }
         }
     }
@@ -358,7 +329,7 @@ fun TarjetaProximoViaje(
 fun PanelesInicioPreview() {
     JaveWheelsTheme {
         Column {
-            EncabezadoInicio(subtitulo = "Comparte tu ruta", rol = Rol.CONDUCTOR, onCambiarRol = {})
+            EncabezadoInicio(subtitulo = stringResource(R.string.ui_comparte_tu_ruta), rol = Rol.CONDUCTOR, onCambiarRol = {})
             PanelConductor(proximoViaje = proximoViajeConductor, onPublicar = {}, onVerViaje = {})
         }
     }

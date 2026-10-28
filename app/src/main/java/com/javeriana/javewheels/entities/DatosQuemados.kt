@@ -4,6 +4,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DirectionsCar
 import androidx.compose.material.icons.filled.PeopleAlt
 import androidx.compose.material.icons.filled.ShareLocation
+import com.javeriana.javewheels.R
 
 // ============================================================
 // DATOS QUEMADOS (hardcoded)
@@ -28,18 +29,18 @@ val usuarioDePrueba = Usuario(
 /** Las 3 páginas de la pantalla de carga. */
 val paginasCarga = listOf(
     PaginaCarga(
-        titulo = "Reserva tu Wheel",
-        descripcion = "Encuentra conductores de la comunidad Javeriana que van por tu ruta y reserva tu cupo en segundos.",
+        titulo = R.string.ui_reserva_tu_wheel,
+        descripcion = R.string.bienvenida_reservar_descripcion,
         icono = Icons.Default.DirectionsCar
     ),
     PaginaCarga(
-        titulo = "Viaja seguro",
-        descripcion = "Sigue tu viaje en tiempo real y comparte tu recorrido con quien quieras.",
+        titulo = R.string.ui_viaja_seguro,
+        descripcion = R.string.bienvenida_seguridad_descripcion,
         icono = Icons.Default.ShareLocation
     ),
     PaginaCarga(
-        titulo = "Pasajero o conductor",
-        descripcion = "Cambia de rol cuando quieras: pide un Wheel o comparte tu camino con otros javerianos.",
+        titulo = R.string.ui_pasajero_o_conductor,
+        descripcion = R.string.bienvenida_roles_descripcion,
         icono = Icons.Default.PeopleAlt
     )
 )

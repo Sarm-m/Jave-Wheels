@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -16,16 +18,19 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.javeriana.javewheels.ui.theme.JWAmarillo
-import com.javeriana.javewheels.ui.theme.JWAzul
-import com.javeriana.javewheels.ui.theme.JWCeleste
-import com.javeriana.javewheels.ui.theme.JWCelesteContenedor
+import com.javeriana.javewheels.R
 import com.javeriana.javewheels.ui.theme.JaveWheelsTheme
 
 // ============================================================
@@ -78,6 +83,8 @@ fun MensajeError(
     modifier: Modifier = Modifier
 ) {
     if (mensaje.isNotEmpty()) {
+        val solicitud = remember { BringIntoViewRequester() }
+        LaunchedEffect(mensaje) { solicitud.bringIntoView() }
         Text(
             text = mensaje,
             style = MaterialTheme.typography.bodyMedium,
@@ -85,8 +92,16 @@ fun MensajeError(
             modifier = modifier
                 .fillMaxWidth()
                 .padding(vertical = 8.dp)
+                .semantics { liveRegion = LiveRegionMode.Polite }
+                .bringIntoViewRequester(solicitud)
         )
     }
+}
+
+/** Resuelve el mensaje del estado de UI sin llevar un Context al ViewModel. */
+@Composable
+fun MensajeError(@androidx.annotation.StringRes mensaje: Int, modifier: Modifier = Modifier) {
+    if (mensaje != 0) MensajeError(stringResource(mensaje), modifier)
 }
 
 /** Texto de ayuda gris y centrado ("Mínimo 8 caracteres...", etc.). */
@@ -107,12 +122,12 @@ fun TextoAyuda(
 
 /** Círculo con el check de "Confirmación exitosa". */
 @Composable
-fun IconoConfirmacion(modifier: Modifier = Modifier, descripcion: String = "Confirmación exitosa", conDiscoAmarillo: Boolean = false) {
+fun IconoConfirmacion(modifier: Modifier = Modifier, descripcion: String = stringResource(R.string.ui_confirmacion_exitosa), conDiscoAmarillo: Boolean = false) {
     Box(
         modifier = modifier
             .size(124.dp)
             .clip(CircleShape)
-            .background(if (conDiscoAmarillo) JWCeleste else JWCelesteContenedor),
+            .background(if (conDiscoAmarillo) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.primaryContainer),
         contentAlignment = Alignment.Center
     ) {
         if (conDiscoAmarillo) {
@@ -120,13 +135,13 @@ fun IconoConfirmacion(modifier: Modifier = Modifier, descripcion: String = "Conf
                 modifier = Modifier
                     .size(84.dp)
                     .clip(CircleShape)
-                    .background(JWAmarillo),
+                    .background(MaterialTheme.colorScheme.tertiary),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = Icons.Default.Check,
                     contentDescription = descripcion,
-                    tint = JWAzul,
+                    tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(52.dp)
                 )
             }
@@ -147,11 +162,11 @@ fun EncabezadoAccesoPreview() {
     JaveWheelsTheme {
         Column(modifier = Modifier.padding(24.dp)) {
             EncabezadoAcceso(
-                titulo = "Crea tu cuenta",
-                descripcion = "Únete a la comunidad JaveWheels.",
+                titulo = stringResource(R.string.ui_crea_tu_cuenta),
+                descripcion = stringResource(R.string.ui_unete_a_la_comunidad_javewheels),
                 onVolver = {}
             )
-            MensajeError(mensaje = "Completa todos los campos.")
+            MensajeError(mensaje = stringResource(R.string.error_completa_todos_los_campos))
             IconoConfirmacion()
         }
     }

@@ -9,11 +9,14 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.Button
@@ -24,20 +27,19 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.javeriana.javewheels.R
 import com.javeriana.javewheels.entities.paginasCarga
 import com.javeriana.javewheels.ui.components.AcentoAmarillo
 import com.javeriana.javewheels.ui.components.BotonVolver
-import com.javeriana.javewheels.ui.theme.JWAmarillo
-import com.javeriana.javewheels.ui.theme.JWBordeSuave
-import com.javeriana.javewheels.ui.theme.JWCelesteContenedor
-import com.javeriana.javewheels.ui.theme.JWCelesteSuave
 import com.javeriana.javewheels.ui.theme.JaveWheelsTheme
 import com.javeriana.javewheels.viewmodels.CargaViewModel
 
@@ -61,6 +63,7 @@ fun CargaScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .padding(24.dp)
     ) {
         // Fila superior: volver (desde la página 2) y "Saltar"
@@ -75,29 +78,29 @@ fun CargaScreen(
                 Spacer(modifier = Modifier.size(44.dp))
             }
             TextButton(onClick = onComenzar) {
-                Text("Saltar", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(stringResource(R.string.ui_saltar), color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
 
         // weight(1f) en los Spacer = reparten el espacio libre arriba y abajo
-        Spacer(modifier = Modifier.weight(1f))
+        Spacer(modifier = Modifier.height(24.dp))
         IlustracionCarga(
             icono = pagina.icono,
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
-        Spacer(modifier = Modifier.weight(1f))
+        Spacer(modifier = Modifier.height(24.dp))
 
         // Texto de la pantalla de carga
         AcentoAmarillo()
         Spacer(modifier = Modifier.height(14.dp))
         Text(
-            text = pagina.titulo,
+            text = stringResource(pagina.titulo),
             style = MaterialTheme.typography.headlineMedium,
             color = MaterialTheme.colorScheme.primary
         )
         Spacer(modifier = Modifier.height(10.dp))
         Text(
-            text = pagina.descripcion,
+            text = stringResource(pagina.descripcion),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -116,10 +119,10 @@ fun CargaScreen(
                     if (uiState.esUltimaPagina) onComenzar() else viewModel.siguientePagina()
                 },
                 shape = RoundedCornerShape(14.dp),
-                modifier = Modifier.height(48.dp)
+                modifier = Modifier.heightIn(min = 48.dp)
             ) {
                 Text(
-                    text = if (uiState.esUltimaPagina) "Comenzar" else "Siguiente",
+                    text = if (uiState.esUltimaPagina) stringResource(R.string.ui_comenzar) else stringResource(R.string.ui_siguiente),
                     style = MaterialTheme.typography.labelLarge
                 )
                 Spacer(modifier = Modifier.width(6.dp))
@@ -139,14 +142,14 @@ fun IlustracionCarga(
         modifier = modifier
             .size(280.dp)
             .clip(CircleShape)
-            .background(JWCelesteSuave),
+            .background(MaterialTheme.colorScheme.surfaceContainerLow),
         contentAlignment = Alignment.Center
     ) {
         Box(
             modifier = Modifier
                 .size(190.dp)
                 .clip(CircleShape)
-                .background(JWCelesteContenedor),
+                .background(MaterialTheme.colorScheme.primaryContainer),
             contentAlignment = Alignment.Center
         ) {
             Icon(
@@ -163,7 +166,7 @@ fun IlustracionCarga(
                 .padding(top = 30.dp, end = 30.dp)
                 .size(44.dp)
                 .clip(CircleShape)
-                .background(JWAmarillo)
+                .background(MaterialTheme.colorScheme.tertiary)
         )
     }
 }
@@ -186,7 +189,7 @@ fun IndicadorPagina(
                     .height(8.dp)
                     .width(if (esActual) 26.dp else 8.dp)
                     .clip(RoundedCornerShape(4.dp))
-                    .background(if (esActual) MaterialTheme.colorScheme.primary else JWBordeSuave)
+                    .background(if (esActual) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant)
             )
         }
     }

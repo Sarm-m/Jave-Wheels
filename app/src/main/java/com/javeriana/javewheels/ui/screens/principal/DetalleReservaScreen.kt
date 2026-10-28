@@ -15,15 +15,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.javeriana.javewheels.R
 import com.javeriana.javewheels.entities.reservaConfirmada
 import com.javeriana.javewheels.ui.components.BotonSecundario
 import com.javeriana.javewheels.ui.components.BotonTexto
-import com.javeriana.javewheels.ui.components.MapaIlustrativo
 import com.javeriana.javewheels.ui.components.DatosDetallePasajero
 import com.javeriana.javewheels.ui.components.EncabezadoViajes
 import com.javeriana.javewheels.ui.components.EtiquetaViaje
+import com.javeriana.javewheels.ui.components.MapaIlustrativo
 import com.javeriana.javewheels.ui.components.PuntoRecogidaPasajero
 import com.javeriana.javewheels.ui.components.compartirViaje
 import com.javeriana.javewheels.ui.theme.JaveWheelsTheme
@@ -36,34 +39,35 @@ fun DetalleReservaScreen(
     onVerViaje: (() -> Unit)? = null
 ) {
     val context = LocalContext.current
+    val recursos = LocalResources.current
     val wheel = reservaConfirmada.wheel
     fun mostrarAviso() {
-        Toast.makeText(context, "Acción disponible próximamente", Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, recursos.getString(R.string.ui_accion_disponible_proximamente), Toast.LENGTH_SHORT).show()
     }
 
     Column(modifier = modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
-        EncabezadoViajes("Detalle de reserva", onVolver)
+        EncabezadoViajes(stringResource(R.string.ui_detalle_de_reserva), onVolver)
         Row(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp).padding(bottom = 12.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             EtiquetaViaje(reservaConfirmada.estado, resaltado = true)
-            Text("Solicitud aceptada · Modo Buseta", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.weight(1f))
+            Text(stringResource(R.string.ui_solicitud_aceptada_modo_buseta), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
-        MapaIlustrativo(altura = 200.dp, textoUbicacion = "Recogida", mostrarCentrar = false)
+        MapaIlustrativo(altura = 200.dp, textoUbicacion = stringResource(R.string.ui_recogida), mostrarCentrar = false)
         Column(
             modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            DatosDetallePasajero(wheel, "1 cupo reservado")
+            DatosDetallePasajero(wheel, stringResource(R.string.ui_1_cupo_reservado))
             PuntoRecogidaPasajero(wheel, acordado = true)
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                BotonSecundario("Enviar mensaje", onClick = onEnviarMensaje, modifier = Modifier.weight(1f))
-                BotonSecundario("Compartir viaje", onClick = { compartirViaje(context, wheel) }, modifier = Modifier.weight(1f))
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                BotonSecundario(stringResource(R.string.ui_enviar_mensaje), onClick = onEnviarMensaje)
+                BotonSecundario(stringResource(R.string.ui_compartir_viaje), onClick = { compartirViaje(context, wheel) })
             }
-            if (onVerViaje != null) BotonSecundario("Ver viaje en vivo", onClick = onVerViaje)
-            BotonTexto("Cancelar reserva", onClick = { mostrarAviso() })
+            if (onVerViaje != null) BotonSecundario(stringResource(R.string.ui_ver_viaje_en_vivo), onClick = onVerViaje)
+            BotonTexto(stringResource(R.string.ui_cancelar_reserva), onClick = { mostrarAviso() })
         }
     }
 }

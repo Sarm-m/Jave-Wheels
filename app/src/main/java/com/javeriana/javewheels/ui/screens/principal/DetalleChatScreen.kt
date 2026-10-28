@@ -10,25 +10,30 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material3.FilledIconButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.javeriana.javewheels.ui.components.BotonPrincipal
+import com.javeriana.javewheels.R
 import com.javeriana.javewheels.ui.components.BurbujaMensaje
 import com.javeriana.javewheels.ui.components.CampoTexto
 import com.javeriana.javewheels.ui.components.FilaConAvatar
 import com.javeriana.javewheels.ui.components.MarcaJaveWheels
-import com.javeriana.javewheels.ui.theme.JWCelesteContenedor
 import com.javeriana.javewheels.viewmodels.ChatsViewModel
 
 @Composable
@@ -59,11 +64,11 @@ fun DetalleChatScreen(
             // Encabezado: el usuario del otro lado del chat
             FilaConAvatar(
                 titulo = chat.nombreUsuario,
-                subtitulo = if (idChat in estado.chatsEscribiendo) "Escribiendo..." else "",
-                descripcionAvatar = "Foto de ${chat.nombreUsuario}",
+                subtitulo = if (idChat in estado.chatsEscribiendo) stringResource(R.string.ui_escribiendo) else "",
+                descripcionAvatar = stringResource(R.string.ui_foto_de_1_s, chat.nombreUsuario),
                 modifier = Modifier
                     .clip(RoundedCornerShape(16.dp))
-                    .background(JWCelesteContenedor)
+                    .background(MaterialTheme.colorScheme.primaryContainer)
             )
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -89,14 +94,12 @@ fun DetalleChatScreen(
                     etiqueta = "",
                     valor = estado.borrador,
                     alCambiar = viewModel::actualizarBorrador,
-                    placeholder = "Escribe un mensaje . . .",
+                    placeholder = stringResource(R.string.ui_escribe_un_mensaje),
                     modifier = Modifier.weight(1f)
                 )
-                BotonPrincipal(
-                    texto = "Enviar",
-                    onClick = { viewModel.enviarMensaje(idChat) },
-                    modifier = Modifier.width(96.dp)
-                )
+                FilledIconButton(onClick = { viewModel.enviarMensaje(idChat) }, enabled = estado.borrador.isNotBlank()) {
+                    Icon(Icons.AutoMirrored.Filled.Send, contentDescription = stringResource(R.string.ui_enviar))
+                }
             }
         }
     }

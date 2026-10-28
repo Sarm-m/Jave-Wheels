@@ -9,13 +9,15 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.javeriana.javewheels.R
 
 @Composable
 fun BoxScope.BotonCentradoMapa(
@@ -30,12 +32,12 @@ fun BoxScope.BotonCentradoMapa(
             .size(46.dp)
             .shadow(4.dp, CircleShape)
             .clip(CircleShape)
-            .background(Color.White)
+            .background(MaterialTheme.colorScheme.surface)
     ) {
         Icon(
             imageVector = Icons.Default.MyLocation,
-            contentDescription = "Centrar",
-            tint = Color(0xFF0D3B66),
+            contentDescription = stringResource(R.string.ui_centrar),
+            tint = MaterialTheme.colorScheme.primary,
             modifier = Modifier.size(22.dp)
         )
     }

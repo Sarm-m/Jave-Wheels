@@ -11,13 +11,20 @@ import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.TripOrigin
 import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.javeriana.javewheels.R
 import com.javeriana.javewheels.entities.*
 import com.javeriana.javewheels.ui.components.*
+import com.javeriana.javewheels.ui.components.MensajeError
 import com.javeriana.javewheels.viewmodels.InicioViewModel
 import java.util.Calendar
 
@@ -32,6 +39,7 @@ fun BuscarMomentoScreen(
 ) {
     val estado by viewModel.uiState.collectAsState()
     val context = LocalContext.current
+    val recursos = LocalResources.current
     // El borrador pertenece a esta pantalla: Atrás no cambia la búsqueda confirmada.
     var origen by rememberSaveable { mutableStateOf(estado.origen) }
     var destino by rememberSaveable { mutableStateOf(estado.destino) }
@@ -68,58 +76,60 @@ fun BuscarMomentoScreen(
     }
 
     Column(modifier.fillMaxSize().imePadding().verticalScroll(rememberScrollState())) {
-        EncabezadoViajes(if (programado) "Programar búsqueda" else "Buscar ahora", onVolver)
+        EncabezadoViajes(if (programado) stringResource(R.string.ui_programar_busqueda) else stringResource(R.string.ui_buscar_ahora), onVolver)
         MapaIlustrativo(altura = 170.dp, mostrarCentrar = false,
-            textoUbicacion = if (origen == "Mi ubicación") "Tu ubicación" else origen,
-            textoDestino = destino.ifBlank { "Destino" })
+            textoUbicacion = if (origen == "Mi ubicación") stringResource(R.string.ui_tu_ubicacion) else origen,
+            textoDestino = destino.ifBlank { stringResource(R.string.ui_destino) })
         Column(Modifier.padding(24.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            Text(if (programado) "¿Cuándo quieres viajar?" else "¿A dónde vas ahora?",
+            Text(if (programado) stringResource(R.string.ui_cuando_quieres_viajar) else stringResource(R.string.ui_a_donde_vas_ahora),
                 style = MaterialTheme.typography.headlineSmall)
-            Text(if (programado) "Elige fecha y hora. Buscaremos salidas durante la hora siguiente."
-                else "Buscaremos Wheels que salen durante los próximos 60 minutos.")
+            Text(if (programado) stringResource(R.string.ui_elige_fecha_y_hora_buscaremos_salidas_durante_la_hora_siguiente)
+                else stringResource(R.string.ui_buscaremos_wheels_que_salen_durante_los_proximos_60_minutos))
             OutlinedTextField(origen, { origen = it; error = null }, Modifier.fillMaxWidth(),
-                label = { Text("Origen") }, singleLine = true,
+                label = { Text(stringResource(R.string.ui_origen)) }, singleLine = true,
+                isError = error != null && origen.isBlank(),
                 leadingIcon = { Icon(Icons.Default.TripOrigin, contentDescription = null) })
-            TextButton(onClick = { origen = "Mi ubicación"; error = null }) { Text("Usar mi ubicación") }
+            TextButton(onClick = { origen = "Mi ubicación"; error = null }) { Text(stringResource(R.string.ui_usar_mi_ubicacion)) }
             OutlinedTextField(destino, { destino = it; error = null }, Modifier.fillMaxWidth(),
-                label = { Text("Destino") }, singleLine = true,
+                label = { Text(stringResource(R.string.ui_destino)) }, singleLine = true,
+                isError = error != null && destino.isBlank(),
                 leadingIcon = { Icon(Icons.Default.Place, contentDescription = null) })
             if (!destino.trim().equals(DESTINO_JAVERIANA, ignoreCase = true) &&
                 !destino.trim().equals("Pontificia Universidad Javeriana", ignoreCase = true)) {
-                TextButton(onClick = { destino = DESTINO_JAVERIANA; error = null }) { Text("Ir a la Javeriana") }
+                TextButton(onClick = { destino = DESTINO_JAVERIANA; error = null }) { Text(stringResource(R.string.ui_ir_a_la_javeriana)) }
             }
             if (programado) {
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    ChipOpcion("Hoy", Icons.Default.CalendarMonth, false, {
+                    ChipOpcion(stringResource(R.string.ui_hoy), Icons.Default.CalendarMonth, false, {
                         salida = salidaEnDias(0, minutosDelDia(salida)); error = null
                     })
-                    ChipOpcion("Mañana", Icons.Default.CalendarMonth, false, {
+                    ChipOpcion(stringResource(R.string.ui_manana), Icons.Default.CalendarMonth, false, {
                         salida = salidaEnDias(1, minutosDelDia(salida)); error = null
                     })
                 }
                 OutlinedButton(onClick = { elegirFecha() }, modifier = Modifier.fillMaxWidth()) {
                     Icon(Icons.Default.CalendarMonth, contentDescription = null)
                     Spacer(Modifier.width(8.dp))
-                    Text("Fecha: ${fechaBusqueda(salida)}")
+                    Text(stringResource(R.string.ui_fecha_1_s, fechaBusqueda(salida)))
                 }
                 OutlinedButton(onClick = { elegirHora() }, modifier = Modifier.fillMaxWidth()) {
                     Icon(Icons.Default.Schedule, contentDescription = null)
                     Spacer(Modifier.width(8.dp))
-                    Text("Hora: ${horaBusqueda(salida)}")
+                    Text(stringResource(R.string.ui_hora_1_s, horaBusqueda(salida)))
                 }
             } else {
                 Card(Modifier.fillMaxWidth()) {
-                    Text("Salida: ahora · próximos 60 minutos", Modifier.padding(16.dp))
+                    Text(stringResource(R.string.ui_salida_ahora_proximos_60_minutos), Modifier.padding(16.dp))
                 }
             }
-            error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
-            BotonPrincipal(if (programado) "Buscar Wheels programados" else "Buscar Wheels ahora", onClick = {
+            error?.let { MensajeError(it) }
+            BotonPrincipal(if (programado) stringResource(R.string.ui_buscar_wheels_programados) else stringResource(R.string.ui_buscar_wheels_ahora), onClick = {
                 val momento = if (programado) salida else System.currentTimeMillis()
                 error = when {
-                    origen.isBlank() -> "Escribe el origen del viaje."
-                    destino.isBlank() -> "Escribe el destino del viaje."
-                    origen.trim().equals(destino.trim(), ignoreCase = true) -> "El origen y el destino deben ser diferentes."
-                    programado && momento <= System.currentTimeMillis() -> "Selecciona una fecha y hora futuras."
+                    origen.isBlank() -> recursos.getString(R.string.ui_escribe_el_origen_del_viaje)
+                    destino.isBlank() -> recursos.getString(R.string.ui_escribe_el_destino_del_viaje)
+                    origen.trim().equals(destino.trim(), ignoreCase = true) -> recursos.getString(R.string.ui_el_origen_y_el_destino_deben_ser_diferentes)
+                    programado && momento <= System.currentTimeMillis() -> recursos.getString(R.string.ui_selecciona_una_fecha_y_hora_futuras)
                     else -> null
                 }
                 if (error == null) {
@@ -127,7 +137,7 @@ fun BuscarMomentoScreen(
                     onBuscar(origen.trim(), destino.trim(), momento)
                 }
             })
-            Text("Datos locales de demostración. Mi ubicación no utiliza GPS. Hay viajes para ahora, mañana y pasado mañana.",
+            Text(stringResource(R.string.ui_datos_locales_de_demostracion_mi_ubicacion_no_utiliza_gps_hay_via),
                 style = MaterialTheme.typography.bodySmall)
         }
     }

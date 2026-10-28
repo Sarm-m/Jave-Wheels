@@ -1,6 +1,7 @@
 package com.javeriana.javewheels.viewmodels
 
 import androidx.lifecycle.ViewModel
+import com.javeriana.javewheels.R
 import com.javeriana.javewheels.entities.CODIGO_VERIFICACION
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,7 +20,7 @@ data class RecuperarUiState(
     val codigo: String = "",
     val nuevaContrasena: String = "",
     val confirmarContrasena: String = "",
-    val mensajeError: String = ""
+    @androidx.annotation.StringRes val mensajeError: Int = 0
 )
 
 class RecuperarContrasenaViewModel : ViewModel() {
@@ -29,23 +30,23 @@ class RecuperarContrasenaViewModel : ViewModel() {
 
     // ---------- Paso 1: correo ----------
     fun actualizarCorreo(valor: String) {
-        _uiState.update { it.copy(correo = valor, mensajeError = "") }
+        _uiState.update { it.copy(correo = valor, mensajeError = 0) }
     }
 
     /** "Envía" el código. Devuelve true si el correo es válido. */
     fun enviarCodigo(): Boolean {
         val correo = _uiState.value.correo
-        val error = if (esCorreoInstitucional(correo)) "" else
-            "Escribe tu correo institucional (@javeriana.edu.co)."
+        val error = if (esCorreoInstitucional(correo)) 0 else
+            R.string.error_escribe_tu_correo_institucional_javeriana_edu_co
         _uiState.update { it.copy(mensajeError = error, codigo = "") }
-        return error.isEmpty()
+        return error == 0
     }
 
     // ---------- Paso 2: código ----------
     fun actualizarCodigo(valor: String) {
         // Solo se aceptan números y máximo 6 dígitos
         if (valor.length <= 6 && valor.all { it.isDigit() }) {
-            _uiState.update { it.copy(codigo = valor, mensajeError = "") }
+            _uiState.update { it.copy(codigo = valor, mensajeError = 0) }
         }
     }
 
@@ -53,21 +54,21 @@ class RecuperarContrasenaViewModel : ViewModel() {
     fun verificarCodigo(): Boolean {
         val codigo = _uiState.value.codigo
         val error = when {
-            codigo.length < 6 -> "El código tiene 6 dígitos."
-            codigo != CODIGO_VERIFICACION -> "El código no es correcto. Inténtalo de nuevo."
-            else -> ""
+            codigo.length < 6 -> R.string.error_el_codigo_tiene_6_digitos
+            codigo != CODIGO_VERIFICACION -> R.string.error_el_codigo_no_es_correcto_intentalo_de_nuevo
+            else -> 0
         }
         _uiState.update { it.copy(mensajeError = error) }
-        return error.isEmpty()
+        return error == 0
     }
 
     // ---------- Paso 3: nueva contraseña ----------
     fun actualizarNuevaContrasena(valor: String) {
-        _uiState.update { it.copy(nuevaContrasena = valor, mensajeError = "") }
+        _uiState.update { it.copy(nuevaContrasena = valor, mensajeError = 0) }
     }
 
     fun actualizarConfirmarContrasena(valor: String) {
-        _uiState.update { it.copy(confirmarContrasena = valor, mensajeError = "") }
+        _uiState.update { it.copy(confirmarContrasena = valor, mensajeError = 0) }
     }
 
     /** Valida la nueva contraseña. Si todo está bien, limpia el flujo. */
@@ -75,22 +76,22 @@ class RecuperarContrasenaViewModel : ViewModel() {
         val estado = _uiState.value
         val error = when {
             !esContrasenaValida(estado.nuevaContrasena) ->
-                "Usa al menos 8 caracteres, con letras y números."
+                R.string.error_usa_al_menos_8_caracteres_con_letras_y_numeros
             estado.nuevaContrasena != estado.confirmarContrasena ->
-                "Las contraseñas no coinciden."
-            else -> ""
+                R.string.error_las_contrasenas_no_coinciden
+            else -> 0
         }
-        if (error.isEmpty()) {
+        if (error == 0) {
             // Terminó el flujo: se reinicia para la próxima vez
             _uiState.value = RecuperarUiState()
         } else {
             _uiState.update { it.copy(mensajeError = error) }
         }
-        return error.isEmpty()
+        return error == 0
     }
 
     /** Limpia el mensaje de error al volver atrás. */
     fun limpiarError() {
-        _uiState.update { it.copy(mensajeError = "") }
+        _uiState.update { it.copy(mensajeError = 0) }
     }
 }

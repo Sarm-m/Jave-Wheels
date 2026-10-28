@@ -1,6 +1,7 @@
 package com.javeriana.javewheels.viewmodels
 
 import androidx.lifecycle.ViewModel
+import com.javeriana.javewheels.R
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -12,7 +13,7 @@ import kotlinx.coroutines.flow.update
 data class LoginUiState(
     val correo: String = "",
     val contrasena: String = "",
-    val mensajeError: String = ""   // "" = no hay error
+    @androidx.annotation.StringRes val mensajeError: Int = 0   // 0 = no hay error
 )
 
 class LoginViewModel : ViewModel() {
@@ -23,11 +24,11 @@ class LoginViewModel : ViewModel() {
     // --- Eventos que llegan desde la UI (UI -> ViewModel) ---
 
     fun actualizarCorreo(nuevoCorreo: String) {
-        _uiState.update { it.copy(correo = nuevoCorreo, mensajeError = "") }
+        _uiState.update { it.copy(correo = nuevoCorreo, mensajeError = 0) }
     }
 
     fun actualizarContrasena(nuevaContrasena: String) {
-        _uiState.update { it.copy(contrasena = nuevaContrasena, mensajeError = "") }
+        _uiState.update { it.copy(contrasena = nuevaContrasena, mensajeError = 0) }
     }
 
     /**
@@ -39,15 +40,15 @@ class LoginViewModel : ViewModel() {
         val estado = _uiState.value
         val error = when {
             estado.correo.isBlank() || estado.contrasena.isBlank() ->
-                "Completa tu correo y tu contraseña."
+                R.string.error_completa_tu_correo_y_tu_contrasena
             !esCorreoInstitucional(estado.correo) ->
-                "Usa tu correo institucional (@javeriana.edu.co)."
+                R.string.error_usa_tu_correo_institucional_javeriana_edu_co
             !esContrasenaValida(estado.contrasena) ->
-                "La contraseña debe tener mínimo 8 caracteres, con letras y números."
-            else -> ""
+                R.string.error_la_contrasena_debe_tener_minimo_8_caracteres_con_letras_y_numeros
+            else -> 0
         }
         _uiState.update { it.copy(mensajeError = error) }
-        return error.isEmpty()
+        return error == 0
     }
 
     /** Limpia el formulario (al cerrar sesión). */

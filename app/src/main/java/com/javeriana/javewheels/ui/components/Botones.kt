@@ -1,14 +1,12 @@
 package com.javeriana.javewheels.ui.components
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -19,21 +17,21 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.javeriana.javewheels.ui.theme.JWCelesteContenedor
+import com.javeriana.javewheels.R
 import com.javeriana.javewheels.ui.theme.JaveWheelsTheme
 
 // ============================================================
@@ -58,11 +56,11 @@ fun BotonPrincipal(
         modifier = if (compacto) {
             modifier
                 .widthIn(min = 84.dp)
-                .height(32.dp)
+                .heightIn(min = 48.dp)
         } else {
             modifier
                 .fillMaxWidth()
-                .height(52.dp)
+                .heightIn(min = 52.dp)
         },
         shape = RoundedCornerShape(if (compacto) 16.dp else 14.dp),
         colors = ButtonDefaults.buttonColors(
@@ -70,7 +68,7 @@ fun BotonPrincipal(
             contentColor = colorTexto
         ),
         contentPadding = if (compacto) {
-            PaddingValues(horizontal = 20.dp, vertical = 0.dp)
+            PaddingValues(horizontal = 16.dp, vertical = 8.dp)
         } else {
             ButtonDefaults.ContentPadding
         }
@@ -79,7 +77,8 @@ fun BotonPrincipal(
             Icon(imageVector = icono, contentDescription = null)
             Spacer(modifier = Modifier.width(8.dp))
         }
-        Text(text = texto,
+        Text(text = texto, textAlign = TextAlign.Center,
+            modifier = Modifier.weight(1f, fill = false),
             style = if (compacto) MaterialTheme.typography.labelMedium else MaterialTheme.typography.labelLarge)
     }
 }
@@ -96,12 +95,12 @@ fun BotonSecundario(
         onClick = onClick,
         modifier = modifier
             .fillMaxWidth()
-            .height(52.dp),
+            .heightIn(min = 52.dp),
         shape = RoundedCornerShape(14.dp),
         colors = colors,
         border = BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary)
     ) {
-        Text(text = texto, style = MaterialTheme.typography.labelLarge)
+        Text(text = texto, textAlign = TextAlign.Center, style = MaterialTheme.typography.labelLarge)
     }
 }
 
@@ -130,19 +129,12 @@ fun BotonVolver(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Box(
-        modifier = modifier
-            .size(44.dp)
-            .clip(RoundedCornerShape(12.dp))
-            .background(JWCelesteContenedor)
-            .clickable { onClick() },
-        contentAlignment = Alignment.Center
+    FilledTonalIconButton(
+        onClick = onClick,
+        modifier = modifier.size(48.dp),
+        shape = RoundedCornerShape(12.dp)
     ) {
-        Icon(
-            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-            contentDescription = "Volver",
-            tint = MaterialTheme.colorScheme.primary
-        )
+        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.ui_volver))
     }
 }
 
@@ -153,10 +145,10 @@ fun BotonesPreview() {
         Column(modifier = Modifier.padding(24.dp)) {
             BotonVolver(onClick = {})
             Spacer(modifier = Modifier.height(16.dp))
-            BotonPrincipal(texto = "Iniciar sesión", onClick = {})
+            BotonPrincipal(texto = stringResource(R.string.ui_iniciar_sesion), onClick = {})
             Spacer(modifier = Modifier.height(16.dp))
-            BotonSecundario(texto = "Crear una cuenta", onClick = {})
-            BotonTexto(texto = "¿Olvidaste tu contraseña?", onClick = {})
+            BotonSecundario(texto = stringResource(R.string.ui_crear_una_cuenta), onClick = {})
+            BotonTexto(texto = stringResource(R.string.ui_olvidaste_tu_contrasena_2), onClick = {})
         }
     }
 }

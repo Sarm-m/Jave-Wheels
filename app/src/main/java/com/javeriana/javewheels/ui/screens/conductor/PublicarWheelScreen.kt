@@ -6,20 +6,26 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalResources
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.javeriana.javewheels.R
 import com.javeriana.javewheels.entities.*
 import com.javeriana.javewheels.navigation.Pestana
 import com.javeriana.javewheels.ui.components.*
+import com.javeriana.javewheels.ui.components.InformacionVehiculo
 import com.javeriana.javewheels.ui.theme.JaveWheelsTheme
-import com.javeriana.javewheels.ui.theme.JWCelesteSuave
 import com.javeriana.javewheels.viewmodels.VehiculoUiState
 import java.util.Calendar
 
@@ -32,6 +38,7 @@ fun PublicarWheelScreen(
     vehiculoRegistrado: VehiculoUiState = VehiculoUiState()
 ) {
     val context = LocalContext.current
+    val recursos = LocalResources.current
     val focusManager = LocalFocusManager.current
     var origen by rememberSaveable { mutableStateOf("") }
     var destino by rememberSaveable { mutableStateOf(DESTINO_JAVERIANA) }
@@ -78,51 +85,55 @@ fun PublicarWheelScreen(
             Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(24.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            EncabezadoViajes("Publicar Wheel", onBack, modifier = Modifier)
-            Text("Completa el recorrido y los detalles de tu viaje.",
+            EncabezadoViajes(stringResource(R.string.ui_publicar_wheel), onBack, modifier = Modifier)
+            Text(stringResource(R.string.ui_completa_el_recorrido_y_los_detalles_de_tu_viaje),
                 color = MaterialTheme.colorScheme.onSurfaceVariant)
-            SeccionPublicacion("Recorrido") {
-                CampoTexto("Origen", origen, { origen = it; error = "" },
-                    placeholder = "Dirección o punto de salida", obligatorio = true)
-                CampoTexto("Destino", destino, { destino = it; error = "" },
-                    placeholder = "¿A dónde vas?", obligatorio = true)
+            SeccionPublicacion(stringResource(R.string.ui_recorrido)) {
+                CampoTexto(stringResource(R.string.ui_origen), origen, { origen = it; error = "" },
+                    placeholder = stringResource(R.string.ui_direccion_o_punto_de_salida), obligatorio = true,
+                    hayError = error.isNotEmpty() && origen.isBlank())
+                CampoTexto(stringResource(R.string.ui_destino), destino, { destino = it; error = "" },
+                    placeholder = stringResource(R.string.ui_a_donde_vas), obligatorio = true,
+                    hayError = error.isNotEmpty() && destino.isBlank())
             }
-            SeccionPublicacion("Detalles del viaje") {
-                BotonSecundario("Fecha: ${fechaBusqueda(salida)}", onClick = { elegirFecha() })
-                BotonSecundario("Hora: ${horaBusqueda(salida)}", onClick = { elegirHora() })
-                CampoTexto("Aporte por pasajero (COP)", aporte,
+            SeccionPublicacion(stringResource(R.string.ui_detalles_del_viaje)) {
+                BotonSecundario(stringResource(R.string.ui_fecha_1_s, fechaBusqueda(salida)), onClick = { elegirFecha() })
+                BotonSecundario(stringResource(R.string.ui_hora_1_s, horaBusqueda(salida)), onClick = { elegirHora() })
+                CampoTexto(stringResource(R.string.ui_aporte_por_pasajero_cop), aporte,
                     { aporte = it.filter { caracter -> caracter.isDigit() }; error = "" },
-                    tipoTeclado = KeyboardType.Number, obligatorio = true)
-                Text("Vehículo registrado", style = MaterialTheme.typography.titleSmall,
+                    tipoTeclado = KeyboardType.Number, obligatorio = true,
+                    hayError = error.isNotEmpty() && (aporte.toIntOrNull() ?: 0) <= 0)
+                Text(stringResource(R.string.ui_vehiculo_registrado), style = MaterialTheme.typography.titleSmall,
                     color = MaterialTheme.colorScheme.primary)
-                Text(vehiculo.ifBlank { "Registra tu vehículo desde Perfil." })
-                CampoTexto("Cupos disponibles", cupos,
+                InformacionVehiculo(vehiculo)
+                CampoTexto(stringResource(R.string.ui_cupos_disponibles), cupos,
                     { cupos = it.filter { caracter -> caracter.isDigit() }.take(1); error = "" },
-                    tipoTeclado = KeyboardType.Number, obligatorio = true)
-                Text("Hasta $capacidad cupos según tu vehículo.",
+                    tipoTeclado = KeyboardType.Number, obligatorio = true,
+                    hayError = error.isNotEmpty() && (cupos.toIntOrNull() ?: 0) !in 1..capacidad)
+                Text(stringResource(R.string.ui_hasta_1_s_cupos_segun_tu_vehiculo, capacidad),
                     style = MaterialTheme.typography.bodySmall)
             }
-            SeccionPublicacion("Modo Buseta") {
+            SeccionPublicacion(stringResource(R.string.ui_modo_buseta)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("Recoger pasajeros en puntos intermedios", Modifier.weight(1f))
+                    Text(stringResource(R.string.ui_recoger_pasajeros_en_puntos_intermedios), Modifier.weight(1f))
                     Switch(checked = modoBuseta, onCheckedChange = { modoBuseta = it; error = "" })
                 }
-                if (modoBuseta) CampoTexto("Punto de recogida", puntoRecogida,
-                    { puntoRecogida = it; error = "" }, placeholder = "Dirección de encuentro",
-                    obligatorio = true)
+                if (modoBuseta) CampoTexto(stringResource(R.string.ui_punto_de_recogida), puntoRecogida,
+                    { puntoRecogida = it; error = "" }, placeholder = stringResource(R.string.ui_direccion_de_encuentro),
+                    obligatorio = true, hayError = error.isNotEmpty() && puntoRecogida.isBlank())
             }
             MensajeError(error)
-            BotonPrincipal("Publicar Wheel", onClick = {
+            BotonPrincipal(stringResource(R.string.ui_publicar_wheel), onClick = {
                 val aportePesos = aporte.toIntOrNull()
                 val cuposOfrecidos = cupos.toIntOrNull()
                 error = when {
-                    origen.isBlank() || destino.isBlank() -> "Completa el origen y el destino."
-                    origen.trim().equals(destino.trim(), ignoreCase = true) -> "El origen y el destino deben ser diferentes."
-                    salida <= System.currentTimeMillis() -> "Selecciona una fecha y hora futuras."
-                    aportePesos == null || aportePesos <= 0 -> "Escribe un aporte válido mayor a cero."
-                    vehiculo.isBlank() -> "Completa los datos del vehículo."
-                    cuposOfrecidos == null || cuposOfrecidos !in 1..capacidad -> "Ofrece entre 1 y $capacidad cupos."
-                    modoBuseta && puntoRecogida.isBlank() -> "Escribe el punto de recogida."
+                    origen.isBlank() || destino.isBlank() -> recursos.getString(R.string.ui_completa_el_origen_y_el_destino)
+                    origen.trim().equals(destino.trim(), ignoreCase = true) -> recursos.getString(R.string.ui_el_origen_y_el_destino_deben_ser_diferentes)
+                    salida <= System.currentTimeMillis() -> recursos.getString(R.string.ui_selecciona_una_fecha_y_hora_futuras)
+                    aportePesos == null || aportePesos <= 0 -> recursos.getString(R.string.ui_escribe_un_aporte_valido_mayor_a_cero)
+                    vehiculo.isBlank() -> recursos.getString(R.string.ui_completa_los_datos_del_vehiculo)
+                    cuposOfrecidos == null || cuposOfrecidos !in 1..capacidad -> recursos.getString(R.string.ui_ofrece_entre_1_y_1_s_cupos, capacidad)
+                    modoBuseta && puntoRecogida.isBlank() -> recursos.getString(R.string.ui_escribe_el_punto_de_recogida)
                     else -> ""
                 }
                 if (error.isEmpty()) {
@@ -137,7 +148,7 @@ fun PublicarWheelScreen(
                     ))
                 }
             })
-            BotonTexto("Cancelar publicación", onClick = {
+            BotonTexto(stringResource(R.string.ui_cancelar_publicacion), onClick = {
                 focusManager.clearFocus()
                 onBack()
             })
@@ -149,7 +160,7 @@ fun PublicarWheelScreen(
 @Composable
 private fun SeccionPublicacion(titulo: String, contenido: @Composable ColumnScope.() -> Unit) {
     Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(
-        containerColor = JWCelesteSuave
+        containerColor = MaterialTheme.colorScheme.surfaceContainerLow
     )) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Text(titulo, style = MaterialTheme.typography.titleMedium,

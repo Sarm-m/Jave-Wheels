@@ -1,19 +1,26 @@
 package com.javeriana.javewheels.ui.screens.conductor
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.javeriana.javewheels.R
 import com.javeriana.javewheels.entities.proximoViajeConductor
 import com.javeriana.javewheels.navigation.Pestana
 import com.javeriana.javewheels.ui.components.*
+import com.javeriana.javewheels.ui.components.InformacionVehiculo
 import com.javeriana.javewheels.ui.theme.JaveWheelsTheme
 import com.javeriana.javewheels.viewmodels.InicioViewModel
 
@@ -32,7 +39,7 @@ fun AdministrarWheelScreen(
     var pasajeroAceptado by rememberSaveable(idViaje) { mutableStateOf<String?>(null) }
     var confirmarCancelacion by rememberSaveable(idViaje) { mutableStateOf(false) }
     if (viaje == null) {
-        Text("No se encontró el viaje.", Modifier.padding(24.dp))
+        Text(stringResource(R.string.ui_no_se_encontro_el_viaje), Modifier.padding(24.dp))
         return
     }
 
@@ -41,34 +48,34 @@ fun AdministrarWheelScreen(
             Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(24.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            EncabezadoViajes("Administrar Wheel", onBack, modifier = Modifier)
+            EncabezadoViajes(stringResource(R.string.ui_administrar_wheel), onBack, modifier = Modifier)
             Card(Modifier.fillMaxWidth()) {
                 Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("Resumen del viaje", style = MaterialTheme.typography.titleMedium)
-                    Text("${viaje.origen} → ${viaje.destino}",
+                    Text(stringResource(R.string.ui_resumen_del_viaje), style = MaterialTheme.typography.titleMedium)
+                    Text(stringResource(R.string.ruta_busqueda, viaje.origen, viaje.destino),
                         style = MaterialTheme.typography.titleLarge,
                         color = MaterialTheme.colorScheme.primary)
-                    Text("${viaje.fecha} · ${viaje.hora}")
-                    Text(viaje.vehiculo)
-                    Text("Aporte por pasajero: ${viaje.aporte}")
-                    Text(if (viaje.modoBuseta) "Modo Buseta" else "Recogida directa")
-                    Text("Recogida: ${viaje.puntoRecogida}")
+                    Text(stringResource(R.string.fecha_y_hora, viaje.fecha, viaje.hora))
+                    InformacionVehiculo(viaje.vehiculo)
+                    Text(stringResource(R.string.ui_aporte_por_pasajero_1_s, viaje.aporte))
+                    Text(if (viaje.modoBuseta) stringResource(R.string.ui_modo_buseta) else stringResource(R.string.ui_recogida_directa))
+                    Text(stringResource(R.string.ui_recogida_1_s, viaje.puntoRecogida))
                 }
             }
-            Text("Solicitudes pendientes (${viaje.solicitudes.size})",
+            Text(stringResource(R.string.ui_solicitudes_pendientes_1_s, viaje.solicitudes.size),
                 style = MaterialTheme.typography.titleMedium)
             if (viaje.solicitudes.isEmpty()) {
-                Text("No tienes solicitudes pendientes.", style = MaterialTheme.typography.bodyMedium)
+                Text(stringResource(R.string.ui_no_tienes_solicitudes_pendientes), style = MaterialTheme.typography.bodyMedium)
             }
             viaje.solicitudes.forEach { solicitud ->
                 Card(Modifier.fillMaxWidth()) {
                     Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        FilaConAvatar(solicitud.nombre, "Foto de ${solicitud.nombre}",
+                        FilaConAvatar(solicitud.nombre, stringResource(R.string.ui_foto_de_1_s, solicitud.nombre),
                             subtitulo = solicitud.puntoRecogida)
-                        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                            BotonSecundario("Rechazar", onClick = {
+                        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                            BotonSecundario(stringResource(R.string.ui_rechazar), onClick = {
                                 viewModel.rechazarSolicitud(idViaje, solicitud.id)
-                            }, modifier = Modifier.weight(1f))
+                            }, modifier = Modifier.fillMaxWidth())
                             Button(
                                 onClick = {
                                     if (viewModel.aceptarSolicitud(idViaje, solicitud.id)) {
@@ -76,61 +83,61 @@ fun AdministrarWheelScreen(
                                     }
                                 },
                                 enabled = viaje.cuposOcupados < viaje.cuposTotales,
-                                modifier = Modifier.weight(1f).height(52.dp),
+                                modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp),
                                 shape = RoundedCornerShape(14.dp)
-                            ) { Text("Aceptar") }
+                            ) { Text(stringResource(R.string.ui_aceptar)) }
                         }
                     }
                 }
             }
             if (viaje.cuposOcupados >= viaje.cuposTotales && viaje.solicitudes.isNotEmpty()) {
-                Text("Ya no hay cupos disponibles.", color = MaterialTheme.colorScheme.error)
+                Text(stringResource(R.string.ui_ya_no_hay_cupos_disponibles), color = MaterialTheme.colorScheme.error)
             }
             Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.secondaryContainer
             )) {
                 Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Text("Pasajeros confirmados", style = MaterialTheme.typography.titleMedium)
-                    Text("${viaje.cuposOcupados} de ${viaje.cuposTotales} cupos ocupados")
+                    Text(stringResource(R.string.ui_pasajeros_confirmados), style = MaterialTheme.typography.titleMedium)
+                    Text(stringResource(R.string.cupos_ocupados_descripcion, viaje.cuposOcupados, viaje.cuposTotales))
                     LinearProgressIndicator(
                         progress = { viaje.cuposOcupados.toFloat() / viaje.cuposTotales.coerceAtLeast(1) },
                         modifier = Modifier.fillMaxWidth()
                     )
-                    if (viaje.pasajerosConfirmados.isEmpty()) Text("Aún no hay pasajeros confirmados.")
+                    if (viaje.pasajerosConfirmados.isEmpty()) Text(stringResource(R.string.ui_aun_no_hay_pasajeros_confirmados))
                     viaje.pasajerosConfirmados.forEach { pasajero ->
-                        FilaConAvatar(pasajero.nombre, "Foto de ${pasajero.nombre}",
-                            subtitulo = "Recogida: ${pasajero.puntoRecogida}")
+                        FilaConAvatar(pasajero.nombre, stringResource(R.string.ui_foto_de_1_s, pasajero.nombre),
+                            subtitulo = stringResource(R.string.ui_recogida_1_s, pasajero.puntoRecogida))
                     }
                 }
             }
-            BotonPrincipal("Iniciar viaje", onClick = onIniciarViaje)
-            BotonTexto("Cancelar Wheel", onClick = { confirmarCancelacion = true })
+            BotonPrincipal(stringResource(R.string.ui_iniciar_viaje), onClick = onIniciarViaje)
+            BotonTexto(stringResource(R.string.ui_cancelar_wheel), onClick = { confirmarCancelacion = true })
         }
         if (mostrarBarraNavegacion) BarraNavegacion(Pestana.MisViajes, onSeleccionarPestana)
     }
     if (confirmarCancelacion) {
         AlertDialog(
             onDismissRequest = { confirmarCancelacion = false },
-            title = { Text("Cancelar Wheel") },
-            text = { Text("¿Quieres cancelar este viaje? Se quitará de tus viajes programados.") },
+            title = { Text(stringResource(R.string.ui_cancelar_wheel)) },
+            text = { Text(stringResource(R.string.ui_quieres_cancelar_este_viaje_se_quitara_de_tus_viajes_programados)) },
             confirmButton = {
                 TextButton(onClick = {
                     confirmarCancelacion = false
                     onCancelarWheel()
-                }) { Text("Sí, cancelar") }
+                }) { Text(stringResource(R.string.ui_si_cancelar)) }
             },
             dismissButton = {
-                TextButton(onClick = { confirmarCancelacion = false }) { Text("Mantener viaje") }
+                TextButton(onClick = { confirmarCancelacion = false }) { Text(stringResource(R.string.ui_mantener_viaje)) }
             }
         )
     }
     pasajeroAceptado?.let { nombre ->
         AlertDialog(
             onDismissRequest = { pasajeroAceptado = null },
-            title = { Text("Pasajero aceptado") },
-            text = { Text("$nombre se agregó a los pasajeros confirmados.\n${viaje.cuposOcupados} de ${viaje.cuposTotales} cupos ocupados.") },
+            title = { Text(stringResource(R.string.ui_pasajero_aceptado)) },
+            text = { Text(stringResource(R.string.pasajero_aceptado_confirmacion, nombre, viaje.cuposOcupados, viaje.cuposTotales)) },
             confirmButton = {
-                TextButton(onClick = { pasajeroAceptado = null }) { Text("Listo") }
+                TextButton(onClick = { pasajeroAceptado = null }) { Text(stringResource(R.string.listo)) }
             }
         )
     }

@@ -1,5 +1,9 @@
 package com.javeriana.javewheels.navigation
 
+import androidx.compose.runtime.setValue
+
+import androidx.compose.runtime.getValue
+
 import android.widget.Toast
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,54 +12,54 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
+import com.javeriana.javewheels.R
 import com.javeriana.javewheels.entities.Rol
 import com.javeriana.javewheels.entities.reservaConfirmada
 import com.javeriana.javewheels.entities.usuarioDePrueba
-import com.javeriana.javewheels.entities.wheelsFinalizados
 import com.javeriana.javewheels.entities.viajesFinalizadosConductor
 import com.javeriana.javewheels.entities.wheelsDisponibles
+import com.javeriana.javewheels.entities.wheelsFinalizados
 import com.javeriana.javewheels.ui.components.BarraNavegacion
+import com.javeriana.javewheels.ui.components.compartirViaje
 import com.javeriana.javewheels.ui.screens.acceso.ConfirmacionScreen
 import com.javeriana.javewheels.ui.screens.acceso.LoginScreen
 import com.javeriana.javewheels.ui.screens.acceso.RecuperarContrasenaScreen
 import com.javeriana.javewheels.ui.screens.acceso.RegistroScreen
 import com.javeriana.javewheels.ui.screens.acceso.RestablecerContrasenaScreen
 import com.javeriana.javewheels.ui.screens.acceso.VerificarCodigoScreen
-import com.javeriana.javewheels.ui.screens.bienvenida.CargaScreen
 import com.javeriana.javewheels.ui.screens.bienvenida.BienvenidaScreen
-import com.javeriana.javewheels.ui.screens.conductor.ConductorCompletadoScreen
-import com.javeriana.javewheels.ui.screens.conductor.PublicarWheelScreen
+import com.javeriana.javewheels.ui.screens.bienvenida.CargaScreen
 import com.javeriana.javewheels.ui.screens.conductor.AdministrarWheelScreen
-import com.javeriana.javewheels.ui.screens.conductor.ViajeEnCursoScreen
+import com.javeriana.javewheels.ui.screens.conductor.ConductorCompletadoScreen
 import com.javeriana.javewheels.ui.screens.conductor.EditarVehiculoScreen
+import com.javeriana.javewheels.ui.screens.conductor.PublicarWheelScreen
 import com.javeriana.javewheels.ui.screens.conductor.QuieresConducirScreen
 import com.javeriana.javewheels.ui.screens.conductor.RegistrarVehiculoScreen
+import com.javeriana.javewheels.ui.screens.conductor.ViajeEnCursoScreen
+import com.javeriana.javewheels.ui.screens.pasajero.VerViajeBusetaScreen
+import com.javeriana.javewheels.ui.screens.pasajero.VerViajeEnVivoScreen
+import com.javeriana.javewheels.ui.screens.principal.BuscarMomentoScreen
+import com.javeriana.javewheels.ui.screens.principal.DetalleChatScreen
+import com.javeriana.javewheels.ui.screens.principal.DetalleReservaScreen
+import com.javeriana.javewheels.ui.screens.principal.DetalleViajeConductorScreen
+import com.javeriana.javewheels.ui.screens.principal.DetalleWheelScreen
 import com.javeriana.javewheels.ui.screens.principal.EditarPerfilScreen
 import com.javeriana.javewheels.ui.screens.principal.InformacionUsuarioScreen
-import com.javeriana.javewheels.ui.screens.principal.DetalleViajeConductorScreen
-import com.javeriana.javewheels.ui.screens.principal.RutasGuardadasScreen
-import com.javeriana.javewheels.ui.screens.principal.BuscarMomentoScreen
 import com.javeriana.javewheels.ui.screens.principal.InicioScreen
-import com.javeriana.javewheels.ui.screens.principal.DetalleChatScreen
 import com.javeriana.javewheels.ui.screens.principal.ListaChatsScreen
 import com.javeriana.javewheels.ui.screens.principal.MisViajesScreen
 import com.javeriana.javewheels.ui.screens.principal.PerfilActualizadoScreen
+import com.javeriana.javewheels.ui.screens.principal.RutasGuardadasScreen
 import com.javeriana.javewheels.ui.screens.principal.VehiculoActualizadoScreen
-import com.javeriana.javewheels.ui.screens.principal.PerfilScreen
 import com.javeriana.javewheels.ui.screens.principal.WheelsDisponiblesScreen
-import com.javeriana.javewheels.ui.screens.principal.DetalleWheelScreen
-import com.javeriana.javewheels.ui.screens.principal.DetalleReservaScreen
-import com.javeriana.javewheels.ui.screens.pasajero.VerViajeBusetaScreen
-import com.javeriana.javewheels.ui.screens.pasajero.VerViajeEnVivoScreen
-import com.javeriana.javewheels.ui.components.compartirViaje
 import com.javeriana.javewheels.ui.theme.JWAzul
 import com.javeriana.javewheels.viewmodels.ChatsViewModel
 import com.javeriana.javewheels.viewmodels.InicioViewModel
@@ -69,6 +73,7 @@ import com.javeriana.javewheels.viewmodels.VehiculoViewModel
 @Composable
 fun JWNavHost(modifier: Modifier = Modifier) {
     val context = LocalContext.current
+    val recursos = LocalResources.current
     // La app arranca en la pantalla de Bienvenida
     val backStack = rememberNavBackStack(Rutas.Bienvenida)
 
@@ -334,7 +339,7 @@ fun JWNavHost(modifier: Modifier = Modifier) {
                         onIniciarViaje = { navegarA(Rutas.ViajeEnCurso) },
                         onCancelarWheel = {
                             if (inicioViewModel.cancelarViaje(ruta.viajeId)) {
-                                Toast.makeText(context, "Wheel cancelado", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, recursos.getString(R.string.ui_wheel_cancelado), Toast.LENGTH_SHORT).show()
                                 irAPestana(Pestana.MisViajes)
                             }
                         },
@@ -379,6 +384,7 @@ fun JWNavHost(modifier: Modifier = Modifier) {
                 }
                 entry<Rutas.Perfil> {
                     InformacionUsuarioScreen(
+                        vehiculo = estadoVehiculo,
                         inicioViewModel = inicioViewModel,
                         perfilViewModel = perfilViewModel,
                         onEditarPerfil = {

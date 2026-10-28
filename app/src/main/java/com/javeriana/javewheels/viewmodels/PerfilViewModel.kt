@@ -2,11 +2,13 @@ package com.javeriana.javewheels.viewmodels
 
 import android.net.Uri
 import androidx.lifecycle.ViewModel
+import com.javeriana.javewheels.R
 import com.javeriana.javewheels.entities.usuarioDePrueba
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+
 data class PerfilUiState(
     val nombre: String = usuarioDePrueba.nombre,
     val correo: String = usuarioDePrueba.correo,
@@ -16,7 +18,7 @@ data class PerfilUiState(
     val fotoEditada: Uri? = null,
     val contrasena: String = "",
     val confirmarContrasena: String = "",
-    val mensajeError: String = ""
+    @androidx.annotation.StringRes val mensajeError: Int = 0
 )
 
 class PerfilViewModel : ViewModel() {
@@ -32,29 +34,29 @@ class PerfilViewModel : ViewModel() {
                 fotoEditada = estadoActual.fotoPerfil,
                 contrasena = "",
                 confirmarContrasena = "",
-                mensajeError = ""
+                mensajeError = 0
             )
         }
     }
 
     fun actualizarNombre(valor: String) {
-        _uiState.update { estadoActual -> estadoActual.copy(nombreEditado = valor, mensajeError = "") }
+        _uiState.update { estadoActual -> estadoActual.copy(nombreEditado = valor, mensajeError = 0) }
     }
 
     fun actualizarCorreo(valor: String) {
-        _uiState.update { estadoActual -> estadoActual.copy(correoEditado = valor, mensajeError = "") }
+        _uiState.update { estadoActual -> estadoActual.copy(correoEditado = valor, mensajeError = 0) }
     }
 
     fun actualizarFoto(nuevaFoto: Uri?) {
-        _uiState.update { estadoActual -> estadoActual.copy(fotoEditada = nuevaFoto, mensajeError = "") }
+        _uiState.update { estadoActual -> estadoActual.copy(fotoEditada = nuevaFoto, mensajeError = 0) }
     }
 
     fun actualizarContrasena(valor: String) {
-        _uiState.update { estadoActual -> estadoActual.copy(contrasena = valor, mensajeError = "") }
+        _uiState.update { estadoActual -> estadoActual.copy(contrasena = valor, mensajeError = 0) }
     }
 
     fun actualizarConfirmacion(valor: String) {
-        _uiState.update { estadoActual -> estadoActual.copy(confirmarContrasena = valor, mensajeError = "") }
+        _uiState.update { estadoActual -> estadoActual.copy(confirmarContrasena = valor, mensajeError = 0) }
     }
 
     /**
@@ -68,16 +70,16 @@ class PerfilViewModel : ViewModel() {
         val cambiaContrasena = estado.contrasena.isNotBlank() || estado.confirmarContrasena.isNotBlank()
         val mensaje = when {
             !esNombreValido(estado.nombreEditado) ->
-                "Escribe tu nombre completo."
+                R.string.error_escribe_tu_nombre_completo
             !esCorreoInstitucional(estado.correoEditado) ->
-                "Usa tu correo institucional (@javeriana.edu.co)."
+                R.string.error_usa_tu_correo_institucional_javeriana_edu_co
             cambiaContrasena && !esContrasenaValida(estado.contrasena) ->
-                "La contraseña debe tener mínimo 8 caracteres, con letras y números."
+                R.string.error_la_contrasena_debe_tener_minimo_8_caracteres_con_letras_y_numeros
             cambiaContrasena && estado.contrasena != estado.confirmarContrasena ->
-                "Las contraseñas no coinciden."
-            else -> ""
+                R.string.error_las_contrasenas_no_coinciden
+            else -> 0
         }
-        if (mensaje.isNotEmpty()) {
+        if (mensaje != 0) {
             _uiState.update { estadoActual -> estadoActual.copy(mensajeError = mensaje) }
             return false
         }
@@ -88,7 +90,7 @@ class PerfilViewModel : ViewModel() {
                 fotoPerfil = estadoActual.fotoEditada,
                 contrasena = "",
                 confirmarContrasena = "",
-                mensajeError = ""
+                mensajeError = 0
             )
         }
         return true

@@ -1,6 +1,5 @@
 package com.javeriana.javewheels.ui.screens.principal
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -19,19 +18,21 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.javeriana.javewheels.R
 import com.javeriana.javewheels.entities.usuarioDePrueba
-import com.javeriana.javewheels.ui.components.AvatarUsuario
 import com.javeriana.javewheels.ui.components.AcentoAmarillo
+import com.javeriana.javewheels.ui.components.AvatarUsuario
 import com.javeriana.javewheels.ui.components.BotonPrincipal
 import com.javeriana.javewheels.ui.components.BotonSecundario
 import com.javeriana.javewheels.ui.components.TextoAyuda
-import com.javeriana.javewheels.ui.theme.JWCelesteSuave
+import com.javeriana.javewheels.ui.components.tituloRol
 import com.javeriana.javewheels.ui.theme.JaveWheelsTheme
 import com.javeriana.javewheels.viewmodels.InicioViewModel
 
@@ -57,7 +58,7 @@ fun PerfilScreen(
         AcentoAmarillo()
         Spacer(modifier = Modifier.height(14.dp))
         Text(
-            text = "Perfil",
+            text = stringResource(R.string.ui_perfil),
             style = MaterialTheme.typography.headlineMedium,
             color = MaterialTheme.colorScheme.primary
         )
@@ -67,7 +68,7 @@ fun PerfilScreen(
         Card(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(containerColor = JWCelesteSuave)
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)
         ) {
             Row(
                 modifier = Modifier.padding(16.dp),
@@ -83,7 +84,7 @@ fun PerfilScreen(
                     )
                     Text(text = usuarioDePrueba.correo, style = MaterialTheme.typography.bodyMedium)
                     Text(
-                        text = "Rol actual: ${uiState.rol.titulo}",
+                        text = stringResource(R.string.ui_rol_actual_1_s, tituloRol(uiState.rol)),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -94,13 +95,13 @@ fun PerfilScreen(
 
         // Si todavía no es conductor, puede registrar su vehículo desde aquí
         if (uiState.esConductorRegistrado) {
-            TextoAyuda(texto = "Tu perfil de conductor está activo. Cambia de rol desde Inicio.")
+            TextoAyuda(texto = stringResource(R.string.ui_tu_perfil_de_conductor_esta_activo_cambia_de_rol_desde_inicio))
         } else {
-            BotonPrincipal(texto = "Registrar mi vehículo", onClick = onRegistrarVehiculo)
+            BotonPrincipal(texto = stringResource(R.string.ui_registrar_mi_vehiculo), onClick = onRegistrarVehiculo)
         }
         Spacer(modifier = Modifier.height(16.dp))
         BotonSecundario(
-            texto = "Cerrar sesión",
+            texto = stringResource(R.string.ui_cerrar_sesion),
             onClick = {
                 viewModel.cerrarSesion()
                 onCerrarSesion()

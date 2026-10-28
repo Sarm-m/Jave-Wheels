@@ -20,10 +20,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.javeriana.javewheels.ui.theme.JWCelesteContenedor
+import com.javeriana.javewheels.R
 import com.javeriana.javewheels.ui.theme.JaveWheelsTheme
 
 // ============================================================
@@ -37,7 +38,7 @@ fun PantallaEnConstruccion(
     titulo: String,
     icono: ImageVector,
     modifier: Modifier = Modifier,
-    descripcion: String = "Esta sección estará disponible en la próxima entrega."
+    descripcion: String = stringResource(R.string.ui_esta_seccion_estara_disponible_en_la_proxima_entrega)
 ) {
     Column(
         modifier = modifier
@@ -50,7 +51,7 @@ fun PantallaEnConstruccion(
             modifier = Modifier
                 .size(110.dp)
                 .clip(CircleShape)
-                .background(JWCelesteContenedor),
+                .background(MaterialTheme.colorScheme.primaryContainer),
             contentAlignment = Alignment.Center
         ) {
             Icon(
@@ -82,6 +83,6 @@ fun PantallaEnConstruccion(
 @Composable
 fun PantallaEnConstruccionPreview() {
     JaveWheelsTheme {
-        PantallaEnConstruccion(titulo = "Mis viajes", icono = Icons.Default.Construction)
+        PantallaEnConstruccion(titulo = stringResource(R.string.ui_mis_viajes), icono = Icons.Default.Construction)
     }
 }

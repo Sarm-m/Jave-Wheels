@@ -21,9 +21,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.javeriana.javewheels.R
 import com.javeriana.javewheels.ui.components.AvatarUsuario
 import com.javeriana.javewheels.ui.components.BotonPrincipal
 import com.javeriana.javewheels.ui.components.CampoTexto
@@ -31,10 +33,8 @@ import com.javeriana.javewheels.ui.components.DialogoSeleccionFoto
 import com.javeriana.javewheels.ui.components.FilaEditable
 import com.javeriana.javewheels.ui.components.MarcaJaveWheels
 import com.javeriana.javewheels.ui.components.MensajeError
-import com.javeriana.javewheels.ui.theme.JWAzul
-import com.javeriana.javewheels.ui.theme.JWCeleste
+import com.javeriana.javewheels.viewmodels.*
 import com.javeriana.javewheels.viewmodels.PerfilViewModel
-
 
 @Composable
 fun EditarPerfilScreen(
@@ -56,14 +56,14 @@ fun EditarPerfilScreen(
         MarcaJaveWheels()
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = "¡Hola, javeriano!",
+            text = stringResource(R.string.ui_hola_javeriano),
             style = MaterialTheme.typography.titleLarge,
             color = MaterialTheme.colorScheme.primary,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
         )
         Text(
-            text = "Aquí podrás editar tus datos",
+            text = stringResource(R.string.ui_aqui_podras_editar_tus_datos),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
@@ -73,57 +73,65 @@ fun EditarPerfilScreen(
 
         AvatarUsuario(
             foto = estado.fotoEditada,
-            descripcion = "Foto de perfil",
+            descripcion = stringResource(R.string.ui_foto_de_perfil),
             modifier = Modifier
                 .size(170.dp)
                 .align(Alignment.CenterHorizontally)
         )
         Spacer(modifier = Modifier.height(12.dp))
         BotonPrincipal(
-            texto = "Editar foto",
+            texto = stringResource(R.string.ui_editar_foto),
             onClick = { mostrarDialogoFoto = true },
             compacto = true,
-            colorFondo = JWCeleste,
-            colorTexto = JWAzul,
+            colorFondo = MaterialTheme.colorScheme.outline,
+            colorTexto = MaterialTheme.colorScheme.primary,
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
         Spacer(modifier = Modifier.height(16.dp))
 
         FilaEditable(
-            etiqueta = "Nombre completo",
+            etiqueta = stringResource(R.string.ui_nombre_completo),
             valor = estado.nombreEditado,
+            hayError = estado.mensajeError != 0 && (!esNombreValido(estado.nombreEditado)),
+            mensajeApoyo = if (estado.mensajeError != 0 && (!esNombreValido(estado.nombreEditado))) stringResource(R.string.error_escribe_tu_nombre_completo) else null,
             alCambiar = viewModel::actualizarNombre,
-            textoEditar = "Editar",
-            textoListo = "Listo",
-            placeholder = "Escribe tu nombre completo"
+            textoEditar = stringResource(R.string.editar),
+            textoListo = stringResource(R.string.listo),
+            placeholder = stringResource(R.string.ui_escribe_tu_nombre_completo)
         )
         FilaEditable(
-            etiqueta = "Correo institucional",
+            etiqueta = stringResource(R.string.ui_correo_institucional),
             valor = estado.correoEditado,
+            hayError = estado.mensajeError != 0 && (!esCorreoInstitucional(estado.correoEditado)),
+            mensajeApoyo = if (estado.mensajeError != 0 && (!esCorreoInstitucional(estado.correoEditado))) stringResource(R.string.error_usa_tu_correo_institucional_javeriana_edu_co) else null,
             alCambiar = viewModel::actualizarCorreo,
-            textoEditar = "Editar",
-            textoListo = "Listo",
-            placeholder = "nombre@javeriana.edu.co",
+            textoEditar = stringResource(R.string.editar),
+            textoListo = stringResource(R.string.listo),
+            placeholder = stringResource(R.string.ui_nombre_javeriana_edu_co),
             tipoTeclado = KeyboardType.Email
         )
         // La contraseña es opcional: solo se pide si el usuario toca Editar
         FilaEditable(
-            etiqueta = "Contraseña",
-            etiquetaCampo = "Nueva contraseña",
+            etiqueta = stringResource(R.string.ui_contrasena),
+            etiquetaCampo = stringResource(R.string.ui_nueva_contrasena),
             valor = estado.contrasena,
+            hayError = estado.mensajeError != 0 && ((estado.contrasena.isNotBlank() || estado.confirmarContrasena.isNotBlank()) && !esContrasenaValida(estado.contrasena)),
+            mensajeApoyo = if (estado.mensajeError != 0 && ((estado.contrasena.isNotBlank() || estado.confirmarContrasena.isNotBlank()) && !esContrasenaValida(estado.contrasena))) stringResource(R.string.error_la_contrasena_debe_tener_minimo_8_caracteres_con_letras_y_numeros) else null,
             alCambiar = viewModel::actualizarContrasena,
-            textoEditar = "Editar",
-            textoListo = "Listo",
-            placeholder = "Escribe tu nueva contraseña",
+            textoEditar = stringResource(R.string.editar),
+            textoListo = stringResource(R.string.listo),
+            placeholder = stringResource(R.string.ui_escribe_tu_nueva_contrasena),
             esContrasena = true,
             obligatorio = false,
             contenidoExtra = {
                 Spacer(modifier = Modifier.height(12.dp))
                 CampoTexto(
-                    etiqueta = "Confirmar contraseña",
+                    etiqueta = stringResource(R.string.ui_confirmar_contrasena),
                     valor = estado.confirmarContrasena,
+            hayError = estado.mensajeError != 0 && (estado.confirmarContrasena != estado.contrasena),
+            mensajeApoyo = if (estado.mensajeError != 0 && (estado.confirmarContrasena != estado.contrasena)) stringResource(R.string.error_las_contrasenas_no_coinciden) else null,
                     alCambiar = viewModel::actualizarConfirmacion,
-                    placeholder = "Confirma tu contraseña",
+                    placeholder = stringResource(R.string.ui_confirma_tu_contrasena),
                     esContrasena = true
                 )
             }
@@ -132,7 +140,7 @@ fun EditarPerfilScreen(
         MensajeError(mensaje = estado.mensajeError)
         Spacer(modifier = Modifier.height(12.dp))
         BotonPrincipal(
-            texto = "Guardar",
+            texto = stringResource(R.string.guardar),
             onClick = { if (viewModel.guardar()) onGuardado() },
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
@@ -144,9 +152,9 @@ fun EditarPerfilScreen(
     if (mostrarDialogoFoto) {
         DialogoSeleccionFoto(
             fotoActual = estado.fotoEditada,
-            textoInstruccion = "Presiona para cargar foto",
-            textoBoton = "Guardar",
-            descripcionAvatar = "Foto de perfil",
+            textoInstruccion = stringResource(R.string.ui_presiona_para_cargar_foto),
+            textoBoton = stringResource(R.string.guardar),
+            descripcionAvatar = stringResource(R.string.ui_foto_de_perfil),
             onGuardar = { fotoNueva ->
                 viewModel.actualizarFoto(fotoNueva)
                 mostrarDialogoFoto = false
